@@ -1,5 +1,76 @@
 import Vue from 'vue'
 import App from './App.vue'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import {
+  faEye,
+  faInbox,
+  faHistory,
+  faMugHot,
+  faCalendarAlt,
+  faBook,
+  faCompass,
+  faTrashAlt,
+  faEraser,
+  faFilter,
+  faEllipsisH,
+  faCheck,
+  faPaperPlane,
+  faPlus,
+  faSearch,
+  faTag,
+  faClock,
+  faCaretDown,
+  faCaretUp,
+  faChevronDown,
+  faChevronLeft,
+  faChevronRight,
+  faChevronUp,
+  faCaretSquareUp,
+  faStopwatch,
+  faChevronCircleDown,
+  faTimesCircle,
+  faLink,
+  faUnlink,
+  faSortAmountDown,
+  faShoePrints,
+  faArchive
+} from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faEye)
+library.add(faInbox)
+library.add(faHistory)
+library.add(faMugHot)
+library.add(faCalendarAlt)
+library.add(faBook)
+library.add(faCompass)
+library.add(faTrashAlt)
+library.add(faEraser)
+library.add(faFilter)
+library.add(faEllipsisH)
+library.add(faCheck)
+library.add(faPaperPlane)
+library.add(faPlus)
+library.add(faSearch)
+library.add(faTag)
+library.add(faClock)
+library.add(faCaretDown)
+library.add(faCaretUp)
+library.add(faChevronDown)
+library.add(faChevronLeft)
+library.add(faChevronRight)
+library.add(faChevronUp)
+library.add(faCaretSquareUp)
+library.add(faStopwatch)
+library.add(faChevronCircleDown)
+library.add(faTimesCircle)
+library.add(faLink)
+library.add(faUnlink)
+library.add(faSortAmountDown)
+library.add(faShoePrints)
+library.add(faArchive)
+
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false
 
