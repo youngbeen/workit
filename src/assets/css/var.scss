@@ -36,8 +36,11 @@ $sidebar-tab-badge-color: #555;
 
 // 定义toolbar
 $toolbar-color: #444;
+$toolbar-bgcolor: #fcf4f5;
 $toolbar-icon-color: #696969;
-$toolbar-bgcolor-active: #f2f2f2;
+$toolbar-bgcolor-hover: #efe7e8;
+$toolbar-bgcolor-active: #efe7e8;
+$toolbar-bgcolor-active-hover: #c9c1c2;
 
 // 定义集成toolbar
 $itoolbar-height: 24px;

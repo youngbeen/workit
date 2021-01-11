@@ -5,12 +5,20 @@
         <div class="icon-btn lg" @click="close()">
           <font-awesome-icon :icon="['fas', 'chevron-left']" />
         </div>
-        <div class="box-select" :data-name="'search by'">
+        <div class="common-radio-group">
+          <div class="radio"
+            :class="[mode === 'keyword' && 'active']"
+            @click="mode = 'keyword'">Keyword</div>
+          <div class="radio"
+            :class="[mode === 'tag' && 'active']"
+            @click="mode = 'tag'">Tag</div>
+        </div>
+        <!-- <div class="box-select" :data-name="'search by'">
           <select class="common-select" v-model="mode">
             <option value="keyword">Keyword</option>
             <option value="tag">Tag</option>
           </select>
-        </div>
+        </div> -->
         <span>in</span>
         <div class="box-select" :data-name="'category'">
           <select class="common-select" v-model="category">
@@ -321,8 +329,8 @@ export default {
       top: 0;
       right: 0;
       z-index: 100;
-      height: 60px;
-      padding: 0 18px 0 12px;
+      height: 50px;
+      padding: 0 18px 0 80px;
       // border-bottom: 2px solid #ccc;
       border-bottom-right-radius: $border-radius;
       border-bottom-left-radius: $border-radius;
@@ -333,18 +341,19 @@ export default {
         height: $input-height;
       }
       .common-input {
-        width: 570px;
+        width: 480px;
       }
     }
     .row-counts {
       position: fixed;
       left: 0;
-      top: 60px;
+      top: 50px;
       right: 0;
       z-index: 100;
       height: 30px;
       line-height: 30px;
       padding: 0 16px;
+      border-radius: 0 0 $border-radius $border-radius;
       background: #bfe2ff;
       box-shadow: 0px 10px 8px 1px rgba(122, 122, 122, .2);
       font-size: $sub-font-size;

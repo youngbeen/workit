@@ -104,6 +104,8 @@ export default {
 @import "../assets/css/var.scss";
 
 .comp-due-tag {
+  display: inline-flex;
+  align-items: center;
   border-radius: 3px;
   font-size: 11px;
   font-weight: 500;
@@ -136,14 +138,18 @@ export default {
     }
   }
   .day {
+    display: inline-flex;
+    align-items: center;
     background: $color-active;
     color: #fff;
     // &.warning {
     //   background: $color-warning;
     // }
     .day-block {
-      display: inline-block;
+      // display: inline-block;
+      // vertical-align: middle;
       width: 10px;
+      height: 16px;
       &:not(:last-of-type) {
         border-right: 1px solid #fff;
       }

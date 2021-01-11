@@ -1,12 +1,13 @@
 <template>
   <section class="bed-left-nav" @mouseover="handleMouseover" @mouseout="handleMouseout">
+    <div class="box-title">Workit</div>
     <div class="box-group">
       <div class="nav" :class="[system.tab === 'inbox' && 'active']" @click="changeTab('inbox')" @dragover.prevent="handleDragover" @drop.prevent="handleDrop($event, 'inbox')">
         <div class="title">
           <span class="icon-image">
             <font-awesome-icon :icon="['fas', 'inbox']" />
           </span>
-          &nbsp;Inbox
+          Inbox
         </div>
         <span class="badge" :class="[(isShowCount || system.tab === 'inbox') && data.inbox.length && 'show']">{{ data.inbox.length }}</span>
       </div>
@@ -17,7 +18,7 @@
           <span class="icon-image" :class="[system.tab === 'current' && 'compass-lost']">
             <font-awesome-icon :icon="['fas', 'compass']" />
           </span>
-          &nbsp;Current
+          Current
         </div>
         <span class="badge" :class="[(isShowCount || system.tab === 'current') && data.current.length && 'show']">{{ data.current.length }}</span>
       </div>
@@ -26,7 +27,7 @@
           <span class="icon-image">
             <font-awesome-icon :icon="['fas', 'history']" />
           </span>
-          &nbsp;Coming
+          Coming
         </div>
         <span class="badge" :class="[(isShowCount || system.tab === 'coming') && data.coming.length && 'show']">{{ data.coming.length }}</span>
       </div>
@@ -35,7 +36,7 @@
           <span class="icon-image">
             <font-awesome-icon :icon="['fas', 'mug-hot']" />
           </span>
-          &nbsp;Anytime
+          Anytime
         </div>
         <span class="badge" :class="[(isShowCount || system.tab === 'anytime') && data.anytime.length && 'show']">{{ data.anytime.length }}</span>
       </div>
@@ -44,7 +45,7 @@
           <span class="icon-image">
             <font-awesome-icon :icon="['fas', 'calendar-alt']" />
           </span>
-          &nbsp;Someday
+          Someday
         </div>
         <span class="badge" :class="[(isShowCount || system.tab === 'someday') && data.someday.length && 'show']">{{ data.someday.length }}</span>
       </div>
@@ -55,7 +56,7 @@
           <span class="icon-image" :class="[system.tab === 'tracking' && 'eye-bling']">
             <font-awesome-icon :icon="['fas', 'eye']" />
           </span>
-          &nbsp;Tracking
+          Tracking
         </div>
         <span class="badge" :class="[(isShowCount || system.tab === 'tracking') && data.tracking.length && 'show']">{{ data.tracking.length }}</span>
       </div>
@@ -64,7 +65,7 @@
           <span class="icon-image">
             <font-awesome-icon :icon="['fas', 'book']" />
           </span>
-          &nbsp;Note
+          Note
         </div>
         <span class="badge" :class="[(isShowCount || system.tab === 'note') && data.note.length && 'show']">{{ data.note.length }}</span>
       </div>
@@ -75,7 +76,7 @@
           <span class="icon-image">
             <font-awesome-icon :icon="['fas', 'archive']" />
           </span>
-          &nbsp;History
+          History
         </div>
         <span class="badge" :class="[(isShowCount || system.tab === 'history') && data.history.length && 'show']">{{ data.history.length }}</span>
       </div>
@@ -182,6 +183,21 @@ export default {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   transition: all $transition-time;
+  .box-title {
+    display: inline-block;
+    height: 40px;
+    line-height: 38px;
+    padding-left: 80px;
+    background: linear-gradient(90deg, #00e54d, #dce6df, #00e54d);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    // color: #444;
+    // text-shadow: 1px 1px #fff;
+    // text-align: justify;
+    font-size: 15px;
+    font-weight: bold;
+    user-select: none;
+  }
   .box-group {
     position: relative;
     margin: 10px;
@@ -221,6 +237,9 @@ export default {
         }
         .eye-bling {
           animation: eyebling infinite 5s linear;
+        }
+        span {
+          margin-right: 4px;
         }
       }
       .badge {

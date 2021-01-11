@@ -329,7 +329,7 @@ export default {
           display: flex;
           align-items: center;
           position: absolute;
-          right: 0;
+          right: 2px;
           top: 0;
           bottom: 0;
           .icon-btn {

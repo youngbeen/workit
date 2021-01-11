@@ -844,10 +844,12 @@ select, input {
   &.active {
     background: $toolbar-bgcolor-active;
   }
-  // &:hover {
-  //   color: #333;
-  //   background: #aaa;
-  // }
+  &:hover {
+    background: $toolbar-bgcolor-hover;
+    &.active {
+      background: $toolbar-bgcolor-active-hover;
+    }
+  }
 }
 .modal-bg {
   position: absolute;
@@ -891,6 +893,32 @@ select, input {
   font-weight: 500;
   &:focus {
     background: $input-bgcolor-active;
+  }
+}
+.common-radio-group {
+  display: inline-flex;
+  align-items: center;
+  border-radius: $border-radius;
+  color: $toolbar-icon-color;
+  transition: all $transition-time;
+  .radio {
+    height: $input-height;
+    line-height: $input-height;
+    padding: 0 8px;
+    border-radius: $border-radius;
+    font-weight: 500;
+    transition: all $transition-time;
+    &.active {
+      background: $toolbar-bgcolor-active;
+    }
+  }
+  &:hover {
+    background: $toolbar-bgcolor-hover;
+    .radio {
+      &.active {
+        background: $toolbar-bgcolor-active-hover;
+      }
+    }
   }
 }
 .common-textarea {
@@ -983,7 +1011,7 @@ select, input {
     width: 520px;
   }
   .box-list {
-    max-height: 500px;
+    max-height: 524px;
     padding: 0 0 18px 18px;
     font-size: 14px;
     // font-family: 'Monaco';

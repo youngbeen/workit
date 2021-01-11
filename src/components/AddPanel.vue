@@ -389,7 +389,7 @@ export default {
             display: flex;
             align-items: center;
             position: absolute;
-            right: 0;
+            right: 2px;
             top: 0;
             bottom: 0;
             .weekday-tip {
@@ -413,8 +413,10 @@ export default {
           // width: 220px;
           .cell {
             display: inline-block;
+            vertical-align: top;
             margin-right: 1px;
             width: 12px;
+            height: 18px;
             border: 1px solid $color-active;
             // border-radius: 3px;
             text-align: center;

@@ -83,7 +83,7 @@ export default {
   align-items: center;
   padding: 12px 12px;
   border-bottom: 1px solid $border-color;
-  background: #fff;
+  background: $toolbar-bgcolor;
   .icon-btn {
     margin-left: 12px;
     &.active {

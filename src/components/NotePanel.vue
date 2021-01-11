@@ -99,6 +99,7 @@ export default {
     opacity: 0;
     cursor: default;
     transition: all $transition-time;
+    user-select: none;
     &.animated {
       opacity: 1;
     }
