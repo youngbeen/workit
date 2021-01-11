@@ -188,7 +188,8 @@ export default {
     height: 40px;
     line-height: 38px;
     padding-left: 80px;
-    background: linear-gradient(90deg, #00e54d, #dce6df, #00e54d);
+    background: linear-gradient(90deg, red, orange, gold, green, cyan, blue, purple, pink, red);
+    background-size: 1200px;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     // color: #444;
@@ -197,6 +198,7 @@ export default {
     font-size: 15px;
     font-weight: bold;
     user-select: none;
+    animation: rolling infinite 20s linear;
   }
   .box-group {
     position: relative;
@@ -331,6 +333,14 @@ export default {
   }
   100% {
     transform: rotateX(0deg);
+  }
+}
+@keyframes rolling {
+  0% {
+    background-position: 0px;
+  }
+  100% {
+    background-position: 1200px;
   }
 }
 </style>
