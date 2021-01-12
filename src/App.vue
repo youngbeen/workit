@@ -37,6 +37,10 @@
             <div class="icon-btn btn" v-show="system.tab !== 'history' && item.group" @click="handleUnlink($event, system.tab, item, index)">
               <font-awesome-icon :icon="['fas', 'unlink']" title="Unlink" />
             </div> -->
+            <!-- <div class="icon-btn btn"
+              v-show="system.tab !== 'history'" @click="handleAddSubTask(item)">
+              <font-awesome-icon :icon="['fas', 'plus']" title="Add Sub Task" />
+            </div> -->
             <div class="icon-btn btn" @click="handleChangeCat($event, system.tab, item, index)">
               <font-awesome-icon :icon="['fas', 'paper-plane']" title="Change Category" />
             </div>
@@ -616,6 +620,9 @@ export default {
     //   }
     //   dataCtrl.save(this.list)
     // },
+    // handleAddSubTask (task) {
+    //   console.log('add sub task to', task)
+    // },
     handleChangeCat (e, cat, task, showIndex) {
       // console.log(e)
       this.focusIndex = task.index
@@ -636,6 +643,7 @@ export default {
       this.focusIndex = -1
       const item = this.list.splice(data.tag.index, 1)[0]
       item.cat = data.value
+      item.status = 0
       item.doneTime = null
       this.list.push(item)
       dataCtrl.save(this.list)
