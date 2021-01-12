@@ -3,7 +3,7 @@
     <div class="bg" @click="close(true)"></div>
     <div class="box-options" :class="[isAnimationDone ? 'animated': '']" :style="{ left: left + 'px', top: top + 'px' }">
       <div class="tip">Category</div>
-      <div class="option" v-for="(option, index) in options" :key="option.value" @click="select(option.value, index)">{{ option.text }}</div>
+      <div class="option" v-for="(option, index) in options" :key="option.value" @click="select(option.value, index)">{{ option.label }}</div>
     </div>
   </section>
 </template>

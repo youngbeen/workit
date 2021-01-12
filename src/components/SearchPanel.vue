@@ -22,15 +22,9 @@
         <span>in</span>
         <div class="box-select" :data-name="'category'">
           <select class="common-select" v-model="category">
-            <option value="all">All</option>
-            <option value="inbox">Inbox</option>
-            <option value="current">Current</option>
-            <option value="coming">Coming</option>
-            <option value="anytime">Anytime</option>
-            <option value="someday">Someday</option>
-            <option value="tracking">Tracking</option>
-            <option value="note">Note</option>
-            <option value="history">History</option>
+            <option v-for="c in catOptions"
+              :key="c.value"
+              :value="c.value">{{ c.label }}</option>
           </select>
         </div>
         <input id="search-input" class="common-input" type="text" autofocus :placeholder="searchPlaceholder" v-model="keyword" @keypress.enter="search()">
@@ -56,7 +50,7 @@
               <span class="common-tag sm label" v-for="(label, i) in item.labels" :key="i">{{ label }}</span>
               <div class="mask">&nbsp;</div>
             </div>
-            <div class="btn" @click="go(cat.categoryName)">
+            <div class="icon-btn lg" @click="go(cat.category)">
               <font-awesome-icon :icon="['fas', 'chevron-right']" />
             </div>
           </div>
@@ -75,6 +69,7 @@
 
 <script>
 import eventBus from '@/eventBus'
+import { cats } from '@/models/DictMap'
 import system from '@/models/system'
 import systemCtrl from '@/ctrls/systemCtrl'
 // import dataCtrl from '@/ctrls/dataCtrl'
@@ -82,8 +77,8 @@ import systemCtrl from '@/ctrls/systemCtrl'
 export default {
   name: 'searchPanel',
   props: {
-    data: {
-      type: Object,
+    list: {
+      type: Array,
       required: true
     }
   },
@@ -92,16 +87,21 @@ export default {
       isShow: false,
       hasSearched: false,
       category: 'all',
+      catOptions: [
+        { value: 'all', label: 'All' },
+        { value: 'open', label: 'All Open' },
+        ...cats
+      ],
       mode: 'keyword', // 模式，keyword - 关键字查找，tag - 标签查找
       keyword: '',
       searchResults: [
         // {
-        //   categoryName: 'inbox',
+        //   category: 'inbox',
+        //   categoryName: 'Inbox',
         //   collapsed: false,
         //   nodes: [
         //     {
         //       ...,
-        //       index: 0,
         //       searchKeyword: 'th',
         //       headPiece: 'some',
         //       tailPiece: 'ing'
@@ -120,6 +120,8 @@ export default {
     searchPlaceholder () {
       if (this.category === 'all') {
         return `${this.mode} to search in ${this.category} categories`
+      } else if (this.category === 'open') {
+        return `${this.mode} to search in all open tasks`
       } else {
         return `${this.mode} to search in ${this.category} category`
       }
@@ -139,107 +141,73 @@ export default {
   methods: {
     search () {
       if (!this.keyword) {
-        window.alert('Please input keyword before searching')
+        window.alert('Please input something to search')
         return
       }
-      const rawData = JSON.parse(JSON.stringify(this.data))
+      const rawData = JSON.parse(JSON.stringify(this.list))
       if (this.category === 'all') {
         // 从所有结果中查找
         this.searchResults = []
-        const inboxResults = this.doSearch(this.mode, this.keyword, rawData.inbox)
-        if (inboxResults.length) {
-          this.searchResults.push({
-            categoryName: 'inbox',
-            collapsed: false,
-            nodes: inboxResults
-          })
-        }
-        const currentResults = this.doSearch(this.mode, this.keyword, rawData.current)
-        if (currentResults.length) {
-          this.searchResults.push({
-            categoryName: 'current',
-            collapsed: false,
-            nodes: currentResults
-          })
-        }
-        const comingResults = this.doSearch(this.mode, this.keyword, rawData.coming)
-        if (comingResults.length) {
-          this.searchResults.push({
-            categoryName: 'coming',
-            collapsed: false,
-            nodes: comingResults
-          })
-        }
-        const anytimeResults = this.doSearch(this.mode, this.keyword, rawData.anytime)
-        if (anytimeResults.length) {
-          this.searchResults.push({
-            categoryName: 'anytime',
-            collapsed: false,
-            nodes: anytimeResults
-          })
-        }
-        const somedayResults = this.doSearch(this.mode, this.keyword, rawData.someday)
-        if (somedayResults.length) {
-          this.searchResults.push({
-            categoryName: 'someday',
-            collapsed: false,
-            nodes: somedayResults
-          })
-        }
-        const trackingResults = this.doSearch(this.mode, this.keyword, rawData.tracking)
-        if (trackingResults.length) {
-          this.searchResults.push({
-            categoryName: 'tracking',
-            collapsed: false,
-            nodes: trackingResults
-          })
-        }
-        const noteResults = this.doSearch(this.mode, this.keyword, rawData.note)
-        if (noteResults.length) {
-          this.searchResults.push({
-            categoryName: 'note',
-            collapsed: false,
-            nodes: noteResults
-          })
-        }
-        const historyResults = this.doSearch(this.mode, this.keyword, rawData.history)
-        if (historyResults.length) {
-          this.searchResults.push({
-            categoryName: 'history',
-            collapsed: false,
-            nodes: historyResults
-          })
-        }
+        cats.forEach(c => {
+          const result = this.doSearch(this.mode, this.keyword, rawData, c.value)
+          if (result.length) {
+            this.searchResults.push({
+              category: c.value,
+              categoryName: c.label,
+              collapsed: false,
+              nodes: result
+            })
+          }
+        })
+      } else if (this.category === 'open') {
+        // 从所有未关闭结果中查找
+        this.searchResults = []
+        cats.forEach(c => {
+          if (c.value !== 'history') {
+            let result = this.doSearch(this.mode, this.keyword, rawData, c.value)
+            if (result.length) {
+              result = result.filter(r => r.status === 0)
+              this.searchResults.push({
+                category: c.value,
+                categoryName: c.label,
+                collapsed: false,
+                nodes: result
+              })
+            }
+          }
+        })
       } else {
         // 从特定分类中查找
         this.searchResults = []
-        const results = this.doSearch(this.mode, this.keyword, rawData[this.category])
-        if (results.length) {
+        const result = this.doSearch(this.mode, this.keyword, rawData, this.category)
+        if (result.length) {
           this.searchResults.push({
-            categoryName: this.category,
+            category: this.category,
+            categoryName: this.catOptions.find(c => c.value === this.category).label,
             collapsed: false,
-            nodes: results
+            nodes: result
           })
         }
       }
       this.hasSearched = true
     },
-    doSearch (mode = 'keyword', keyword, list) {
+    doSearch (mode = 'keyword', keyword, allList, cat) {
+      const list = allList.filter(item => item.cat === cat)
       const result = []
       if (mode === 'keyword') {
         // 搜索关键字模式
-        list.forEach((item, index) => {
+        list.forEach((item) => {
           const targetIndex = item.content.toLowerCase().indexOf(keyword.toLowerCase())
           if (targetIndex > -1) {
             result.push({
               content: item.content,
               cat: item.cat,
+              status: item.status,
               labels: item.labels,
               group: item.group,
               createTime: item.createTime,
               updateTime: item.updateTime,
               doneTime: item.doneTime,
-              index,
               searchKeyword: item.content.substr(targetIndex, keyword.length),
               headPiece: item.content.substring(0, targetIndex),
               tailPiece: item.content.substring(targetIndex + keyword.length)
@@ -248,17 +216,17 @@ export default {
         })
       } else if (mode === 'tag') {
         // 搜索标签模式
-        list.forEach((item, index) => {
+        list.forEach((item) => {
           if (item.labels.some(l => l.toLowerCase().indexOf(keyword.toLowerCase()) > -1)) {
             result.push({
               content: item.content,
               cat: item.cat,
+              status: item.status,
               labels: item.labels,
               group: item.group,
               createTime: item.createTime,
               updateTime: item.updateTime,
               doneTime: item.doneTime,
-              index,
               searchKeyword: '',
               headPiece: item.content,
               tailPiece: ''
@@ -428,22 +396,22 @@ export default {
               z-index: 2;
             }
           }
-          .btn {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-left: 6px;
-            width: 20px;
-            height: 20px;
-            padding: 4px;
-            border-radius: 50%;
-            font-size: 16px;
-            cursor: pointer;
-            transition: $transition-time;
-            &:hover {
-              background: #ccc;
-            }
-          }
+          // .btn {
+          //   display: flex;
+          //   justify-content: center;
+          //   align-items: center;
+          //   margin-left: 6px;
+          //   width: 20px;
+          //   height: 20px;
+          //   padding: 4px;
+          //   border-radius: 50%;
+          //   font-size: 16px;
+          //   cursor: pointer;
+          //   transition: $transition-time;
+          //   &:hover {
+          //     background: #ccc;
+          //   }
+          // }
         }
       }
     }

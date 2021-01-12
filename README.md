@@ -14,16 +14,16 @@ npm run e:build
 
 ## Features
 
-* Clean UI design (also follows new MacOS design)
+* Sub Tasks - *ing*
 * Categories focused on work
 * Show related notes automatically
 * Tag your tasks (labels)
 * Setting due date to tasks
 * Filter tasks
 * Search tasks by keyword/label
-* Grouping tasks
-* Sorting by groups
 * Import/Export your data
+* Clean UI design (follows new MacOS design)
+* Dark mode - *ing*
 
 
 ![preview 1](./docs/assets/1.png)
@@ -37,28 +37,20 @@ npm run e:build
 Workit使用源生的LS作为数据存储方式，存储在`workitSaveData`下面，内容为list的完整JSON字符串，结构如下：
 
 ```javascript
-{
-  inbox: [
-    // {
-    //   content: '测试内容',
-    //   cat: 'inbox',
-    //   status: 0, // 0 - init, 1 - done
-    //   labels: ['分类', '测试'],
-    //   group: 1563168778668, // 分组，以时间戳作为唯一key匹配
-    //   createTime: 1563168778668,
-    //   updateTime: 1563168778668,
-    //   dueTime: 1563168778668,
-    //   doneTime: null,
-    // }
-  ],
-  current: [],
-  coming: [],
-  anytime: [],
-  someday: [],
-  tracking: [],
-  note: [],
-  history: []
-}
+[
+  // {
+  //   index: 0, // 原始索引
+  //   content: '测试内容',
+  //   cat: 'inbox',
+  //   status: 0, // 0 - init, 1 - done
+  //   labels: ['分类', '测试'],
+  //   group: 1563168778668, // 分组，以时间戳作为唯一key匹配
+  //   createTime: 1563168778668,
+  //   updateTime: 1563168778668,
+  //   dueTime: 1563168778668,
+  //   doneTime: null,
+  // }
+]
 ```
 
 ### `usedTags`

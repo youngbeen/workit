@@ -7,6 +7,8 @@
 </template>
 
 <script>
+import { formatKeystroke } from '@/utils/CommonUtil'
+
 export default {
   name: 'useTip',
   data () {
@@ -19,19 +21,19 @@ export default {
         },
         {
           type: 'info',
-          content: 'You can use <span style="padding: 3px 6px;border-radius: 4px;background: #eee;font-weight: 500;">Command/Ctrl</span> + <span style="padding: 3px 6px;border-radius: 4px;background: #eee;font-weight: 500;">A</span> to add a new task'
+          content: `You can use ${formatKeystroke('Command/Ctrl')} + ${formatKeystroke('A')} to add a new task`
         },
         {
           type: 'info',
-          content: 'You can use <span style="padding: 3px 6px;border-radius: 4px;background: #eee;font-weight: 500;">Command/Ctrl</span> + <span style="padding: 3px 6px;border-radius: 4px;background: #eee;font-weight: 500;">Shift</span> + <span style="padding: 3px 6px;border-radius: 4px;background: #eee;font-weight: 500;">A</span> to add a new task with extra config'
+          content: `You can use ${formatKeystroke('Command/Ctrl')} + ${formatKeystroke('Shift')} + ${formatKeystroke('A')} to add a new task with extra config`
         },
         {
           type: 'info',
-          content: 'You can use <span style="padding: 3px 6px;border-radius: 4px;background: #eee;font-weight: 500;">Command/Ctrl</span> + <span style="padding: 3px 6px;border-radius: 4px;background: #eee;font-weight: 500;">Up/Down</span> to toggle navigations'
+          content: `You can use ${formatKeystroke('Command/Ctrl')} + ${formatKeystroke('Up/Down')} to toggle navigations`
         },
         {
           type: 'info',
-          content: 'You can drag tasks to change sequence'
+          content: 'You can drag tasks to change their positions'
         },
         {
           type: 'info',
@@ -39,7 +41,7 @@ export default {
         },
         {
           type: 'info',
-          content: 'Not having any tasks yet'
+          content: 'Not having any tasks yet here'
         }
       ],
       tc: null

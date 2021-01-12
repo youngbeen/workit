@@ -32,23 +32,24 @@ ipcMain.on('asynchronous-message', (event, arg) => {
         fs.writeFileSync(data.filePath, arg.content, 'utf8')
       }
     })
-  } else if (arg && arg.type === 'unlink_all_tasks') {
-    // 重置所有当前项的分组
-    dialog.showMessageBox({
-      type: 'question',
-      buttons: ['Proceed', 'Cancel'],
-      // defaultId: 0,
-      message: 'All tasks in current view will be unlinked, Are you sure to proceed?'
-    }).then((data) => {
-      switch (data.response) {
-        case 0: // proceed
-          win.webContents.send('sys_unlink_all')
-          break
-        case 1:
-          // cancel, do nothing
-      }
-    })
   }
+  // else if (arg && arg.type === 'unlink_all_tasks') {
+  //   // 重置所有当前项的分组
+  //   dialog.showMessageBox({
+  //     type: 'question',
+  //     buttons: ['Proceed', 'Cancel'],
+  //     // defaultId: 0,
+  //     message: 'All tasks in current view will be unlinked, Are you sure to proceed?'
+  //   }).then((data) => {
+  //     switch (data.response) {
+  //       case 0: // proceed
+  //         win.webContents.send('sys_unlink_all')
+  //         break
+  //       case 1:
+  //         // cancel, do nothing
+  //     }
+  //   })
+  // }
   // event.reply('asynchronous-reply', 'got it')
 })
 
@@ -69,7 +70,7 @@ function importData () {
         type: 'question',
         buttons: ['Merge', 'Replace', 'Cancel'],
         defaultId: 0,
-        message: 'How to deal with your saved data? would you like to...'
+        message: 'What will you do to deal with your saved data?'
       }).then((data) => {
         switch (data.response) {
           case 0: // merge
@@ -92,7 +93,7 @@ function resetData () {
     type: 'question',
     buttons: ['Proceed', 'Cancel'],
     // defaultId: 0,
-    message: 'All your data and tasks will be cleared! Are you sure to proceed?'
+    message: 'This will clear all data and tasks, are you sure to proceed?'
   }).then((data) => {
     switch (data.response) {
       case 0: // proceed
@@ -170,7 +171,7 @@ async function createWindow () {
           }
         },
         {
-          label: 'Import Data via File',
+          label: 'Import Data from File',
           click: () => {
             importData()
           }

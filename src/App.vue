@@ -1,11 +1,11 @@
 <template>
   <div id="app">
-    <left-nav :data="list"></left-nav>
+    <left-nav :counts="catCounts"></left-nav>
 
     <note-panel :data="relatedNotes"></note-panel>
 
     <div class="box-main" :class="[relatedNotes.length && 'collapse']">
-      <action-bar :filteredCount="currentList.length" :totalCount="list[system.tab].length"></action-bar>
+      <action-bar :filteredCount="currentList.length" :totalCount="catCounts[system.tab]"></action-bar>
 
       <!-- list -->
       <div class="box-list">
@@ -17,9 +17,13 @@
           @dragover.prevent="handleDragover"
           @drop.prevent="handleDrop($event, item.index)">
           <index-indicator :index="index"></index-indicator>
-          <div class="group-indicator" v-show="system.tab !== 'history' && item.group" :style="{ 'background': groupColors.get(item.group) }">&nbsp;</div>
-          <div class="box-radio" v-show="system.tab !== 'history' && system.tab !== 'note'" @click="handleFinish(system.tab, item.index)"></div>
-          <div class="content" :class="[system.tab === 'history' && 'done', system.tab === 'history' && isDoneInToday(item.doneTime) && 'highlight']">
+          <!-- <div class="group-indicator" v-show="system.tab !== 'history' && item.group" :style="{ 'background': groupColors.get(item.group) }">&nbsp;</div> -->
+          <div class="box-radio"
+            v-show="system.tab !== 'history' && system.tab !== 'note'"
+            @click="handleFinish(system.tab, item.index)"></div>
+          <div class="content"
+            :class="[system.tab === 'history' && 'done',
+              system.tab === 'history' && isDoneInToday(item.doneTime) && 'highlight']">
             {{ item.content }}
             <due-tag v-if="item.dueTime && system.tab !== 'history'" :time="item.dueTime" :now="nowTime"></due-tag>
           </div>
@@ -27,12 +31,12 @@
             <span class="common-tag sm label" v-for="(label, i) in item.labels" :key="i">{{ label }}</span>
           </div>
           <div class="box-btns">
-            <div class="icon-btn btn" v-show="system.tab !== 'history' && !item.group && currentList.length > 1" @click="handleLink($event, system.tab, item, index)">
+            <!-- <div class="icon-btn btn" v-show="system.tab !== 'history' && !item.group && currentList.length > 1" @click="handleLink($event, system.tab, item, index)">
               <font-awesome-icon :icon="['fas', 'link']" title="Link" />
             </div>
             <div class="icon-btn btn" v-show="system.tab !== 'history' && item.group" @click="handleUnlink($event, system.tab, item, index)">
               <font-awesome-icon :icon="['fas', 'unlink']" title="Unlink" />
-            </div>
+            </div> -->
             <div class="icon-btn btn" @click="handleChangeCat($event, system.tab, item, index)">
               <font-awesome-icon :icon="['fas', 'paper-plane']" title="Change Category" />
             </div>
@@ -47,18 +51,18 @@
         </div>
       </div>
 
-      <div class="no-data" v-show="!list[system.tab].length">
+      <div class="no-data" v-show="!catCounts[system.tab]">
         <use-tip></use-tip>
       </div>
     </div>
 
-    <pop-link :callback="link" :cancel="handlePopClose"></pop-link>
+    <!-- <pop-link :callback="link" :cancel="handlePopClose"></pop-link> -->
     <pop-changecat :callback="changeCat" :cancel="handlePopClose"></pop-changecat>
     <pop-actions :callback="confirmAction" :cancel="handlePopClose"></pop-actions>
     <add-panel></add-panel>
     <detail-panel></detail-panel>
     <filter-panel :labels="currentCatLabels"></filter-panel>
-    <search-panel :data="list"></search-panel>
+    <search-panel :list="list"></search-panel>
 
     <date-picker></date-picker>
   </div>
@@ -69,17 +73,17 @@ import { ipcRenderer, clipboard } from 'electron'
 // import { sleep } from '@youngbeen/sleep'
 import { dateUtil } from '@youngbeen/angle-util'
 import eventBus from '@/eventBus'
-import { groupColorsPreset } from '@/models/DictMap'
+import { cats, actions } from '@/models/DictMap'
 import system from '@/models/system'
 import config from '@/models/config'
-import colorUtil from '@/utils/ColorUtil'
+// import colorUtil from '@/utils/ColorUtil'
 import systemCtrl from '@/ctrls/systemCtrl'
 import dataCtrl from '@/ctrls/dataCtrl'
 import LeftNav from './components/LeftNav.vue'
 import ActionBar from './components/ActionBar.vue'
 import UseTip from './components/UseTip.vue'
 import NotePanel from './components/NotePanel.vue'
-import PopLink from './components/PopLink.vue'
+// import PopLink from './components/PopLink.vue'
 import PopChangecat from './components/PopChangecat.vue'
 import PopActions from './components/PopActions.vue'
 import AddPanel from './components/AddPanel.vue'
@@ -91,6 +95,23 @@ import IndexIndicator from '@/components/IndexIndicator.vue'
 import DatePicker from '@/components/DatePickerPop.vue'
 
 export default {
+  components: {
+    LeftNav,
+    ActionBar,
+    UseTip,
+    NotePanel,
+    // PopLink,
+    PopChangecat,
+    PopActions,
+    AddPanel,
+    DetailPanel,
+    FilterPanel,
+    SearchPanel,
+    DueTag,
+    IndexIndicator,
+    DatePicker
+  },
+
   data () {
     return {
       animated: false,
@@ -99,46 +120,24 @@ export default {
       focusIndex: -1, // 正聚焦的索引（代表当前触发激活了pop box）
       seePartHistory: true, // 是否只展示部分历史数据
       historyLimit: 30, // 默认展示的历史条目数上限
-      groupColors: new Map(), // 颜色匹配字典，key=group, value=<css color string>
-      list: {
-        inbox: [
-          // {
-          //   content: '测试内容',
-          //   cat: 'inbox',
-          //   status: 0, // 0 - init, 1 - done
-          //   labels: ['分类', '测试'],
-          //   group: 1563168778668, // 分组，以时间戳作为唯一key匹配
-          //   createTime: 1563168778668,
-          //   updateTime: 1563168778668,
-          //   dueTime: 1563168778668,
-          //   doneTime: null,
-          // }
-        ],
-        current: [],
-        coming: [],
-        anytime: [],
-        someday: [],
-        tracking: [],
-        note: [],
-        history: []
-      },
+      // groupColors: new Map(), // 颜色匹配字典，key=group, value=<css color string>
+      list: [
+        // {
+        //   index: 0, // 原始索引
+        //   content: '测试内容',
+        //   cat: 'inbox',
+        //   status: 0, // 0 - init, 1 - done
+        //   labels: ['分类', '测试'],
+        //   group: 1563168778668, // 分组，以时间戳作为唯一key匹配
+        //   createTime: 1563168778668,
+        //   updateTime: 1563168778668,
+        //   dueTime: 1563168778668,
+        //   doneTime: null,
+        // }
+      ],
       // displayedList: [],
-      catOptions: [
-        { value: 'inbox', text: 'Inbox' },
-        { value: 'current', text: 'Current' },
-        { value: 'coming', text: 'Coming' },
-        { value: 'anytime', text: 'Anytime' },
-        { value: 'someday', text: 'Someday' },
-        { value: 'tracking', text: 'Tracking' },
-        { value: 'note', text: 'Note' }
-      ],
-      actionOptions: [
-        { value: 'edit', text: 'Edit' },
-        { value: 'detail', text: 'Detail' },
-        { value: 'delete', text: 'Delete' },
-        { value: 'btt', text: 'Bring To Top' },
-        { value: 'stb', text: 'Set To Bottom' }
-      ],
+      catOptions: cats.slice(0, cats.length - 1),
+      actionOptions: actions,
       nowTime: 0,
       tc: null,
       system
@@ -146,8 +145,8 @@ export default {
   },
   computed: {
     currentCatLabels () {
-      if (this.system.tab && this.list[this.system.tab] && this.list[this.system.tab].length) {
-        const list = this.list[this.system.tab]
+      if (this.system.tab) {
+        const list = this.list.filter(item => item.cat === this.system.tab)
         const labels = list.reduce((soFar, item) => {
           soFar = [...soFar, ...item.labels]
           return soFar
@@ -158,13 +157,13 @@ export default {
       }
     },
     currentList () {
-      if (this.system.tab && this.list[this.system.tab] && this.list[this.system.tab].length) {
-        // 根据筛选条件筛选，并插入新字段index标记原始index
-        let rawList = JSON.parse(JSON.stringify(this.list[this.system.tab]))
-        rawList = rawList.map((item, index) => {
+      if (this.system.tab) {
+        // 根据筛选条件筛选
+        let rawList = this.list.map((item, index) => {
           item.index = index
           return item
         })
+        rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.cat === this.system.tab)))
         // 根据起始时间筛选
         if (this.system.filter.fromTime) {
           if (this.system.tab === 'history') {
@@ -205,10 +204,29 @@ export default {
         return []
       }
     },
+    catCounts () {
+      return this.list.reduce((soFar, item) => {
+        if (item.cat) {
+          soFar[item.cat]++
+        } else {
+          soFar.inbox++
+        }
+        return soFar
+      }, {
+        inbox: 0,
+        current: 0,
+        coming: 0,
+        anytime: 0,
+        someday: 0,
+        tracking: 0,
+        note: 0,
+        history: 0
+      })
+    },
     relatedNotes () {
       if (this.system.tab && !['note', 'history'].includes(this.system.tab)) {
-        return this.list.note.filter(n => {
-          return n.labels.some(l => this.currentCatLabels.includes(l))
+        return this.list.filter(n => {
+          return n.cat === 'note' && n.labels.some(l => this.currentCatLabels.includes(l))
         })
       } else {
         return []
@@ -216,48 +234,31 @@ export default {
     }
   },
   watch: {
-    currentList: {
-      handler: function (newVal, oldVal) {
-        console.log(newVal)
-        this.currentList.forEach((item) => {
-          if (item.group && !this.groupColors.has(item.group)) {
-            let color = ''
-            if (this.groupColors.size < groupColorsPreset.length) {
-              // 分组数量足够使用预设的颜色
-              color = groupColorsPreset[this.groupColors.size]
-            } else {
-              // 预设颜色不足，生成随机颜色
-              color = colorUtil.getRandomColor()
-            }
-            this.groupColors.set(item.group, color)
-          }
-        })
-        // this.animated = false
-        // this.displayedList = [...this.currentList]
-        // sleep(10).then(() => {
-        //   this.animated = true
-        // })
-      },
-      deep: true,
-      immediate: true
-    }
-  },
-
-  components: {
-    LeftNav,
-    ActionBar,
-    UseTip,
-    NotePanel,
-    PopLink,
-    PopChangecat,
-    PopActions,
-    AddPanel,
-    DetailPanel,
-    FilterPanel,
-    SearchPanel,
-    DueTag,
-    IndexIndicator,
-    DatePicker
+    // currentList: {
+    //   handler: function (newVal, oldVal) {
+    //     console.log(newVal)
+    //     this.currentList.forEach((item) => {
+    //       if (item.group && !this.groupColors.has(item.group)) {
+    //         let color = ''
+    //         if (this.groupColors.size < groupColorsPreset.length) {
+    //           // 分组数量足够使用预设的颜色
+    //           color = groupColorsPreset[this.groupColors.size]
+    //         } else {
+    //           // 预设颜色不足，生成随机颜色
+    //           color = colorUtil.getRandomColor()
+    //         }
+    //         this.groupColors.set(item.group, color)
+    //       }
+    //     })
+    //     // this.animated = false
+    //     // this.displayedList = [...this.currentList]
+    //     // sleep(10).then(() => {
+    //     //   this.animated = true
+    //     // })
+    //   },
+    //   deep: true,
+    //   immediate: true
+    // }
   },
 
   created () {
@@ -268,26 +269,26 @@ export default {
     }
     // 初始化激活nav
     let initTab = 'inbox'
-    if (this.list.tracking.length) {
+    if (this.catCounts.tracking) {
       initTab = 'tracking'
-    } else if (this.list.inbox.length) {
+    } else if (this.catCounts.inbox) {
       initTab = 'inbox'
-    } else if (this.list.current.length) {
+    } else if (this.catCounts.current) {
       initTab = 'current'
-    } else if (this.list.coming.length) {
+    } else if (this.catCounts.coming) {
       initTab = 'coming'
-    } else if (this.list.anytime.length) {
+    } else if (this.catCounts.anytime) {
       initTab = 'anytime'
-    } else if (this.list.someday.length) {
+    } else if (this.catCounts.someday) {
       initTab = 'someday'
-    } else if (this.list.note.length) {
+    } else if (this.catCounts.note) {
       initTab = 'note'
     }
     systemCtrl.changeTab(initTab)
 
     // 历史数据过多提示
-    if (this.list.history.length > config.historyWarningCount) {
-      const historyNotify = new Notification('Too many history items!', {
+    if (this.catCounts.history > config.historyWarningCount) {
+      const historyNotify = new Notification('Too many history items', {
         body: 'Begin to clean...'
       })
 
@@ -298,9 +299,12 @@ export default {
   },
 
   mounted () {
+    // ticking
     this.tc = setInterval(() => {
       this.nowTime = (new Date()).getTime()
     }, 1000)
+
+    // 重构传入的参数，对象化处理
     eventBus.$on('addItem', (params) => {
       this.addItem(params.category, params.content, params.tags, params.dueTime, params.reverse)
     })
@@ -310,9 +314,9 @@ export default {
     eventBus.$on('changeCat', (params) => {
       this.changeCat(params)
     })
-    eventBus.$on('proceedSort', (params) => {
-      this.sort(params)
-    })
+    // eventBus.$on('proceedSort', (params) => {
+    //   this.sort(params)
+    // })
     eventBus.$on('clearHistory', () => {
       this.clearHistory()
     })
@@ -322,9 +326,9 @@ export default {
     ipcRenderer.on('sys_copycontent_withtag', () => {
       this.copyAllContent(true)
     })
-    ipcRenderer.on('sys_unlink_all', () => {
-      this.unlinkAll()
-    })
+    // ipcRenderer.on('sys_unlink_all', () => {
+    //   this.unlinkAll()
+    // })
     ipcRenderer.on('sys_export_trigger', () => {
       ipcRenderer.send('asynchronous-message', {
         type: 'sys_export_file',
@@ -369,7 +373,8 @@ export default {
       const now = (new Date()).getTime()
       if (reverse) {
         // 插入到首行
-        this.list[cat].unshift({
+        this.list.unshift({
+          // index: 0, // 自维护
           content,
           cat,
           status: 0, // 0 - init, 1 - done
@@ -381,7 +386,8 @@ export default {
         })
       } else {
         // 插入到末尾
-        this.list[cat].push({
+        this.list.push({
+          // index: this.list.length, // 自维护
           content,
           cat,
           status: 0, // 0 - init, 1 - done
@@ -406,19 +412,20 @@ export default {
       const now = (new Date()).getTime()
       if (cat !== this.editingCat) {
         // 用户更改了分类
-        this.list[cat].push(this.list[this.editingCat].splice(this.editingIndex, 1)[0])
-        this.list[cat][this.list[cat].length - 1].content = content
-        this.list[cat][this.list[cat].length - 1].cat = cat
-        this.list[cat][this.list[cat].length - 1].labels = labelArray
-        this.list[cat][this.list[cat].length - 1].updateTime = now
-        this.list[cat][this.list[cat].length - 1].dueTime = dueTime
-        this.list[cat][this.list[cat].length - 1].doneTime = null
+        const item = this.list.splice(this.editingIndex, 1)[0]
+        item.content = content
+        item.cat = cat
+        item.labels = labelArray
+        item.updateTime = now
+        item.dueTime = dueTime
+        item.doneTime = null
+        this.list.push(item)
       } else {
         // 仅更改值
-        this.list[this.editingCat][this.editingIndex].content = content
-        this.list[this.editingCat][this.editingIndex].labels = labelArray
-        this.list[this.editingCat][this.editingIndex].updateTime = now
-        this.list[this.editingCat][this.editingIndex].dueTime = dueTime
+        this.list[this.editingIndex].content = content
+        this.list[this.editingIndex].labels = labelArray
+        this.list[this.editingIndex].updateTime = now
+        this.list[this.editingIndex].dueTime = dueTime
       }
       dataCtrl.save(this.list)
       dataCtrl.saveTag(labelArray)
@@ -428,12 +435,14 @@ export default {
         const op = system.lastOperation
         if (op.operation === 'finish') {
           // 撤销完结
-          const item = this.list[op.targetCat].splice(op.targetIndex, 1)[0]
+          const item = this.list.splice(op.targetIndex, 1)[0]
+          item.cat = op.sourceCat
+          item.status = 0
           item.doneTime = null
-          this.list[op.sourceCat].splice(op.sourceIndex, 0, item)
+          this.list.splice(op.sourceIndex, 0, item)
         } else if (op.operation === 'delete') {
           // 撤销删除
-          this.list[op.sourceCat].splice(op.sourceIndex, 0, op.dataValue)
+          this.list.splice(op.sourceIndex, 0, op.dataValue)
         }
         system.lastOperation = null
         dataCtrl.save(this.list)
@@ -456,7 +465,7 @@ export default {
         contents = this.currentList.map(item => item.content)
       }
       clipboard.writeText(contents.join('\n'))
-      const copyNotify = new Notification('Content Copied!', {
+      const copyNotify = new Notification('Content Copied', {
         body: 'Content was copied into clipboard'
       })
       copyNotify.onclick = () => {
@@ -464,11 +473,11 @@ export default {
       }
     },
     clearHistory () {
-      if (!this.list.history.length) {
+      if (!this.catCounts.history) {
         return
       }
-      dataCtrl.backup('History', this.list.history)
-      this.list.history = []
+      dataCtrl.backup('History', this.list.filter(item => item.cat === 'history'))
+      this.list = this.list.filter(item => item.cat !== 'history')
       dataCtrl.save(this.list)
       const clearNotify = new Notification('All history data are cleared!', {
         body: 'Click to restore'
@@ -480,15 +489,17 @@ export default {
     restoreHistory () {
       const data = dataCtrl.readBackup('History')
       if (data) {
-        this.list.history = data
+        this.list = [...this.list, ...data]
         dataCtrl.save(this.list)
       }
     },
     handleFinish (cat, index) {
       const now = (new Date()).getTime()
-      const item = this.list[cat].splice(index, 1)[0]
+      const item = this.list.splice(index, 1)[0]
+      item.cat = 'history'
+      item.status = 1
       item.doneTime = now
-      this.list.history.push(item)
+      this.list.push(item)
       // console.log(this.list)
       dataCtrl.save(this.list)
       system.lastOperation = {
@@ -496,7 +507,7 @@ export default {
         sourceCat: cat,
         sourceIndex: index,
         targetCat: 'history',
-        targetIndex: this.list.history.length - 1,
+        targetIndex: this.list.length - 1,
         dataValue: ''
       }
       const finishNotify = new Notification('Congratulations!', {
@@ -506,105 +517,105 @@ export default {
         this.abortOperation()
       }
     },
-    handleLink (e, cat, task, showIndex) {
-      this.focusIndex = task.index
-      const options = []
-      const existGroups = []
-      this.currentList.forEach((item) => {
-        if (item.index !== task.index) {
-          if (!item.group) {
-            // 没有分组的可以被link
-            options.push({
-              value: item.index,
-              text: item.content,
-              labels: item.labels,
-              group: item.group
-            })
-          } else {
-            // 有分组
-            if (!existGroups.length || !existGroups.includes(item.group)) {
-              // 新的分组
-              existGroups.push(item.group)
-              options.push({
-                value: item.index,
-                text: item.content,
-                labels: item.labels,
-                group: item.group
-              })
-            } else {
-              // 已有的分组
-            }
-          }
-        }
-      })
-      // console.log(options)
-      eventBus.$emit('showPopLink', {
-        options,
-        position: {
-          left: e.clientX,
-          top: e.clientY
-        },
-        tag: {
-          cat,
-          index: task.index,
-          showIndex
-        }
-      })
-    },
-    link (data) {
-      // console.log(data)
-      this.focusIndex = -1
-      const source = this.list[data.tag.cat][data.tag.index]
-      const target = this.list[data.tag.cat][data.value]
-      console.log(source, target)
-      if (!target.group) {
-        // 目标也无分组，则创建一个新分组
-        const newGroupKey = new Date().getTime()
-        source.group = target.group = newGroupKey
-      } else {
-        // 目标有分组
-        source.group = target.group
-      }
-      dataCtrl.save(this.list)
-    },
-    handleUnlink (e, cat, task, showIndex) {
-      task.group = null
-      this.list[cat].splice(task.index, 1, task)
-      dataCtrl.save(this.list)
-    },
-    unlinkAll () {
-      this.currentList.forEach((item, index) => {
-        if (item.group) {
-          const shiftingItem = this.list[system.tab].splice(index, 1)[0]
-          shiftingItem.group = null
-          this.list[system.tab].splice(index, 0, shiftingItem)
-        }
-      })
-      dataCtrl.save(this.list)
-      this.groupColors.clear()
-    },
-    sort () {
-      // 按分组排序
-      let index = 0
-      for (; index < this.currentList.length; index++) {
-        const item = this.currentList[index]
-        if (item.group) {
-          let nextIndex = index + 1
-          const group = item.group
-          for (let i = index + 1; i < this.currentList.length; i++) {
-            const checkedItem = this.currentList[i]
-            if (checkedItem.group === group && i !== nextIndex) {
-              // 同分组，放置到一起
-              const shiftingItem = this.list[system.tab].splice(i, 1)[0]
-              this.list[system.tab].splice(nextIndex, 0, shiftingItem)
-              index++
-              nextIndex++
-            }
-          }
-        }
-      }
-      dataCtrl.save(this.list)
-    },
+    // handleLink (e, cat, task, showIndex) {
+    //   this.focusIndex = task.index
+    //   const options = []
+    //   const existGroups = []
+    //   this.currentList.forEach((item) => {
+    //     if (item.index !== task.index) {
+    //       if (!item.group) {
+    //         // 没有分组的可以被link
+    //         options.push({
+    //           value: item.index,
+    //           text: item.content,
+    //           labels: item.labels,
+    //           group: item.group
+    //         })
+    //       } else {
+    //         // 有分组
+    //         if (!existGroups.length || !existGroups.includes(item.group)) {
+    //           // 新的分组
+    //           existGroups.push(item.group)
+    //           options.push({
+    //             value: item.index,
+    //             text: item.content,
+    //             labels: item.labels,
+    //             group: item.group
+    //           })
+    //         } else {
+    //           // 已有的分组
+    //         }
+    //       }
+    //     }
+    //   })
+    //   // console.log(options)
+    //   eventBus.$emit('showPopLink', {
+    //     options,
+    //     position: {
+    //       left: e.clientX,
+    //       top: e.clientY
+    //     },
+    //     tag: {
+    //       cat,
+    //       index: task.index,
+    //       showIndex
+    //     }
+    //   })
+    // },
+    // link (data) {
+    //   // console.log(data)
+    //   this.focusIndex = -1
+    //   const source = this.list[data.tag.cat][data.tag.index]
+    //   const target = this.list[data.tag.cat][data.value]
+    //   console.log(source, target)
+    //   if (!target.group) {
+    //     // 目标也无分组，则创建一个新分组
+    //     const newGroupKey = new Date().getTime()
+    //     source.group = target.group = newGroupKey
+    //   } else {
+    //     // 目标有分组
+    //     source.group = target.group
+    //   }
+    //   dataCtrl.save(this.list)
+    // },
+    // handleUnlink (e, cat, task, showIndex) {
+    //   task.group = null
+    //   this.list[cat].splice(task.index, 1, task)
+    //   dataCtrl.save(this.list)
+    // },
+    // unlinkAll () {
+    //   this.currentList.forEach((item, index) => {
+    //     if (item.group) {
+    //       const shiftingItem = this.list[system.tab].splice(index, 1)[0]
+    //       shiftingItem.group = null
+    //       this.list[system.tab].splice(index, 0, shiftingItem)
+    //     }
+    //   })
+    //   dataCtrl.save(this.list)
+    //   this.groupColors.clear()
+    // },
+    // sort () {
+    //   // 按分组排序
+    //   let index = 0
+    //   for (; index < this.currentList.length; index++) {
+    //     const item = this.currentList[index]
+    //     if (item.group) {
+    //       let nextIndex = index + 1
+    //       const group = item.group
+    //       for (let i = index + 1; i < this.currentList.length; i++) {
+    //         const checkedItem = this.currentList[i]
+    //         if (checkedItem.group === group && i !== nextIndex) {
+    //           // 同分组，放置到一起
+    //           const shiftingItem = this.list[system.tab].splice(i, 1)[0]
+    //           this.list[system.tab].splice(nextIndex, 0, shiftingItem)
+    //           index++
+    //           nextIndex++
+    //         }
+    //       }
+    //     }
+    //   }
+    //   dataCtrl.save(this.list)
+    // },
     handleChangeCat (e, cat, task, showIndex) {
       // console.log(e)
       this.focusIndex = task.index
@@ -623,10 +634,10 @@ export default {
     },
     changeCat (data) {
       this.focusIndex = -1
-      const item = this.list[data.tag.cat].splice(data.tag.index, 1)[0]
+      const item = this.list.splice(data.tag.index, 1)[0]
       item.cat = data.value
       item.doneTime = null
-      this.list[data.value].push(item)
+      this.list.push(item)
       dataCtrl.save(this.list)
     },
     handleShowMore (e, cat, task, showIndex) {
@@ -666,13 +677,13 @@ export default {
       }
     },
     handleBringToTop (cat, index) {
-      const item = this.list[cat].splice(index, 1)[0]
-      this.list[cat] = [item, ...this.list[cat]]
+      const item = this.list.splice(index, 1)[0]
+      this.list = [item, ...this.list]
       dataCtrl.save(this.list)
     },
     handleSetToBottom (cat, index) {
-      const item = this.list[cat].splice(index, 1)[0]
-      this.list[cat] = [...this.list[cat], item]
+      const item = this.list.splice(index, 1)[0]
+      this.list = [...this.list, item]
       dataCtrl.save(this.list)
     },
     handleShowEdit (cat, index) {
@@ -680,9 +691,9 @@ export default {
       this.editingIndex = index
       eventBus.$emit('showEditItem', {
         category: cat,
-        content: this.list[cat][index].content,
-        tags: this.list[cat][index].labels.join(','),
-        dueTime: this.list[cat][index].dueTime
+        content: this.list[index].content,
+        tags: this.list[index].labels.join(','),
+        dueTime: this.list[index].dueTime
       })
     },
     handleShowDetail (cat, index) {
@@ -693,7 +704,7 @@ export default {
       })
     },
     handleShowDelete (cat, index) {
-      const removedItem = this.list[cat].splice(index, 1)[0]
+      const removedItem = this.list.splice(index, 1)[0]
       dataCtrl.save(this.list)
       system.lastOperation = {
         operation: 'delete',
@@ -733,26 +744,19 @@ export default {
       // console.log('drop', index)
       e.dataTransfer.dropEffect = 'move'
       // 交换2个位置数据
-      const sourceCat = e.dataTransfer.getData('sourceCat')
+      // const sourceCat = e.dataTransfer.getData('sourceCat')
       const sourceIndex = e.dataTransfer.getData('sourceIndex')
       if (sourceIndex === index) {
         return
       }
-      const item = this.list[sourceCat].splice(sourceIndex, 1)[0]
-      this.list[sourceCat].splice(index, 0, item)
+      const item = this.list.splice(sourceIndex, 1)[0]
+      this.list.splice(index, 0, item)
       dataCtrl.save(this.list)
     },
     importData (content, type) {
       const newData = JSON.parse(content)
       if (type === 'merge') {
-        this.list.inbox = [...this.list.inbox, ...newData.inbox]
-        this.list.current = [...this.list.current, ...newData.current]
-        this.list.coming = [...this.list.coming, ...newData.coming]
-        this.list.anytime = [...this.list.anytime, ...newData.anytime]
-        this.list.someday = [...this.list.someday, ...newData.someday]
-        this.list.tracking = [...this.list.tracking, ...newData.tracking]
-        this.list.note = [...this.list.note, ...newData.note]
-        this.list.history = [...this.list.history, ...newData.history]
+        this.list = [...this.list, ...newData]
         dataCtrl.save(this.list)
       } else if (type === 'replace') {
         this.list = newData
@@ -764,16 +768,7 @@ export default {
       notify.onclick = () => {}
     },
     resetData () {
-      this.list = {
-        inbox: [],
-        current: [],
-        coming: [],
-        anytime: [],
-        someday: [],
-        tracking: [],
-        note: [],
-        history: []
-      }
+      this.list = []
       dataCtrl.save(this.list)
       dataCtrl.clearTags()
       system.lastOperation = null
@@ -906,7 +901,7 @@ select, input {
     line-height: $input-height;
     padding: 0 8px;
     border-radius: $border-radius;
-    font-weight: 500;
+    font-weight: 600;
     transition: all $transition-time;
     &.active {
       background: $toolbar-bgcolor-active;

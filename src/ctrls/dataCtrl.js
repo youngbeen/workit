@@ -12,7 +12,19 @@ export default {
     if (data) {
       data = JSON.parse(data)
       // NOTE 新增的功能，兼容老数据
-      !data.note && (data.note = [])
+      if (Object.prototype.toString.call(data) === '[object Object]') {
+        // 老对象数据，需要转为数组
+        data.history = data.history.map(item => {
+          item.cat = 'history'
+          return item
+        })
+        data = [...data.inbox, ...data.current, ...data.coming, ...data.anytime, ...data.someday, ...data.tracking, ...data.note, ...data.history]
+      }
+      // 附加原始索引值
+      data = data.map((item, index) => {
+        item.index = index
+        return item
+      })
       return data
     } else {
       return null

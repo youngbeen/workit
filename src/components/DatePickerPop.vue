@@ -309,8 +309,12 @@ export default {
           text-align: center;
           cursor: pointer;
           user-select: none;
-          &:hover, &.today {
+          &:hover {
             color: $color-active;
+          }
+          &.today {
+            color: $color-active;
+            font-weight: bold;
           }
           &.active {
             background: $itoolbar-item-bgcolor-active;

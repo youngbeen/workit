@@ -9,7 +9,7 @@
           </span>
           Inbox
         </div>
-        <span class="badge" :class="[(isShowCount || system.tab === 'inbox') && data.inbox.length && 'show']">{{ data.inbox.length }}</span>
+        <span class="badge" :class="[(isShowCount || system.tab === 'inbox') && counts.inbox && 'show']">{{ counts.inbox }}</span>
       </div>
     </div>
     <div class="box-group">
@@ -20,7 +20,7 @@
           </span>
           Current
         </div>
-        <span class="badge" :class="[(isShowCount || system.tab === 'current') && data.current.length && 'show']">{{ data.current.length }}</span>
+        <span class="badge" :class="[(isShowCount || system.tab === 'current') && counts.current && 'show']">{{ counts.current }}</span>
       </div>
       <div class="nav" :class="[system.tab === 'coming' && 'active']" @click="changeTab('coming')" @dragover.prevent="handleDragover" @drop.prevent="handleDrop($event, 'coming')">
         <div class="title">
@@ -29,7 +29,7 @@
           </span>
           Coming
         </div>
-        <span class="badge" :class="[(isShowCount || system.tab === 'coming') && data.coming.length && 'show']">{{ data.coming.length }}</span>
+        <span class="badge" :class="[(isShowCount || system.tab === 'coming') && counts.coming && 'show']">{{ counts.coming }}</span>
       </div>
       <div class="nav" :class="[system.tab === 'anytime' && 'active']" @click="changeTab('anytime')" @dragover.prevent="handleDragover" @drop.prevent="handleDrop($event, 'anytime')">
         <div class="title">
@@ -38,7 +38,7 @@
           </span>
           Anytime
         </div>
-        <span class="badge" :class="[(isShowCount || system.tab === 'anytime') && data.anytime.length && 'show']">{{ data.anytime.length }}</span>
+        <span class="badge" :class="[(isShowCount || system.tab === 'anytime') && counts.anytime && 'show']">{{ counts.anytime }}</span>
       </div>
       <div class="nav" :class="[system.tab === 'someday' && 'active']" @click="changeTab('someday')" @dragover.prevent="handleDragover" @drop.prevent="handleDrop($event, 'someday')">
         <div class="title">
@@ -47,7 +47,7 @@
           </span>
           Someday
         </div>
-        <span class="badge" :class="[(isShowCount || system.tab === 'someday') && data.someday.length && 'show']">{{ data.someday.length }}</span>
+        <span class="badge" :class="[(isShowCount || system.tab === 'someday') && counts.someday && 'show']">{{ counts.someday }}</span>
       </div>
     </div>
     <div class="box-group">
@@ -58,7 +58,7 @@
           </span>
           Tracking
         </div>
-        <span class="badge" :class="[(isShowCount || system.tab === 'tracking') && data.tracking.length && 'show']">{{ data.tracking.length }}</span>
+        <span class="badge" :class="[(isShowCount || system.tab === 'tracking') && counts.tracking && 'show']">{{ counts.tracking }}</span>
       </div>
       <div class="nav" :class="[system.tab === 'note' && 'active']" @click="changeTab('note')" @dragover.prevent="handleDragover" @drop.prevent="handleDrop($event, 'note')">
         <div class="title">
@@ -67,7 +67,7 @@
           </span>
           Note
         </div>
-        <span class="badge" :class="[(isShowCount || system.tab === 'note') && data.note.length && 'show']">{{ data.note.length }}</span>
+        <span class="badge" :class="[(isShowCount || system.tab === 'note') && counts.note && 'show']">{{ counts.note }}</span>
       </div>
     </div>
     <div class="box-group">
@@ -78,7 +78,7 @@
           </span>
           History
         </div>
-        <span class="badge" :class="[(isShowCount || system.tab === 'history') && data.history.length && 'show']">{{ data.history.length }}</span>
+        <span class="badge" :class="[(isShowCount || system.tab === 'history') && counts.history && 'show']">{{ counts.history }}</span>
       </div>
     </div>
   </section>
@@ -87,13 +87,15 @@
 <script>
 import eventBus from '@/eventBus'
 import { ipcRenderer } from 'electron'
+import { cats } from '@/models/DictMap'
 import system from '@/models/system'
 import systemCtrl from '@/ctrls/systemCtrl'
 
 export default {
   name: 'leftNav',
   props: {
-    data: {
+    counts: {
+      type: Object,
       required: true
     }
   },
@@ -101,7 +103,7 @@ export default {
     return {
       isHover: false,
       isShowCount: false,
-      queue: ['inbox', 'current', 'coming', 'anytime', 'someday', 'tracking', 'note', 'history'],
+      queue: cats.map(item => item.value),
       system
     }
   },
@@ -184,7 +186,7 @@ export default {
   -webkit-overflow-scrolling: touch;
   transition: all $transition-time;
   .box-title {
-    display: inline-block;
+    display: block;
     height: 40px;
     line-height: 38px;
     padding-left: 80px;
@@ -198,6 +200,7 @@ export default {
     font-size: 15px;
     font-weight: bold;
     user-select: none;
+    -webkit-app-region: drag;
     animation: rolling infinite 20s linear;
   }
   .box-group {

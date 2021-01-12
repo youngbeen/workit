@@ -4,26 +4,30 @@
       <font-awesome-icon :icon="['fas', 'filter']" />&nbsp;
       <span v-show="isFilterActive">{{ filteredCount }}/{{ totalCount }}</span>
     </div>
-    <div class="icon-btn lg" title="Search" @click="showSeach()">
-      <font-awesome-icon :icon="['fas', 'search']" />
-    </div>
-    <div class="icon-btn lg" title="Sort" v-show="system.tab !== 'history'" @click="sort()">
+    <!-- <div class="icon-btn lg" title="Sort" v-show="system.tab !== 'history'" @click="sort()">
       <font-awesome-icon :icon="['fas', 'sort-amount-down']" />
-    </div>
-    <div class="icon-btn" title="Unlink All" v-show="system.tab !== 'history'" @click="unlink()">
+    </div> -->
+    <!-- <div class="icon-btn" title="Unlink All" v-show="system.tab !== 'history'" @click="unlink()">
       <font-awesome-icon :icon="['fas', 'unlink']" />
-    </div>
+    </div> -->
     <div class="icon-btn lg" title="Clear" v-show="system.tab === 'history'" @click="clear()">
       <font-awesome-icon :icon="['fas', 'trash-alt']" />
     </div>
     <div class="icon-btn lg" title="Add New" v-show="system.tab !== 'history'" @click="add()">
       <font-awesome-icon :icon="['fas', 'plus']" />
     </div>
+
+    <div class="icon-btn lg"
+      title="Search"
+      style="position: fixed; right: 12px; top: 12px;"
+      @click="showSeach()">
+      <font-awesome-icon :icon="['fas', 'search']" />
+    </div>
   </section>
 </template>
 
 <script>
-import { ipcRenderer } from 'electron'
+// import { ipcRenderer } from 'electron'
 import eventBus from '@/eventBus'
 import system from '@/models/system'
 
@@ -51,14 +55,14 @@ export default {
   },
 
   methods: {
-    sort () {
-      eventBus.$emit('proceedSort')
-    },
-    unlink () {
-      ipcRenderer.send('asynchronous-message', {
-        type: 'unlink_all_tasks'
-      })
-    },
+    // sort () {
+    //   eventBus.$emit('proceedSort')
+    // },
+    // unlink () {
+    //   ipcRenderer.send('asynchronous-message', {
+    //     type: 'unlink_all_tasks'
+    //   })
+    // },
     add () {
       eventBus.$emit('showAddItem')
     },

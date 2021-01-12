@@ -5,13 +5,9 @@
       <div class="box-row" style="height: 40px;">
         <div class="box-select">
           <select class="common-select" v-model="category" :disabled="category === 'history'" style="width: 200px;">
-            <option value="current">Current</option>
-            <option value="coming">Coming</option>
-            <option value="anytime">Anytime</option>
-            <option value="someday">Someday</option>
-            <option value="tracking">Tracking</option>
-            <option value="inbox">Inbox</option>
-            <option value="note">Note</option>
+            <option v-for="c in catOptions"
+              :key="c.value"
+              :value="c.value">{{ c.label }}</option>
           </select>
         </div>
         <div class="box-btns">
@@ -94,6 +90,7 @@
 <script>
 import { ipcRenderer } from 'electron'
 import eventBus from '@/eventBus'
+import { cats } from '@/models/DictMap'
 import system from '@/models/system'
 import dataCtrl from '@/ctrls/dataCtrl'
 import { dateUtil } from '@youngbeen/angle-util'
@@ -109,6 +106,7 @@ export default {
       content: '',
       inputTags: '', // 标签值以此为准，tags只用于收录选择显示
       tags: [],
+      catOptions: cats.slice(0, cats.length - 1),
       usedTags: [],
       dueTime: '',
       halfDays: 0

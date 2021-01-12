@@ -56,7 +56,7 @@ export default {
             this.animated = false
             this.noteAnimated = false
           } else {
-            // 展开 =》 展开
+            // 展开 => 展开
             clearTimeout(this.tc)
             this.animated = true
             this.noteAnimated = false

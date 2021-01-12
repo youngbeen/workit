@@ -1,6 +1,5 @@
 <template>
   <section class="comp-index-indicator">
-
     {{ index + 1 }}
   </section>
 </template>
