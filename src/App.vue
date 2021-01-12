@@ -11,16 +11,16 @@
       <div class="box-list">
         <div class="box-item" :class="[item.index === focusIndex && 'focused', 'animated']"
           :style="{ transitionDelay: index / 20 + 's' }"
-          draggable
+          :draggable="system.tab !== 'focus'"
           v-for="(item, index) in currentList" :key="item.index"
-          @dragstart="handleDragstart($event, system.tab, item.index)"
+          @dragstart="handleDragstart($event, item.cat, item.index)"
           @dragover.prevent="handleDragover"
           @drop.prevent="handleDrop($event, item.index)">
           <index-indicator :index="index"></index-indicator>
           <!-- <div class="group-indicator" v-show="system.tab !== 'history' && item.group" :style="{ 'background': groupColors.get(item.group) }">&nbsp;</div> -->
           <div class="box-radio"
             v-show="system.tab !== 'history' && system.tab !== 'note'"
-            @click="handleFinish(system.tab, item.index)"></div>
+            @click="handleFinish(item.cat, item.index)"></div>
           <div class="content"
             :class="[system.tab === 'history' && 'done',
               system.tab === 'history' && isDoneInToday(item.doneTime) && 'highlight']">
@@ -41,10 +41,10 @@
               v-show="system.tab !== 'history'" @click="handleAddSubTask(item)">
               <font-awesome-icon :icon="['fas', 'plus']" title="Add Sub Task" />
             </div> -->
-            <div class="icon-btn btn" @click="handleChangeCat($event, system.tab, item, index)">
+            <div class="icon-btn btn" @click="handleChangeCat($event, item)">
               <font-awesome-icon :icon="['fas', 'paper-plane']" title="Change Category" />
             </div>
-            <div class="icon-btn btn" @click="handleShowMore($event, system.tab, item, index)">
+            <div class="icon-btn btn" @click="handleShowMore($event, item, index)">
               <font-awesome-icon :icon="['fas', 'ellipsis-h']" title="More" />
             </div>
           </div>
@@ -149,7 +149,14 @@ export default {
   },
   computed: {
     currentCatLabels () {
-      if (this.system.tab) {
+      if (this.system.tab === 'focus') {
+        const list = this.list.filter(item => item.dueTime && dateUtil.formatDateTime('YYYY-MM-DD', new Date()) === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime))
+        const labels = list.reduce((soFar, item) => {
+          soFar = [...soFar, ...item.labels]
+          return soFar
+        }, [])
+        return [...new Set(labels)]
+      } else if (this.system.tab) {
         const list = this.list.filter(item => item.cat === this.system.tab)
         const labels = list.reduce((soFar, item) => {
           soFar = [...soFar, ...item.labels]
@@ -167,7 +174,13 @@ export default {
           item.index = index
           return item
         })
-        rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.cat === this.system.tab)))
+        if (this.system.tab === 'focus') {
+          // 聚焦tab
+          rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.dueTime && dateUtil.formatDateTime('YYYY-MM-DD', new Date()) === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime))))
+        } else {
+          // 常规tab
+          rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.cat === this.system.tab)))
+        }
         // 根据起始时间筛选
         if (this.system.filter.fromTime) {
           if (this.system.tab === 'history') {
@@ -215,8 +228,12 @@ export default {
         } else {
           soFar.inbox++
         }
+        if (item.dueTime && dateUtil.formatDateTime('YYYY-MM-DD', new Date()) === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime)) {
+          soFar.focus++
+        }
         return soFar
       }, {
+        focus: 0,
         inbox: 0,
         current: 0,
         coming: 0,
@@ -228,7 +245,7 @@ export default {
       })
     },
     relatedNotes () {
-      if (this.system.tab && !['note', 'history'].includes(this.system.tab)) {
+      if (this.system.tab && !['note', 'history', 'focus'].includes(this.system.tab)) {
         return this.list.filter(n => {
           return n.cat === 'note' && n.labels.some(l => this.currentCatLabels.includes(l))
         })
@@ -273,7 +290,9 @@ export default {
     }
     // 初始化激活nav
     let initTab = 'inbox'
-    if (this.catCounts.tracking) {
+    if (this.catCounts.focus) {
+      initTab = 'focus'
+    } else if (this.catCounts.tracking) {
       initTab = 'tracking'
     } else if (this.catCounts.inbox) {
       initTab = 'inbox'
@@ -623,10 +642,10 @@ export default {
     // handleAddSubTask (task) {
     //   console.log('add sub task to', task)
     // },
-    handleChangeCat (e, cat, task, showIndex) {
+    handleChangeCat (e, task) {
       // console.log(e)
       this.focusIndex = task.index
-      const options = this.catOptions.filter(item => item.value !== cat)
+      const options = this.catOptions.filter(item => item.value !== task.cat)
       eventBus.$emit('showPopChangecat', {
         options,
         position: {
@@ -634,7 +653,7 @@ export default {
           top: e.clientY
         },
         tag: {
-          cat,
+          cat: task.cat,
           index: task.index
         }
       })
@@ -648,17 +667,18 @@ export default {
       this.list.push(item)
       dataCtrl.save(this.list)
     },
-    handleShowMore (e, cat, task, showIndex) {
+    handleShowMore (e, task, showIndex) {
       // console.log(e)
       this.focusIndex = task.index
+      const options = this.actionOptions.filter(o => !o.banCat || !o.banCat.includes(system.tab))
       eventBus.$emit('showPopActions', {
-        options: this.actionOptions,
+        options,
         position: {
           left: e.clientX,
           top: e.clientY
         },
         tag: {
-          cat,
+          cat: task.cat,
           index: task.index,
           showIndex
         }

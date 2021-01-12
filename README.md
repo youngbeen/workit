@@ -14,7 +14,7 @@ npm run e:build
 
 ## Features
 
-* Sub Tasks - *ing*
+* Sub Tasks - *Planning*
 * Categories focused on work
 * Show related notes automatically
 * Tag your tasks (labels)

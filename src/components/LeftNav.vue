@@ -2,6 +2,15 @@
   <section class="bed-left-nav" @mouseover="handleMouseover" @mouseout="handleMouseout">
     <div class="box-title">Workit</div>
     <div class="box-group">
+      <div class="nav" :class="[system.tab === 'focus' && 'active']" @click="changeTab('focus')">
+        <div class="title">
+          <span class="icon-image">
+            <font-awesome-icon :icon="['fas', 'bullseye']" />
+          </span>
+          Focus
+        </div>
+        <span class="badge" :class="[(isShowCount || system.tab === 'focus') && counts.focus && 'show']">{{ counts.focus }}</span>
+      </div>
       <div class="nav" :class="[system.tab === 'inbox' && 'active']" @click="changeTab('inbox')" @dragover.prevent="handleDragover" @drop.prevent="handleDrop($event, 'inbox')">
         <div class="title">
           <span class="icon-image">
@@ -103,7 +112,7 @@ export default {
     return {
       isHover: false,
       isShowCount: false,
-      queue: cats.map(item => item.value),
+      queue: ['focus', ...cats.map(item => item.value)],
       system
     }
   },

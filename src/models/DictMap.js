@@ -19,6 +19,6 @@ export const actions = [
   { value: 'edit', label: 'Edit' },
   { value: 'detail', label: 'Detail' },
   { value: 'delete', label: 'Delete' },
-  { value: 'btt', label: 'Bring To Top' },
-  { value: 'stb', label: 'Set To Bottom' }
+  { value: 'btt', label: 'Bring To Top', banCat: ['focus'] },
+  { value: 'stb', label: 'Set To Bottom', banCat: ['focus'] }
 ]

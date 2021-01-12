@@ -33,7 +33,8 @@ import {
   faUnlink,
   faSortAmountDown,
   faShoePrints,
-  faArchive
+  faArchive,
+  faBullseye
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -69,6 +70,7 @@ library.add(faUnlink)
 library.add(faSortAmountDown)
 library.add(faShoePrints)
 library.add(faArchive)
+library.add(faBullseye)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 

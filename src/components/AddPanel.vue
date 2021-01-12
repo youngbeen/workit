@@ -279,8 +279,12 @@ export default {
       } else {
         this.mode = 'add'
         this.isMoreShow = false
-        // 不允许主动添加history数据
-        system.tab === 'history' ? this.category = 'inbox' : this.category = system.tab
+        // 不允许主动添加数据
+        if (['history', 'focus'].includes(system.tab)) {
+          this.category = 'inbox'
+        } else {
+          this.category = system.tab
+        }
         if (!this.isShow) {
           // 重新打开的情况，清空之前的脏数据
           this.content = ''
