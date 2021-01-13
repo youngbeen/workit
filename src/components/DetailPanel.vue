@@ -298,4 +298,27 @@ export default {
     }
   }
 }
+@media (prefers-color-scheme: dark) {
+  .bed-detail-panel {
+    .container {
+      background: $sheet-bgcolor-dark;
+      box-shadow: none;
+      .box-previous {
+        border: 1px solid #888;
+        background: $dark-2;
+      }
+      .box-current {
+        background: $dark-3;
+        .comment {
+          border-top: 1px solid $dark-2;
+          color: $secondary-font-color-dark;
+        }
+      }
+      .box-next {
+        border: 1px solid #888;
+        background: $dark-2;
+      }
+    }
+  }
+}
 </style>

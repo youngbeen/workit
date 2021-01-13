@@ -248,7 +248,7 @@ export default {
         left: 80px;
         width: 20px;
         height: 20px;
-        background: #fff;
+        background: $primary-bgcolor;
         box-shadow: $sheet-boxshadow;
         transform: rotate(45deg);
       }
@@ -256,12 +256,9 @@ export default {
     .box-cont {
       position: relative;
       z-index: 1;
-      // width: 140px;
-      // height: 140px;
       padding: 6px;
       border-radius: $border-radius;
-      background: #fff;
-      // box-shadow: 0px 6px 8px 2px rgba(122, 122, 122, .4);
+      background: $primary-bgcolor;
       box-shadow: $sheet-boxshadow;
       .box-actions {
         display: flex;
@@ -324,6 +321,51 @@ export default {
           }
           &.faded {
             color: #c2c2c2;
+          }
+        }
+      }
+    }
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .pop-date-picker {
+    .box {
+      .box-arrow {
+        .fake-arrow {
+          background: $dark-2;
+          box-shadow: none;
+        }
+      }
+      .box-cont {
+        background: $dark-2;
+        box-shadow: none;
+        .box-actions {
+          color: $secondary-font-color-dark;
+        }
+        .box-head {
+          color: $secondary-font-color-dark;
+        }
+        .box-month-data {
+          background: $itoolbar-bgcolor-dark;
+          // background: $dark-3;
+          color: $secondary-font-color-dark;
+          .cell {
+            &.today {
+              color: $color-active-dark;
+            }
+            &.active {
+              background: $itoolbar-item-bgcolor-active-dark;
+              color: $primary-font-color-dark;
+              border-color: $itoolbar-item-border-color-active-dark;
+              box-shadow: none;
+            }
+            &.faded {
+              color: $sub-font-color-dark;
+            }
+            &:hover {
+              background: $itoolbar-item-bgcolor-active-dark;
+              color: $primary-font-color-dark;
+            }
           }
         }
       }

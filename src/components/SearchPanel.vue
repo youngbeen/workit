@@ -276,7 +276,7 @@ export default {
   height: 100%;
   .container {
     height: 100%;
-    background: #fff;
+    background: $primary-bgcolor;
     // box-shadow: 1px 1px 28px 2px rgba(12, 12, 12, .4);
     transition: all $transition-time;
     overflow-y: auto;
@@ -286,7 +286,7 @@ export default {
     }
     &::-webkit-scrollbar-thumb {
       border-radius: 4px;
-      background: rgba(#ccc, .8);
+      background: $scrollbar-thumb-color;
     }
     .box-row {
       display: flex;
@@ -419,6 +419,48 @@ export default {
       padding: 16px;
       color: #aaa;
       text-align: center;
+    }
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .bed-search-panel {
+    .container {
+      background: $primary-bgcolor-dark;
+      &::-webkit-scrollbar-thumb {
+        background: $scrollbar-thumb-color-dark;
+      }
+      .box-row {
+        background: $sheet-bgcolor-dark;
+        box-shadow: none;
+      }
+      .row-counts {
+        background: #01569c;
+        box-shadow: none;
+      }
+      .box-list {
+        .box-cats {
+          .cat-title {
+            color: $secondary-font-color-dark;
+          }
+          .box-item {
+            border-top: 1px solid $border-color-dark;
+            background: transparent;
+            &:last-child {
+              border-bottom: 1px solid $border-color-dark;
+            }
+            .content {
+              .matched {
+                background: #646601;
+              }
+            }
+            .labels {
+              .mask {
+                background-image: linear-gradient(-90deg, $dark-0 3%, rgba($dark-0, .5) 60%, rgba($dark-0, 0) 100%);
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

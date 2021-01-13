@@ -162,4 +162,21 @@ export default {
     }
   }
 }
+@media (prefers-color-scheme: dark) {
+  .comp-due-tag {
+    .time {
+      color: $primary-font-color;
+    }
+    .day {
+      .day-block {
+        &:not(:last-of-type) {
+          border-right: 1px solid #ccc;
+        }
+        &.weekend {
+          background: $dark-3;
+        }
+      }
+    }
+  }
+}
 </style>

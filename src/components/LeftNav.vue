@@ -189,7 +189,7 @@ export default {
   width: 180px;
   height: 100%;
   // border-right: 1px solid $border-color;
-  background: #f1f1f1;
+  background: $sidebar-bgcolor;
   // box-shadow: 0px 0px 4px 0 rgba(122, 122, 122, .2) inset;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -223,7 +223,7 @@ export default {
       bottom: -5px;
       width: 80%;
       height: 1px;
-      border-bottom: 1px solid #e1e1e1;
+      border-bottom: 1px solid $border-color;
     }
     .nav {
       display: flex;
@@ -258,7 +258,7 @@ export default {
       }
       .badge {
         padding: 0 5px;
-        border-radius: 24px;
+        border-radius: 10px;
         background: $sidebar-tab-badge-bgcolor;
         color: $sidebar-tab-badge-color;
         // font-size: 13px;
@@ -294,6 +294,34 @@ export default {
   }
   &:hover {
     box-shadow: 0px 0px 2px 0 rgba(122, 122, 122, .2) inset;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .bed-left-nav {
+    background: $sidebar-bgcolor-dark;
+    .box-group {
+      &:not(:last-child):after {
+        border-bottom: 1px solid $border-color-dark;
+      }
+      .nav {
+        color: $secondary-font-color-dark;
+        .badge {
+          background: $sidebar-tab-badge-bgcolor-dark;
+          color: $sidebar-tab-badge-color-dark;
+        }
+        &.active {
+          color: $primary-font-color-dark;
+          background: $sidebar-tab-bgcolor-active-dark;
+          .icon-image {
+            color: $primary-font-color-dark;
+          }
+          .badge {
+            background: $sidebar-tab-badge-bgcolor-active-dark;
+            color: $primary-font-color-dark;
+          }
+        }
+      }
+    }
   }
 }
 @keyframes spin {

@@ -303,9 +303,6 @@ export default {
           .common-tag {
             margin-right: 6px;
             margin-bottom: 4px;
-            &.active {
-              background: rgba(193, 219, 253, .9);
-            }
           }
         }
       }
@@ -352,6 +349,27 @@ export default {
     &.animated {
       margin-top: -1px;
       opacity: 1;
+    }
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .bed-filter-panel {
+    .container {
+      background: $sheet-bgcolor-dark;
+      box-shadow: none;
+      .box-tags {
+        border-bottom: 1px solid $border-color-dark;
+        .row {
+          .tag-options {
+            border: 1px solid $border-color-dark;
+          }
+        }
+      }
+      .box-row {
+        .label {
+          color: $color-active-dark;
+        }
+      }
     }
   }
 }

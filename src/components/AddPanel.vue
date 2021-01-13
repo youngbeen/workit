@@ -377,9 +377,6 @@ export default {
           .common-tag {
             margin-right: 6px;
             margin-bottom: 4px;
-            &.active {
-              background: rgba(193, 219, 253, .9);
-            }
           }
         }
         .box-input {
@@ -451,6 +448,43 @@ export default {
     &.animated {
       margin-top: -1px;
       opacity: 1;
+    }
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .bed-add-panel {
+    .container {
+      border: 1px solid $border-color-dark;
+      background: $sheet-bgcolor-dark;
+      box-shadow: none;
+      .more {
+        border-top: 1px solid $border-color-dark;
+        .row {
+          .box-input {
+            .box-btns {
+              .weekday-tip {
+                background: rgba($color-active-dark, .5);
+                color: $primary-font-color-dark;
+              }
+            }
+          }
+        }
+        .box-date-shortcuts {
+          .date-shortcuts {
+            .cell {
+              color: $secondary-font-color-dark;
+              border: 1px solid $color-active-dark;
+              &.active {
+                background: $color-active-dark;
+                color: $primary-font-color-dark;
+              }
+            }
+          }
+          .date-preview {
+            color: $secondary-font-color-dark;
+          }
+        }
+      }
     }
   }
 }

@@ -150,7 +150,7 @@ export default {
   computed: {
     currentCatLabels () {
       if (this.system.tab === 'focus') {
-        const list = this.list.filter(item => item.dueTime && dateUtil.formatDateTime('YYYY-MM-DD', new Date()) === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime))
+        const list = this.list.filter(item => item.cat !== 'history' && item.status === 0 && item.dueTime && dateUtil.formatDateTime('YYYY-MM-DD', new Date()) === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime))
         const labels = list.reduce((soFar, item) => {
           soFar = [...soFar, ...item.labels]
           return soFar
@@ -176,7 +176,7 @@ export default {
         })
         if (this.system.tab === 'focus') {
           // 聚焦tab
-          rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.dueTime && dateUtil.formatDateTime('YYYY-MM-DD', new Date()) === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime))))
+          rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.cat !== 'history' && item.status === 0 && item.dueTime && dateUtil.formatDateTime('YYYY-MM-DD', new Date()) === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime))))
         } else {
           // 常规tab
           rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.cat === this.system.tab)))
@@ -228,7 +228,7 @@ export default {
         } else {
           soFar.inbox++
         }
-        if (item.dueTime && dateUtil.formatDateTime('YYYY-MM-DD', new Date()) === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime)) {
+        if (item.cat !== 'history' && item.status === 0 && item.dueTime && dateUtil.formatDateTime('YYYY-MM-DD', new Date()) === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime)) {
           soFar.focus++
         }
         return soFar
@@ -827,13 +827,12 @@ select, input {
   display: flex;
   width: 100%;
   height: 100%;
+  background: $primary-bgcolor;
+  color: $primary-color;
   font-size: $primary-font-size;
   font-family: 'WorkSans Regular', 'Monaco', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  // text-align: center;
-  // color: #2c3e50;
-  // margin-top: 60px;
 }
 // 公共样式
 .icon-image {
@@ -894,7 +893,7 @@ select, input {
   border: 1px solid #ccc;
   border-radius: $border-radius;
   background: $input-bgcolor;
-  // color: #666;
+  color: $primary-font-color;
   font-size: $primary-font-size;
   font-weight: 500;
   &:focus {
@@ -902,13 +901,12 @@ select, input {
   }
 }
 .common-input {
-  // width: 400px;
   height: $input-height;
   padding: 0 12px;
   border: 1px solid #ccc;
   border-radius: $border-radius;
   background: $input-bgcolor;
-  // color: #333;
+  color: $primary-font-color;
   // outline: none;
   // -webkit-appearance: none;
   // -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -951,6 +949,7 @@ select, input {
   border: 1px solid #ccc;
   border-radius: $border-radius;
   background: $input-bgcolor;
+  color: $primary-font-color;
   font-family: 'WorkSans Regular', 'Monaco', Helvetica, Arial, sans-serif;
   font-size: $primary-font-size;
   font-weight: 500;
@@ -976,17 +975,14 @@ select, input {
     cursor: pointer;
     user-select: none;
     transition: all $transition-time;
-    // &:not(:last-child) {
-    //   border-right: 1px solid #ccc;
-    // }
+    &:hover {
+      background: $itoolbar-item-bgcolor-active;
+    }
     &.active {
       background: $itoolbar-item-bgcolor-active;
       border: 1px solid $itoolbar-item-border-color-active;
       box-shadow: $itoolbar-item-boxshadow-active;
     }
-    // &:hover {
-    //   background: rgba(193, 219, 253, .6);
-    // }
   }
 }
 .common-tag {
@@ -994,7 +990,7 @@ select, input {
   // height: 30px;
   padding: 3px 6px;
   border-radius: $border-radius;
-  color: #666;
+  color: $secondary-font-color;
   background: rgba(193, 219, 253, .3);
   font-size: $secondary-font-size;
   user-select: none;
@@ -1008,6 +1004,9 @@ select, input {
   &.sm {
     font-size: $sub-font-size;
   }
+  &.active {
+    background: rgba(193, 219, 253, .8);
+  }
 }
 .common-tip {
   padding: 6px 0;
@@ -1020,13 +1019,18 @@ select, input {
     }
   }
 }
+.keystroke {
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: #eee;
+  font-weight: 500;
+}
 
 // 主区域私有样式
 .box-main {
   width: 720px;
   height: 100%;
   box-shadow: 0px 0px 4px 0 rgba(122, 122, 122, .2);
-  // box-shadow: -1px 0px 18px 1px rgba(122, 122, 122, .2);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   transition: all $transition-time-normal;
@@ -1045,12 +1049,12 @@ select, input {
     }
     &::-webkit-scrollbar-thumb {
       border-radius: 4px;
-      background: rgba(#ccc, .8);
+      background: $scrollbar-thumb-color;
     }
     .box-item {
       position: relative;
       border-bottom: 1px solid #eee;
-      background: #fff;
+      background: $primary-bgcolor;
       opacity: 0;
       cursor: default;
       overflow: hidden;
@@ -1112,8 +1116,6 @@ select, input {
         margin-left: 26px;
         padding-bottom: 4px;
         white-space: nowrap;
-        // overflow: hidden;
-        // box-shadow: -3px 0px 8px 1px rgba(0, 0, 0, .3) inset;
         .label {
           margin-right: 3px;
         }
@@ -1125,8 +1127,6 @@ select, input {
         z-index: 3;
         .btn {
           display: inline-flex;
-          // vertical-align: top;
-          // margin-left: 6px;
           opacity: 0;
         }
       }
@@ -1180,5 +1180,127 @@ select, input {
   //   left: 2px;
   //   top: 2px;
   // }
+}
+
+@media (prefers-color-scheme: dark) {
+  #app {
+    background: $primary-bgcolor-dark;
+    color: $primary-font-color-dark;
+  }
+  .icon-btn {
+    color: $toolbar-icon-color-dark;
+    &.active {
+      background: $toolbar-bgcolor-active-dark;
+    }
+    &:hover {
+      background: $toolbar-bgcolor-hover-dark;
+      &.active {
+        background: $toolbar-bgcolor-active-hover-dark;
+      }
+    }
+  }
+  .modal-bg {
+    background: $modal-bgcolor-dark;
+  }
+  .common-select {
+    border: 1px solid $border-color-dark;
+    color: $primary-font-color-dark;
+    &:focus {
+      background: $input-bgcolor-active-dark;
+    }
+  }
+  .common-input {
+    border: 1px solid $border-color-dark;
+    color: $primary-font-color-dark;
+    &:focus {
+      background: $input-bgcolor-active-dark;
+    }
+  }
+  .common-radio-group {
+    color: $toolbar-icon-color-dark;
+    .radio {
+      &.active {
+        background: $toolbar-bgcolor-active-dark;
+      }
+    }
+    &:hover {
+      background: $toolbar-bgcolor-hover-dark;
+      .radio {
+        &.active {
+          background: $toolbar-bgcolor-active-hover-dark;
+        }
+      }
+    }
+  }
+  .common-textarea {
+    border: 1px solid $border-color-dark;
+    color: $primary-font-color-dark;
+    &:focus {
+      background: $input-bgcolor-active-dark;
+    }
+  }
+  .common-radios {
+    border: 1px solid $border-color-dark;
+    background: $itoolbar-bgcolor-dark;
+    .radio {
+      color: $secondary-font-color-dark;
+      &:hover {
+        background: $itoolbar-item-bgcolor-active-dark;
+      }
+      &.active {
+        background: $itoolbar-item-bgcolor-active-dark;
+        color: $primary-font-color-dark;
+        border: 1px solid $itoolbar-item-border-color-active-dark;
+        box-shadow: none;
+      }
+    }
+  }
+  .common-tag {
+    color: $secondary-font-color-dark;
+    background: $dark-2;
+    &.tag-btn {
+      &:hover {
+        background: $dark-3;
+      }
+    }
+    &.active {
+      background: $dark-3;
+    }
+  }
+  .keystroke {
+    background: $dark-2;
+  }
+  .box-main {
+    .box-list {
+      &::-webkit-scrollbar-thumb {
+        background: $scrollbar-thumb-color-dark;
+      }
+      .box-item {
+        border-bottom: 1px solid $border-color-dark;
+        background: $primary-bgcolor-dark;
+        &.focused {
+          background: rgba($dark-1, .9)
+        }
+        .box-radio {
+          border: 1px solid $secondary-font-color-dark;
+          &:hover {
+            border-color: $border-color-dark;
+            background: $border-color-dark;
+          }
+          &:hover:after {
+            background: $color-active-dark;
+          }
+        }
+        .content {
+          &.done {
+            color: $sub-font-color-dark;
+          }
+          &.highlight {
+            color: $secondary-font-color-dark;
+          }
+        }
+      }
+    }
+  }
 }
 </style>

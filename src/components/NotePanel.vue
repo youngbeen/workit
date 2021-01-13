@@ -84,7 +84,7 @@ export default {
   height: 100%;
   border-left: 1px solid $border-color;
   border-right: 1px solid $border-color;
-  background: #f1f1f1;
+  background: $sidebar-bgcolor;
   transition: all $transition-time-normal;
   &.collapse {
     width: 0;
@@ -94,7 +94,7 @@ export default {
     height: 40px;
     line-height: 40px;
     padding: 0 10px;
-    color: #999;
+    color: $sub-font-color;
     font-weight: bold;
     opacity: 0;
     cursor: default;
@@ -114,7 +114,7 @@ export default {
     }
     &::-webkit-scrollbar-thumb {
       border-radius: 4px;
-      background: rgba(#ccc, .8);
+      background: $scrollbar-thumb-color;
     }
     .note {
       margin: 10px 0;
@@ -134,6 +134,30 @@ export default {
         text-align: right;
         .common-tag {
           margin-right: 6px;
+        }
+      }
+    }
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .bed-note-panel {
+    border-left: 1px solid $border-color-dark;
+    border-right: 1px solid $border-color-dark;
+    background: $sidebar-bgcolor-dark;
+    .title {
+      color: $sub-font-color-dark;
+    }
+    .box-notes {
+      &::-webkit-scrollbar-thumb {
+        background: $scrollbar-thumb-color-dark;
+      }
+      .note {
+        background: $dark-2;
+        &:hover {
+          box-shadow: 0px 0px 3px 1px rgba(122, 122, 122, .4);
+        }
+        .common-tag {
+          background: $dark-3;
         }
       }
     }

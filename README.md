@@ -23,7 +23,7 @@ npm run e:build
 * Search tasks by keyword/label
 * Import/Export your data
 * Clean UI design (follows new MacOS design)
-* Dark mode - *ing*
+* Dark mode support
 
 
 ![preview 1](./docs/assets/1.png)

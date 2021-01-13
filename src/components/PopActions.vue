@@ -132,4 +132,19 @@ export default {
     }
   }
 }
+@media (prefers-color-scheme: dark) {
+  .pop-actions {
+    .box-options {
+      border: 1px solid $border-color-dark;
+      background: $dark-1;
+      box-shadow: none;
+      .option {
+        &:hover {
+          background: $color-active-dark;
+          color: $menu-item-color-active;
+        }
+      }
+    }
+  }
+}
 </style>

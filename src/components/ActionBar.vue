@@ -106,4 +106,17 @@ export default {
     }
   }
 }
+@media (prefers-color-scheme: dark) {
+  .bed-action-bar {
+    border-bottom: 1px solid $border-color-dark;
+    background: $toolbar-bgcolor-dark;
+    .icon-btn {
+      &.active {
+        &:after {
+          background: $color-active-dark;
+        }
+      }
+    }
+  }
+}
 </style>

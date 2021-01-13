@@ -138,4 +138,22 @@ export default {
     }
   }
 }
+@media (prefers-color-scheme: dark) {
+  .pop-change-cat {
+    .box-options {
+      border: 1px solid $border-color-dark;
+      background: $dark-1;
+      box-shadow: none;
+      .tip {
+        color: $sub-font-color-dark;
+      }
+      .option {
+        &:hover {
+          background: $color-active-dark;
+          color: $menu-item-color-active;
+        }
+      }
+    }
+  }
+}
 </style>
