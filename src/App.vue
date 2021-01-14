@@ -151,6 +151,7 @@ export default {
       catOptions: cats.slice(0, cats.length - 1),
       actionOptions: actions,
       nowTime: 0,
+      nowDate: '', // 当前日期，YYYY-MM-DD格式。因为有些判断是根据当前日期进行变动的，但是不能根据当前秒数判断（过于频繁）
       tc: null,
       system
     }
@@ -158,7 +159,7 @@ export default {
   computed: {
     currentCatLabels () {
       if (this.system.tab === 'focus') {
-        const list = this.list.filter(item => item.cat !== 'history' && item.status === 0 && item.dueTime && dateUtil.formatDateTime('YYYY-MM-DD', this.nowTime) === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime))
+        const list = this.list.filter(item => item.cat !== 'history' && item.status === 0 && item.dueTime && this.nowDate === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime))
         const labels = list.reduce((soFar, item) => {
           soFar = [...soFar, ...item.labels]
           return soFar
@@ -184,7 +185,7 @@ export default {
         })
         if (this.system.tab === 'focus') {
           // 聚焦tab
-          rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.cat !== 'history' && item.status === 0 && item.dueTime && dateUtil.formatDateTime('YYYY-MM-DD', this.nowTime) === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime))))
+          rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.cat !== 'history' && item.status === 0 && item.dueTime && this.nowDate === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime))))
         } else {
           // 常规tab
           rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.cat === this.system.tab)))
@@ -236,7 +237,7 @@ export default {
         } else {
           soFar.inbox++
         }
-        if (item.cat !== 'history' && item.status === 0 && item.dueTime && dateUtil.formatDateTime('YYYY-MM-DD', this.nowTime) === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime)) {
+        if (item.cat !== 'history' && item.status === 0 && item.dueTime && this.nowDate === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime)) {
           soFar.focus++
         }
         return soFar
@@ -253,7 +254,7 @@ export default {
       })
     },
     relatedNotes () {
-      if (this.system.tab && !['note', 'history', 'focus'].includes(this.system.tab)) {
+      if (this.system.tab && !['note', 'history'].includes(this.system.tab)) {
         return this.list.filter(n => {
           return n.cat === 'note' && n.labels.some(l => this.currentCatLabels.includes(l))
         })
@@ -333,6 +334,7 @@ export default {
     // ticking
     this.tc = setInterval(() => {
       this.nowTime = (new Date()).getTime()
+      this.nowDate = dateUtil.formatDateTime('YYYY-MM-DD', this.nowTime)
     }, 1000)
 
     // 重构传入的参数，对象化处理
