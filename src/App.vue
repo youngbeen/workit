@@ -150,7 +150,7 @@ export default {
   computed: {
     currentCatLabels () {
       if (this.system.tab === 'focus') {
-        const list = this.list.filter(item => item.cat !== 'history' && item.status === 0 && item.dueTime && dateUtil.formatDateTime('YYYY-MM-DD', new Date()) === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime))
+        const list = this.list.filter(item => item.cat !== 'history' && item.status === 0 && item.dueTime && dateUtil.formatDateTime('YYYY-MM-DD', this.nowTime) === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime))
         const labels = list.reduce((soFar, item) => {
           soFar = [...soFar, ...item.labels]
           return soFar
@@ -176,7 +176,7 @@ export default {
         })
         if (this.system.tab === 'focus') {
           // 聚焦tab
-          rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.cat !== 'history' && item.status === 0 && item.dueTime && dateUtil.formatDateTime('YYYY-MM-DD', new Date()) === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime))))
+          rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.cat !== 'history' && item.status === 0 && item.dueTime && dateUtil.formatDateTime('YYYY-MM-DD', this.nowTime) === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime))))
         } else {
           // 常规tab
           rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.cat === this.system.tab)))
@@ -228,7 +228,7 @@ export default {
         } else {
           soFar.inbox++
         }
-        if (item.cat !== 'history' && item.status === 0 && item.dueTime && dateUtil.formatDateTime('YYYY-MM-DD', new Date()) === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime)) {
+        if (item.cat !== 'history' && item.status === 0 && item.dueTime && dateUtil.formatDateTime('YYYY-MM-DD', this.nowTime) === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime)) {
           soFar.focus++
         }
         return soFar
