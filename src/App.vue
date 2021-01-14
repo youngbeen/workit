@@ -17,6 +17,7 @@
           @dragover.prevent="handleDragover"
           @drop.prevent="handleDrop($event, item.index)">
           <index-indicator :index="index"></index-indicator>
+          <cat-indicator v-show="system.tab === 'focus'" :name="item.cat"></cat-indicator>
           <!-- <div class="group-indicator" v-show="system.tab !== 'history' && item.group" :style="{ 'background': groupColors.get(item.group) }">&nbsp;</div> -->
           <div class="box-radio"
             v-show="system.tab !== 'history' && system.tab !== 'note'"
@@ -41,6 +42,11 @@
               v-show="system.tab !== 'history'" @click="handleAddSubTask(item)">
               <font-awesome-icon :icon="['fas', 'plus']" title="Add Sub Task" />
             </div> -->
+            <div class="icon-btn btn lg"
+              v-show="system.tab === 'focus'"
+              @click="handleGoto(item)">
+              <font-awesome-icon :icon="['fas', 'chevron-right']" :title="'Go to ' + item.cat" />
+            </div>
             <div class="icon-btn btn" @click="handleChangeCat($event, item)">
               <font-awesome-icon :icon="['fas', 'paper-plane']" title="Change Category" />
             </div>
@@ -96,6 +102,7 @@ import FilterPanel from './components/FilterPanel.vue'
 import SearchPanel from './components/SearchPanel.vue'
 import DueTag from '@/components/DueTag.vue'
 import IndexIndicator from '@/components/IndexIndicator.vue'
+import CatIndicator from '@/components/CatIndicator.vue'
 import DatePicker from '@/components/DatePickerPop.vue'
 
 export default {
@@ -113,6 +120,7 @@ export default {
     SearchPanel,
     DueTag,
     IndexIndicator,
+    CatIndicator,
     DatePicker
   },
 
@@ -642,6 +650,11 @@ export default {
     // handleAddSubTask (task) {
     //   console.log('add sub task to', task)
     // },
+    handleGoto (task) {
+      if (system.tab !== task.cat) {
+        systemCtrl.changeTab(task.cat)
+      }
+    },
     handleChangeCat (e, task) {
       // console.log(e)
       this.focusIndex = task.index
