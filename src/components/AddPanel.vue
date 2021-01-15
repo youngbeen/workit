@@ -3,12 +3,15 @@
     <div class="modal-bg" :class="[animated && 'animated']" @click="close()"></div>
     <div class="container" :class="[animated && 'animated', isMoreShow && 'extend']">
       <div class="box-row" style="height: 40px;">
-        <div class="box-select">
+        <div class="box-select" v-show="!parentId">
           <select class="common-select" v-model="category" :disabled="category === 'history'" style="width: 200px;">
             <option v-for="c in catOptions"
               :key="c.value"
               :value="c.value">{{ c.label }}</option>
           </select>
+        </div>
+        <div class="box-info" v-show="parentId">
+          Sub task under <span class="sub-title">{{ category }}</span> / <span class="title">{{ parentName }}</span>
         </div>
         <div class="box-btns">
           <div class="icon-btn" @click="save()">
@@ -24,7 +27,7 @@
         </div>
       </div>
       <div class="box-row">
-        <textarea id="task-input" class="common-textarea" autofocus placeholder="todo task content" v-model="content" @keypress.enter="save()"></textarea>
+        <textarea id="task-input" class="common-textarea" autofocus :placeholder="parentId ? 'sub todo task content' : 'todo task content'" v-model="content" @keypress.enter="save()"></textarea>
       </div>
       <!-- 更多录入 -->
       <div class="more">
@@ -102,6 +105,8 @@ export default {
       isShow: false,
       animated: false, // 开启动画控制
       isMoreShow: false,
+      parentId: null, // 有值则认为是子任务
+      parentName: '', // 仅用于显示
       category: '',
       content: '',
       inputTags: '', // 标签值以此为准，tags只用于收录选择显示
@@ -167,8 +172,19 @@ export default {
   },
 
   mounted () {
-    eventBus.$on('showAddItem', () => {
-      this.show()
+    eventBus.$on('showAddItem', (params) => {
+      if (params?.parentId) {
+        // 添加子任务
+        this.show({
+          parentId: params.parentId,
+          params
+        })
+      } else {
+        // 添加主任务
+        this.show({
+          mode: 'add'
+        })
+      }
     })
     eventBus.$on('whenSelectDateDone', data => {
       const { year, month, day, hour, minute, second } = data.data
@@ -176,14 +192,20 @@ export default {
       this.dueTime = dateUtil.formatDateTime('YYYY-MM-DD HH:mm:ss', time)
     })
     eventBus.$on('showEditItem', (params) => {
-      this.show(true, params)
+      this.show({
+        mode: 'edit',
+        parentId: params.parentId || null,
+        params
+      })
     })
     ipcRenderer.on('sys_additem', () => {
       if (system.isPanelActive) {
         return
       }
       if (this.mode !== 'edit') {
-        this.show()
+        this.show({
+          mode: 'add'
+        })
       }
     })
     ipcRenderer.on('sys_additem_full', () => {
@@ -191,7 +213,9 @@ export default {
         return
       }
       if (this.mode !== 'edit') {
-        this.show(false, null, true)
+        this.show({
+          useLastTags: true
+        })
       }
     })
   },
@@ -234,6 +258,7 @@ export default {
           dueTime = (new Date(year, month - 1, day, hour, minute, second)).getTime()
         }
         eventBus.$emit(`${this.mode}Item`, {
+          parentId: this.parentId,
           category: this.category,
           content: this.content,
           tags: this.inputTags,
@@ -263,10 +288,13 @@ export default {
       this.inputTags = ''
       this.tags = []
     },
-    show (isEdit = false, params = {}, isExtraOpen = false) {
-      if (isEdit) {
-        this.mode = 'edit'
+    show ({ mode = 'add', parentId = null, params = {}, useLastTags = false }) {
+      this.mode = mode
+      this.parentId = parentId
+      if (this.mode === 'edit') {
+        // 编辑主，子任务
         this.isMoreShow = true
+        this.parentName = params.parentName || ''
         this.category = params.category
         this.content = params.content
         this.inputTags = params.tags
@@ -276,8 +304,24 @@ export default {
           this.tags = []
         }
         this.dueTime = params.dueTime ? dateUtil.formatDateTime('YYYY-MM-DD HH:mm:ss', params.dueTime) : ''
+      } else if (this.parentId) {
+        // 新增子任务
+        this.isMoreShow = true
+        this.parentName = params.parentName || ''
+        this.category = params.category
+        this.inputTags = params.tags
+        if (this.inputTags) {
+          this.tags = this.inputTags.split(',')
+        } else {
+          this.tags = []
+        }
+        if (!this.isShow) {
+          // 重新打开的情况，清空之前的脏数据
+          this.content = ''
+        }
+        this.dueTime = ''
       } else {
-        this.mode = 'add'
+        // 新增主任务
         this.isMoreShow = false
         // 不允许主动添加数据
         if (['history', 'focus'].includes(system.tab)) {
@@ -294,7 +338,7 @@ export default {
         this.dueTime = ''
       }
       this.usedTags = dataCtrl.readTags()
-      if (isExtraOpen) {
+      if (useLastTags) {
         this.inputTags = dataCtrl.readLastUsedTag() || ''
         if (this.inputTags) {
           this.tags = this.inputTags.split(',')
@@ -349,6 +393,25 @@ export default {
       justify-content: space-between;
       align-items: center;
       padding: 0 18px;
+      .box-info {
+        color: $sub-font-color;
+        .sub-title {
+          display: inline-block;
+          color: $secondary-font-color;
+          font-weight: bold;
+          text-transform: capitalize;
+        }
+        .title {
+          display: inline-block;
+          vertical-align: top;
+          max-width: 260px;
+          color: $primary-font-color;
+          font-weight: bold;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
       .box-select {
         position: relative;
         height: $input-height;
@@ -457,6 +520,17 @@ export default {
       border: 1px solid $border-color-dark;
       background: $sheet-bgcolor-dark;
       box-shadow: none;
+      .box-row {
+        .box-info {
+          color: $sub-font-color-dark;
+          .sub-title {
+            color: $secondary-font-color-dark;
+          }
+          .title {
+            color: $primary-font-color-dark;
+          }
+        }
+      }
       .more {
         border-top: 1px solid $border-color-dark;
         .row {

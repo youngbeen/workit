@@ -25,6 +25,9 @@
         <font-awesome-icon :icon="['fas', 'chevron-down']" />
       </div>
       <div class="box-current">
+        <div class="box-parent-info" v-show="content.parentId">
+          Sub task under <span class="sub-title">{{ content.cat }}</span> / <span class="title">{{ currentParentName }}</span>
+        </div>
         <div class="box-content">
           {{ content.content }}
         </div>
@@ -92,6 +95,14 @@ export default {
           createTimeText: '-',
           updateTimeText: '-'
         }
+      }
+    },
+    currentParentName () {
+      if (this.content.content && this.content.parentId) {
+        const parent = this.list.find(item => item.createTime === this.content.parentId)
+        return parent?.content || ''
+      } else {
+        return ''
       }
     }
   },
@@ -230,6 +241,22 @@ export default {
       padding: 16px 0;
       background: #fcfcfc;
       box-shadow: 0px 0px 8px 1px rgba(12, 12, 12, .3);
+      .box-parent-info {
+        padding: 0 24px;
+        color: $sub-font-color;
+        .sub-title {
+          display: inline-block;
+          color: $secondary-font-color;
+          // font-weight: bold;
+          text-transform: capitalize;
+        }
+        .title {
+          display: inline-block;
+          vertical-align: top;
+          color: $primary-font-color;
+          // font-weight: bold;
+        }
+      }
       .box-content {
         min-height: 60px;
         padding: 12px 24px;
@@ -309,6 +336,15 @@ export default {
       }
       .box-current {
         background: $dark-3;
+        .box-parent-info {
+          color: $sub-font-color-dark;
+          .sub-title {
+            color: $secondary-font-color-dark;
+          }
+          .title {
+            color: $primary-font-color-dark;
+          }
+        }
         .comment {
           border-top: 1px solid $dark-2;
           color: $secondary-font-color-dark;

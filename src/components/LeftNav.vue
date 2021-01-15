@@ -165,7 +165,7 @@ export default {
       e.dataTransfer.dropEffect = 'move'
       // console.log(`from ${e.dataTransfer.getData('sourceCat')} index ${e.dataTransfer.getData('sourceIndex')} to ${cat}`)
       const sourceCat = e.dataTransfer.getData('sourceCat')
-      const sourceIndex = e.dataTransfer.getData('sourceIndex')
+      const sourceIndex = parseInt(e.dataTransfer.getData('sourceIndex'))
       if (sourceCat === cat) {
         // 相同分类，不需操作
         return

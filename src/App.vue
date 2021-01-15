@@ -20,15 +20,20 @@
           <cat-indicator v-show="system.tab === 'focus'" :name="item.cat"></cat-indicator>
           <!-- <div class="group-indicator" v-show="system.tab !== 'history' && item.group" :style="{ 'background': groupColors.get(item.group) }">&nbsp;</div> -->
           <div class="box-radio"
-            v-show="system.tab !== 'history' && system.tab !== 'note'"
+            :class="[!item.parentId && 'always-show']"
+            v-show="system.tab !== 'history' && system.tab !== 'note' && item.status === 0"
             @click="handleFinish(item.cat, item.index)"></div>
           <div class="content"
-            :class="[system.tab === 'history' && 'done',
+            :class="[item.parentId && 'sub',
+              item.status === 1 && 'done',
+              system.tab === 'history' && 'done',
               system.tab === 'history' && isDoneInToday(item.doneTime) && 'highlight']">
-            {{ item.content }}
+            <font-awesome-icon class="sub-icon" v-if="item.parentId" :icon="['fas', 'atom']" /> {{ item.content }}
             <due-tag v-if="item.dueTime && system.tab !== 'history'" :time="item.dueTime" :now="nowTime"></due-tag>
           </div>
-          <div class="labels" v-if="item.labels.length">
+          <div class="labels"
+            :class="[item.parentId && 'sub']"
+            v-if="item.labels.length">
             <span class="common-tag sm label" v-for="(label, i) in item.labels" :key="i">{{ label }}</span>
           </div>
           <div class="box-btns">
@@ -38,16 +43,24 @@
             <div class="icon-btn btn" v-show="system.tab !== 'history' && item.group" @click="handleUnlink($event, system.tab, item, index)">
               <font-awesome-icon :icon="['fas', 'unlink']" title="Unlink" />
             </div> -->
-            <!-- <div class="icon-btn btn"
-              v-show="system.tab !== 'history'" @click="handleAddSubTask(item)">
+            <div class="icon-btn btn"
+              v-show="system.tab !== 'history' && !item.parentId"
+              @click="handleAddSubTask(item)">
               <font-awesome-icon :icon="['fas', 'plus']" title="Add Sub Task" />
-            </div> -->
+            </div>
+            <div class="icon-btn btn"
+              v-show="system.tab !== 'history' && item.parentId && item.status === 0"
+              @click="handleTrunTask(item)">
+              <font-awesome-icon :icon="['fas', 'eject']" title="Turn into task" />
+            </div>
             <div class="icon-btn btn lg"
               v-show="system.tab === 'focus'"
               @click="handleGoto(item)">
               <font-awesome-icon :icon="['fas', 'chevron-right']" :title="'Go to ' + item.cat" />
             </div>
-            <div class="icon-btn btn" @click="handleChangeCat($event, item)">
+            <div class="icon-btn btn"
+              v-show="!(item.parentId && item.status === 1)"
+              @click="handleChangeCat($event, item)">
               <font-awesome-icon :icon="['fas', 'paper-plane']" title="Change Category" />
             </div>
             <div class="icon-btn btn" @click="handleShowMore($event, item, index)">
@@ -141,10 +154,11 @@ export default {
         //   status: 0, // 0 - init, 1 - done
         //   labels: ['分类', '测试'],
         //   group: 1563168778668, // 分组，以时间戳作为唯一key匹配
-        //   createTime: 1563168778668,
+        //   createTime: 1563168778668, // 因为创建时间是唯一的，可充当id
         //   updateTime: 1563168778668,
         //   dueTime: 1563168778668,
         //   doneTime: null,
+        //   parentId: null, // 使用createTime作为id
         // }
       ],
       // displayedList: [],
@@ -218,12 +232,29 @@ export default {
             return [...new Set(labelsTogether)].length < labelsTogether.length
           })
         }
-        // 特殊处理
         if (this.system.tab === 'history') {
+          // 历史特殊处理
           rawList.reverse()
           if (this.seePartHistory) {
             rawList = rawList.slice(0, this.historyLimit)
           }
+        } else if (rawList.some(item => item.parentId)) {
+          // 需要进行子任务调整
+          const tasks = []
+          const subTasks = []
+          rawList.forEach(item => {
+            if (item.parentId) {
+              subTasks.push(item)
+            } else {
+              tasks.push(item)
+            }
+          })
+          rawList = []
+          tasks.forEach(t => {
+            rawList.push(t)
+            const relatedSubTasks = subTasks.filter(st => st.parentId === t.createTime)
+            rawList = [...rawList, ...relatedSubTasks]
+          })
         }
         return rawList
       } else {
@@ -339,10 +370,10 @@ export default {
 
     // 重构传入的参数，对象化处理
     eventBus.$on('addItem', (params) => {
-      this.addItem(params.category, params.content, params.tags, params.dueTime, params.reverse)
+      this.addItem(params)
     })
     eventBus.$on('editItem', (params) => {
-      this.editItem(params.category, params.content, params.tags, params.dueTime)
+      this.editItem(params)
     })
     eventBus.$on('changeCat', (params) => {
       this.changeCat(params)
@@ -397,10 +428,10 @@ export default {
       const doneDay = dateUtil.formatDateTime('YYYY-MM-DD', doneTime)
       return today === doneDay
     },
-    addItem (cat, content, labels, dueTime = null, reverse = false) {
+    addItem ({ parentId = null, category, content, tags, dueTime = null, reverse = false }) {
       let labelArray = []
-      if (labels) {
-        labelArray = labels.split(',')
+      if (tags) {
+        labelArray = tags.split(',')
       }
       labelArray = labelArray.filter(item => item)
       const now = (new Date()).getTime()
@@ -409,26 +440,28 @@ export default {
         this.list.unshift({
           // index: 0, // 自维护
           content,
-          cat,
+          cat: category,
           status: 0, // 0 - init, 1 - done
           labels: labelArray,
           group: null,
           createTime: now,
           updateTime: now,
-          dueTime
+          dueTime,
+          parentId
         })
       } else {
         // 插入到末尾
         this.list.push({
           // index: this.list.length, // 自维护
           content,
-          cat,
+          cat: category,
           status: 0, // 0 - init, 1 - done
           labels: labelArray,
           group: null,
           createTime: now,
           updateTime: now,
-          dueTime
+          dueTime,
+          parentId
         })
       }
       // console.log(this.list)
@@ -436,18 +469,18 @@ export default {
       dataCtrl.saveTag(labelArray)
       dataCtrl.saveLastUsedTag(labelArray)
     },
-    editItem (cat, content, labels, dueTime = null) {
+    editItem ({ parentId = null, category, content, tags, dueTime = null }) {
       let labelArray = []
-      if (labels) {
-        labelArray = labels.split(',')
+      if (tags) {
+        labelArray = tags.split(',')
       }
       labelArray = labelArray.filter(item => item)
       const now = (new Date()).getTime()
-      if (cat !== this.editingCat) {
+      if (category !== this.editingCat) {
         // 用户更改了分类
         const item = this.list.splice(this.editingIndex, 1)[0]
         item.content = content
-        item.cat = cat
+        item.cat = category
         item.labels = labelArray
         item.updateTime = now
         item.dueTime = dueTime
@@ -528,27 +561,58 @@ export default {
     },
     handleFinish (cat, index) {
       const now = (new Date()).getTime()
-      const item = this.list.splice(index, 1)[0]
-      item.cat = 'history'
-      item.status = 1
-      item.doneTime = now
-      this.list.push(item)
+      const task = this.list[index]
+      if (task.parentId) {
+        // 完成子任务
+        const item = this.list.splice(index, 1)[0]
+        item.status = 1
+        item.doneTime = now
+        this.list.splice(index, 0, item)
+      } else {
+        // 完成主任务
+        const subTasks = this.list.filter(t => t.parentId === task.createTime)
+        if (subTasks.length) {
+          // 自动完成所有当前未完成的子任务
+          let finishedSubTasks = []
+          for (let i = subTasks.length - 1; i >= 0; i--) {
+            const subTask = subTasks[i]
+            if (subTask.status === 1) {
+              // 子任务之前已完成
+              subTasks.cat = 'history'
+            } else {
+              // 子任务还未完成
+              subTask.cat = 'history'
+              subTask.status = 1
+              subTask.doneTime = now
+            }
+            finishedSubTasks = [subTask, ...finishedSubTasks]
+            this.list.splice(subTask.index, 1)
+          }
+          this.list = [...this.list, ...finishedSubTasks]
+        }
+        const item = this.list.splice(index, 1)[0]
+        item.cat = 'history'
+        item.status = 1
+        item.doneTime = now
+        this.list.push(item)
+      }
       // console.log(this.list)
       dataCtrl.save(this.list)
-      system.lastOperation = {
-        operation: 'finish',
-        sourceCat: cat,
-        sourceIndex: index,
-        targetCat: 'history',
-        targetIndex: this.list.length - 1,
-        dataValue: ''
-      }
-      const finishNotify = new Notification('Congratulations!', {
-        body: 'You just finished a task, Click to cancel'
-      })
-      finishNotify.onclick = () => {
-        this.abortOperation()
-      }
+      // TODO 完善撤回？
+      // system.lastOperation = {
+      //   operation: 'finish',
+      //   sourceCat: cat,
+      //   sourceIndex: index,
+      //   targetCat: 'history',
+      //   targetIndex: this.list.length - 1,
+      //   dataValue: ''
+      // }
+      // const finishNotify = new Notification('Congratulations!', {
+      //   body: 'You just finished a task, Click to cancel'
+      // })
+      // finishNotify.onclick = () => {
+      //   this.abortOperation()
+      // }
     },
     // handleLink (e, cat, task, showIndex) {
     //   this.focusIndex = task.index
@@ -649,9 +713,21 @@ export default {
     //   }
     //   dataCtrl.save(this.list)
     // },
-    // handleAddSubTask (task) {
-    //   console.log('add sub task to', task)
-    // },
+    handleAddSubTask (task) {
+      eventBus.$emit('showAddItem', {
+        parentId: task.createTime,
+        parentName: task.content,
+        category: task.cat,
+        tags: task.labels.join(',')
+      })
+    },
+    handleTrunTask (task) {
+      const item = this.list.splice(task.index, 1)[0]
+      const targetIndex = this.list.findIndex(t => t.createTime === task.parentId)
+      item.parentId = null
+      this.list.splice(targetIndex, 0, item)
+      dataCtrl.save(this.list)
+    },
     handleGoto (task) {
       if (system.tab !== task.cat) {
         systemCtrl.changeTab(task.cat)
@@ -675,8 +751,15 @@ export default {
     },
     changeCat (data) {
       this.focusIndex = -1
+      const task = this.list[data.tag.index]
+      if (task.parentId && task.status === 1) {
+        // 已完成的子任务正在修改分类
+        console.warn('已完成的子任务不允许修改分类')
+        return
+      }
       const item = this.list.splice(data.tag.index, 1)[0]
       item.cat = data.value
+      item.parentId = null
       item.status = 0
       item.doneTime = null
       this.list.push(item)
@@ -685,7 +768,13 @@ export default {
     handleShowMore (e, task, showIndex) {
       // console.log(e)
       this.focusIndex = task.index
-      const options = this.actionOptions.filter(o => !o.banCat || !o.banCat.includes(system.tab))
+      let options = [...this.actionOptions]
+      if (system.tab === 'focus') {
+        options = options.slice(0, options.length - 2)
+      }
+      if (task.parentId && task.status === 1) {
+        options = options.slice(1)
+      }
       eventBus.$emit('showPopActions', {
         options,
         position: {
@@ -732,11 +821,14 @@ export default {
     handleShowEdit (cat, index) {
       this.editingCat = cat
       this.editingIndex = index
+      const task = this.list[index]
       eventBus.$emit('showEditItem', {
         category: cat,
-        content: this.list[index].content,
-        tags: this.list[index].labels.join(','),
-        dueTime: this.list[index].dueTime
+        content: task.content,
+        tags: task.labels.join(','),
+        dueTime: task.dueTime,
+        parentId: task.parentId,
+        parentName: this.list.find(item => item.createTime === task.parentId)?.content || ''
       })
     },
     handleShowDetail (cat, index) {
@@ -788,12 +880,28 @@ export default {
       e.dataTransfer.dropEffect = 'move'
       // 交换2个位置数据
       // const sourceCat = e.dataTransfer.getData('sourceCat')
-      const sourceIndex = e.dataTransfer.getData('sourceIndex')
+      const sourceIndex = parseInt(e.dataTransfer.getData('sourceIndex'))
       if (sourceIndex === index) {
+        console.log('drop自己，不处理')
         return
       }
-      const item = this.list.splice(sourceIndex, 1)[0]
-      this.list.splice(index, 0, item)
+      const sourceTask = this.list[sourceIndex]
+      const targetTask = this.list[index]
+      if (!sourceTask.parentId && !targetTask.parentId) {
+        // 主任务drop主任务，交换位置
+        const item = this.list.splice(sourceIndex, 1)[0]
+        this.list.splice(index, 0, item)
+      } else if (targetTask.parentId) {
+        // drop到子任务，则变更为该子任务兄弟任务，放于该子任务后
+        const item = this.list.splice(sourceIndex, 1)[0]
+        item.parentId = targetTask.parentId
+        this.list.splice(targetTask.index + 1, 0, item)
+      } else {
+        // 子任务drop主任务，变更为该主任务的子任务
+        const item = this.list.splice(sourceIndex, 1)[0]
+        item.parentId = targetTask.createTime
+        this.list.splice(targetTask.index + 1, 0, item)
+      }
       dataCtrl.save(this.list)
     },
     importData (content, type) {
@@ -1045,6 +1153,7 @@ select, input {
 .box-main {
   width: 720px;
   height: 100%;
+  background: $primary-bgcolor;
   box-shadow: 0px 0px 4px 0 rgba(122, 122, 122, .2);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -1113,10 +1222,17 @@ select, input {
           background: $color-active;
           // animation: heartbeat 2s linear infinite;
         }
+        &.always-show {
+          opacity: 1;
+        }
       }
       .content {
         margin-left: 26px;
         padding: 6px 6px 6px 0;
+        &.sub {
+          margin-left: 36px;
+          font-size: 13px;
+        }
         &.done {
           color: #555;
           text-decoration: line-through;
@@ -1125,12 +1241,18 @@ select, input {
           color: #000;
           font-weight: bold;
         }
+        .sub-icon {
+          color: $sub-font-color;
+        }
       }
       .labels {
         position: relative;
         margin-left: 26px;
         padding-bottom: 4px;
         white-space: nowrap;
+        &.sub {
+          margin-left: 36px;
+        }
         .label {
           margin-right: 3px;
         }
@@ -1286,6 +1408,7 @@ select, input {
     background: $dark-2;
   }
   .box-main {
+    background: $primary-bgcolor-dark;
     .box-list {
       &::-webkit-scrollbar-thumb {
         background: $scrollbar-thumb-color-dark;
@@ -1312,6 +1435,9 @@ select, input {
           }
           &.highlight {
             color: $secondary-font-color-dark;
+          }
+          .sub-icon {
+            color: $sub-font-color-dark;
           }
         }
       }

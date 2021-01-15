@@ -20,9 +20,12 @@ export default {
         })
         data = [...data.inbox, ...data.current, ...data.coming, ...data.anytime, ...data.someday, ...data.tracking, ...data.note, ...data.history]
       }
-      // 附加原始索引值
+      // 数据处理
       data = data.map((item, index) => {
+        // 原始索引值
         item.index = index
+        // 修复旧数据
+        item.parentId === undefined && (item.parentId = null)
         return item
       })
       return data
