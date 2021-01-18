@@ -22,7 +22,7 @@
           <div class="box-radio"
             :class="[!item.parentId && 'always-show']"
             v-show="system.tab !== 'history' && system.tab !== 'note' && item.status === 0"
-            @click="handleFinish(item.cat, item.index)"></div>
+            @click="handleFinish(item.index)"></div>
           <div class="content"
             :class="[item.parentId && 'sub',
               item.status === 1 && 'done',
@@ -50,7 +50,7 @@
             </div>
             <div class="icon-btn btn"
               v-show="system.tab !== 'history' && item.parentId && item.status === 0"
-              @click="handleTrunTask(item)">
+              @click="handleTurnTask(item)">
               <font-awesome-icon :icon="['fas', 'eject']" title="Turn into task" />
             </div>
             <div class="icon-btn btn lg"
@@ -238,7 +238,8 @@ export default {
           if (this.seePartHistory) {
             rawList = rawList.slice(0, this.historyLimit)
           }
-        } else if (rawList.some(item => item.parentId)) {
+        }
+        if (rawList.some(item => item.parentId)) {
           // 需要进行子任务调整
           const tasks = []
           const subTasks = []
@@ -435,36 +436,51 @@ export default {
       }
       labelArray = labelArray.filter(item => item)
       const now = (new Date()).getTime()
+      const task = {
+        content,
+        cat: category,
+        status: 0, // 0 - init, 1 - done
+        labels: labelArray,
+        group: null,
+        createTime: now,
+        updateTime: now,
+        dueTime,
+        parentId
+      }
       if (reverse) {
         // 插入到首行
-        this.list.unshift({
-          // index: 0, // 自维护
-          content,
-          cat: category,
-          status: 0, // 0 - init, 1 - done
-          labels: labelArray,
-          group: null,
-          createTime: now,
-          updateTime: now,
-          dueTime,
-          parentId
-        })
+        if (parentId) {
+          // 添加子任务，需要放到主任务的紧邻下一个
+          const targetIndex = this.list.find(t => t.createTime === parentId)?.index + 1
+          this.list.splice(targetIndex, 0, task)
+        } else {
+          // 添加主任务，放置到队列头部
+          this.list.unshift(task)
+        }
       } else {
         // 插入到末尾
-        this.list.push({
-          // index: this.list.length, // 自维护
-          content,
-          cat: category,
-          status: 0, // 0 - init, 1 - done
-          labels: labelArray,
-          group: null,
-          createTime: now,
-          updateTime: now,
-          dueTime,
-          parentId
-        })
+        if (parentId) {
+          // 添加子任务，需要放到主任务的最后一个子任务紧邻下一个
+          let targetIndex = this.list.reduce((maxIndex, t) => {
+            if (t.parentId === parentId && t.index > maxIndex) {
+              return t.index
+            } else {
+              return maxIndex
+            }
+          }, -1)
+          if (targetIndex > -1) {
+            this.list.splice(targetIndex + 1, 0, task)
+          } else {
+            // 未找到正确的附属末尾子任务，改为放置到主任务紧邻下一个
+            targetIndex = this.list.find(t => t.createTime === parentId)?.index + 1
+            this.list.splice(targetIndex, 0, task)
+          }
+        } else {
+          // 添加主任务，放置到队列末尾
+          this.list.push(task)
+        }
       }
-      // console.log(this.list)
+      // console.table(this.list)
       dataCtrl.save(this.list)
       dataCtrl.saveTag(labelArray)
       dataCtrl.saveLastUsedTag(labelArray)
@@ -559,7 +575,7 @@ export default {
         dataCtrl.save(this.list)
       }
     },
-    handleFinish (cat, index) {
+    handleFinish (index) {
       const now = (new Date()).getTime()
       const task = this.list[index]
       if (task.parentId) {
@@ -570,15 +586,15 @@ export default {
         this.list.splice(index, 0, item)
       } else {
         // 完成主任务
-        const subTasks = this.list.filter(t => t.parentId === task.createTime)
+        const subTasks = this.list.filter(t => t.parentId === task.createTime && t.cat === task.cat)
+        let finishedSubTasks = []
         if (subTasks.length) {
           // 自动完成所有当前未完成的子任务
-          let finishedSubTasks = []
           for (let i = subTasks.length - 1; i >= 0; i--) {
             const subTask = subTasks[i]
             if (subTask.status === 1) {
               // 子任务之前已完成
-              subTasks.cat = 'history'
+              subTask.cat = 'history'
             } else {
               // 子任务还未完成
               subTask.cat = 'history'
@@ -588,15 +604,15 @@ export default {
             finishedSubTasks = [subTask, ...finishedSubTasks]
             this.list.splice(subTask.index, 1)
           }
-          this.list = [...this.list, ...finishedSubTasks]
         }
         const item = this.list.splice(index, 1)[0]
         item.cat = 'history'
         item.status = 1
         item.doneTime = now
         this.list.push(item)
+        this.list = [...this.list, ...finishedSubTasks]
       }
-      // console.log(this.list)
+      // console.table(this.list)
       dataCtrl.save(this.list)
       // TODO 完善撤回？
       // system.lastOperation = {
@@ -721,7 +737,7 @@ export default {
         tags: task.labels.join(',')
       })
     },
-    handleTrunTask (task) {
+    handleTurnTask (task) {
       const item = this.list.splice(task.index, 1)[0]
       const targetIndex = this.list.findIndex(t => t.createTime === task.parentId)
       item.parentId = null
@@ -757,12 +773,40 @@ export default {
         console.warn('已完成的子任务不允许修改分类')
         return
       }
-      const item = this.list.splice(data.tag.index, 1)[0]
-      item.cat = data.value
-      item.parentId = null
-      item.status = 0
-      item.doneTime = null
-      this.list.push(item)
+      if (!task.parentId) {
+        // 主任务修改分类
+        const subTasks = this.list.filter(t => t.parentId === task.createTime && t.cat === task.cat)
+        let changedSubTasks = []
+        if (subTasks.length) {
+          // 同步变更所有子任务的分类
+          for (let i = subTasks.length - 1; i >= 0; i--) {
+            const subTask = subTasks[i]
+            if (subTask.cat === 'history') {
+              // 从history中移出其他分类时，修改其状态
+              subTask.status = 0
+              subTask.doneTime = null
+            }
+            subTask.cat = data.value
+            changedSubTasks = [subTask, ...changedSubTasks]
+            this.list.splice(subTask.index, 1)
+          }
+        }
+        // 变更主任务分类
+        const item = this.list.splice(task.index, 1)[0]
+        item.cat = data.value
+        item.status = 0
+        item.doneTime = null
+        this.list.push(item)
+        this.list = [...this.list, ...changedSubTasks]
+      } else {
+        // 子任务修改分类，弹出为主任务
+        const item = this.list.splice(task.index, 1)[0]
+        item.cat = data.value
+        item.parentId = null
+        item.status = 0
+        item.doneTime = null
+        this.list.push(item)
+      }
       dataCtrl.save(this.list)
     },
     handleShowMore (e, task, showIndex) {

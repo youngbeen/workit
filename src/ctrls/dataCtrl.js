@@ -11,15 +11,6 @@ export default {
     let data = window.localStorage.getItem('workitSaveData') || ''
     if (data) {
       data = JSON.parse(data)
-      // NOTE 新增的功能，兼容老数据
-      if (Object.prototype.toString.call(data) === '[object Object]') {
-        // 老对象数据，需要转为数组
-        data.history = data.history.map(item => {
-          item.cat = 'history'
-          return item
-        })
-        data = [...data.inbox, ...data.current, ...data.coming, ...data.anytime, ...data.someday, ...data.tracking, ...data.note, ...data.history]
-      }
       // 数据处理
       data = data.map((item, index) => {
         // 原始索引值

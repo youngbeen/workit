@@ -109,25 +109,54 @@ export default {
 
   mounted () {
     eventBus.$on('showItemDetail', (params) => {
+      const today = dateUtil.formatDateTime('YYYY-MM-DD', new Date())
+      const yesterday = dateUtil.formatDateTime('YYYY-MM-DD', new Date() - 1000 * 60 * 60 * 24)
+      const tomorrow = dateUtil.formatDateTime('YYYY-MM-DD', new Date() + 1000 * 60 * 60 * 24)
       this.list = params.list || []
       this.list = this.list.map(item => {
         if (item.createTime) {
           item.createTimeText = dateUtil.formatDateTime('YYYY-MM-DD HH:mm:ss', item.createTime)
+          const [date, time] = item.createTimeText.split(' ')
+          if (date === today) {
+            item.createTimeText = `Today ${time}`
+          } else if (date === yesterday) {
+            item.createTimeText = `Yesterday ${time}`
+          }
         } else {
           item.createTimeText = '-'
         }
         if (item.updateTime) {
           item.updateTimeText = dateUtil.formatDateTime('YYYY-MM-DD HH:mm:ss', item.updateTime)
+          const [date, time] = item.updateTimeText.split(' ')
+          if (date === today) {
+            item.updateTimeText = `Today ${time}`
+          } else if (date === yesterday) {
+            item.updateTimeText = `Yesterday ${time}`
+          }
         } else {
           item.updateTimeText = '-'
         }
         if (item.doneTime) {
           item.doneTimeText = dateUtil.formatDateTime('YYYY-MM-DD HH:mm:ss', item.doneTime)
+          const [date, time] = item.doneTimeText.split(' ')
+          if (date === today) {
+            item.doneTimeText = `Today ${time}`
+          } else if (date === yesterday) {
+            item.doneTimeText = `Yesterday ${time}`
+          }
         } else {
           item.doneTimeText = ''
         }
         if (item.dueTime) {
           item.dueTimeText = dateUtil.formatDateTime('YYYY-MM-DD HH:mm:ss', item.dueTime)
+          const [date, time] = item.dueTimeText.split(' ')
+          if (date === today) {
+            item.dueTimeText = `Today ${time}`
+          } else if (date === tomorrow) {
+            item.dueTimeText = `Tomorrow ${time}`
+          } else if (date === yesterday) {
+            item.dueTimeText = `Yesterday ${time}`
+          }
         } else {
           item.dueTimeText = ''
         }
