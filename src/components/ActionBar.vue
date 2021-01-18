@@ -89,7 +89,9 @@ export default {
   border-bottom: 1px solid $border-color;
   background: $toolbar-bgcolor;
   .icon-btn {
-    margin-left: 12px;
+    &:not(:first-of-type) {
+      margin-left: 6px;
+    }
     &.active {
       position: relative;
       &:after {

@@ -24,6 +24,11 @@ export default {
   z-index: 0;
   color: rgba(210, 210, 210, 0.2);
   line-height: 23px;
-  font-size: 48px;
+  font-size: 44px;
+}
+@media (prefers-color-scheme: dark) {
+  .comp-index-indicator {
+    color: rgba(90, 90, 90, .2);
+  }
 }
 </style>

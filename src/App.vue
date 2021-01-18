@@ -20,7 +20,6 @@
           <cat-indicator v-show="system.tab === 'focus'" :name="item.cat"></cat-indicator>
           <!-- <div class="group-indicator" v-show="system.tab !== 'history' && item.group" :style="{ 'background': groupColors.get(item.group) }">&nbsp;</div> -->
           <div class="box-radio"
-            :class="[!item.parentId && 'always-show']"
             v-show="system.tab !== 'history' && system.tab !== 'note' && item.status === 0"
             @click="handleFinish(item.index)"></div>
           <div class="content"
