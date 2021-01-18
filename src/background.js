@@ -259,7 +259,7 @@ app.on('ready', async () => {
 
 app.setAboutPanelOptions({
   applicationName: 'Workit',
-  copyright: 'Released under ISC, all rights reversed by youngbeen 2019 - preset',
+  copyright: 'Released under ISC, all rights reversed by youngbeen 2019 - present',
   credits: 'created by youngbeen with ❤️'
 })
 
