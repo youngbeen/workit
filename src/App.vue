@@ -622,12 +622,12 @@ export default {
       //   targetIndex: this.list.length - 1,
       //   dataValue: ''
       // }
-      // const finishNotify = new Notification('Congratulations!', {
-      //   body: 'You just finished a task, Click to cancel'
-      // })
-      // finishNotify.onclick = () => {
-      //   this.abortOperation()
-      // }
+      const finishNotify = new Notification('Congratulations!', {
+        body: 'You just finished a task'
+      })
+      finishNotify.onclick = () => {
+        // this.abortOperation()
+      }
     },
     // handleLink (e, cat, task, showIndex) {
     //   this.focusIndex = task.index

@@ -61,7 +61,7 @@
         Please input keyword to search
       </div>
       <div class="no-data" v-if="hasSearched && !searchResults.length">
-        No matched task
+        No tasks matched
       </div>
     </div>
   </section>

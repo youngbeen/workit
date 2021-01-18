@@ -37,4 +37,9 @@ export default {
   transform-origin: top left;
   transform: rotate(90deg);
 }
+@media (prefers-color-scheme: dark) {
+  .comp-cat-indicator {
+    color: rgba(90, 90, 90, .3);
+  }
+}
 </style>
