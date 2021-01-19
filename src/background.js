@@ -105,6 +105,11 @@ function resetData () {
   })
 }
 
+// 打开配置
+function openConfig () {
+  win.webContents.send('sys_openconfig')
+}
+
 async function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({
@@ -204,9 +209,15 @@ async function createWindow () {
       ]
     },
     {
-      label: 'About',
+      label: 'Config',
       submenu: [
-        { role: 'about' }
+        // { role: 'about' }
+        {
+          label: 'Open Config',
+          click: () => {
+            openConfig()
+          }
+        }
       ]
     }
   ])

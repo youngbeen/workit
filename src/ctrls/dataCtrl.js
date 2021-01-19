@@ -10,6 +10,7 @@ export default {
   read () {
     let data = window.localStorage.getItem('workitSaveData') || ''
     if (data) {
+      const now = (new Date()).getTime()
       data = JSON.parse(data)
       // 数据处理
       data = data.map((item, index) => {
@@ -17,6 +18,15 @@ export default {
         item.index = index
         // 修复旧数据
         item.parentId === undefined && (item.parentId = null)
+        // 修复错误数据
+        if (item.cat === 'history' && item.status !== 1) {
+          console.log('在history中的数据status错误')
+          item.status = 1
+        }
+        if (item.cat === 'history' && !item.doneTime) {
+          console.log('在history中的数据doneTime错误')
+          item.doneTime = now
+        }
         return item
       })
       return data
@@ -70,6 +80,17 @@ export default {
   },
   clearLastUsedTag () {
     window.localStorage.removeItem('lastTimeUsedTags')
+  },
+  saveConfig (config) {
+    window.localStorage.setItem('workitConfig', JSON.stringify(config))
+  },
+  readConfig () {
+    const data = window.localStorage.getItem('workitConfig')
+    if (data) {
+      return JSON.parse(data)
+    } else {
+      return null
+    }
   },
   backup (key, data) {
     if (key && data) {

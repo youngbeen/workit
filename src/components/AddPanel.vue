@@ -111,7 +111,7 @@ export default {
       content: '',
       inputTags: '', // 标签值以此为准，tags只用于收录选择显示
       tags: [],
-      catOptions: cats.slice(0, cats.length - 1),
+      // catOptions: cats.slice(0, cats.length - 1),
       usedTags: [],
       dueTime: '',
       halfDays: 0
@@ -167,6 +167,13 @@ export default {
         return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][weekday]
       } else {
         return ''
+      }
+    },
+    catOptions () {
+      if (this.category === 'history') {
+        return cats
+      } else {
+        return cats.slice(0, cats.length - 1)
       }
     }
   },

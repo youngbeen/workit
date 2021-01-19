@@ -9,7 +9,7 @@
           </span>
           Focus
         </div>
-        <span class="badge" :class="[(isShowCount || system.tab === 'focus') && counts.focus && 'show']">{{ counts.focus }}</span>
+        <span class="badge" :class="[(isShowCount || system.tab === 'focus') && showCounts.focus && 'show']">{{ showCounts.focus }}</span>
       </div>
       <div class="nav" :class="[system.tab === 'inbox' && 'active']" @click="changeTab('inbox')" @dragover.prevent="handleDragover" @drop.prevent="handleDrop($event, 'inbox')">
         <div class="title">
@@ -18,7 +18,7 @@
           </span>
           Inbox
         </div>
-        <span class="badge" :class="[(isShowCount || system.tab === 'inbox') && counts.inbox && 'show']">{{ counts.inbox }}</span>
+        <span class="badge" :class="[(isShowCount || system.tab === 'inbox') && showCounts.inbox && 'show']">{{ showCounts.inbox }}</span>
       </div>
     </div>
     <div class="box-group">
@@ -29,7 +29,7 @@
           </span>
           Current
         </div>
-        <span class="badge" :class="[(isShowCount || system.tab === 'current') && counts.current && 'show']">{{ counts.current }}</span>
+        <span class="badge" :class="[(isShowCount || system.tab === 'current') && showCounts.current && 'show']">{{ showCounts.current }}</span>
       </div>
       <div class="nav" :class="[system.tab === 'coming' && 'active']" @click="changeTab('coming')" @dragover.prevent="handleDragover" @drop.prevent="handleDrop($event, 'coming')">
         <div class="title">
@@ -38,7 +38,7 @@
           </span>
           Coming
         </div>
-        <span class="badge" :class="[(isShowCount || system.tab === 'coming') && counts.coming && 'show']">{{ counts.coming }}</span>
+        <span class="badge" :class="[(isShowCount || system.tab === 'coming') && showCounts.coming && 'show']">{{ showCounts.coming }}</span>
       </div>
       <div class="nav" :class="[system.tab === 'anytime' && 'active']" @click="changeTab('anytime')" @dragover.prevent="handleDragover" @drop.prevent="handleDrop($event, 'anytime')">
         <div class="title">
@@ -47,7 +47,7 @@
           </span>
           Anytime
         </div>
-        <span class="badge" :class="[(isShowCount || system.tab === 'anytime') && counts.anytime && 'show']">{{ counts.anytime }}</span>
+        <span class="badge" :class="[(isShowCount || system.tab === 'anytime') && showCounts.anytime && 'show']">{{ showCounts.anytime }}</span>
       </div>
       <div class="nav" :class="[system.tab === 'someday' && 'active']" @click="changeTab('someday')" @dragover.prevent="handleDragover" @drop.prevent="handleDrop($event, 'someday')">
         <div class="title">
@@ -56,7 +56,7 @@
           </span>
           Someday
         </div>
-        <span class="badge" :class="[(isShowCount || system.tab === 'someday') && counts.someday && 'show']">{{ counts.someday }}</span>
+        <span class="badge" :class="[(isShowCount || system.tab === 'someday') && showCounts.someday && 'show']">{{ showCounts.someday }}</span>
       </div>
     </div>
     <div class="box-group">
@@ -67,7 +67,7 @@
           </span>
           Tracking
         </div>
-        <span class="badge" :class="[(isShowCount || system.tab === 'tracking') && counts.tracking && 'show']">{{ counts.tracking }}</span>
+        <span class="badge" :class="[(isShowCount || system.tab === 'tracking') && showCounts.tracking && 'show']">{{ showCounts.tracking }}</span>
       </div>
       <div class="nav" :class="[system.tab === 'note' && 'active']" @click="changeTab('note')" @dragover.prevent="handleDragover" @drop.prevent="handleDrop($event, 'note')">
         <div class="title">
@@ -76,7 +76,7 @@
           </span>
           Note
         </div>
-        <span class="badge" :class="[(isShowCount || system.tab === 'note') && counts.note && 'show']">{{ counts.note }}</span>
+        <span class="badge" :class="[(isShowCount || system.tab === 'note') && showCounts.note && 'show']">{{ showCounts.note }}</span>
       </div>
     </div>
     <div class="box-group">
@@ -87,7 +87,7 @@
           </span>
           History
         </div>
-        <span class="badge" :class="[(isShowCount || system.tab === 'history') && counts.history && 'show']">{{ counts.history }}</span>
+        <span class="badge" :class="[(isShowCount || system.tab === 'history') && showCounts.history && 'show']">{{ showCounts.history }}</span>
       </div>
     </div>
   </section>
@@ -98,12 +98,17 @@ import eventBus from '@/eventBus'
 import { ipcRenderer } from 'electron'
 import { cats } from '@/models/DictMap'
 import system from '@/models/system'
+import config from '@/models/config'
 import systemCtrl from '@/ctrls/systemCtrl'
 
 export default {
   name: 'leftNav',
   props: {
     counts: {
+      type: Object,
+      required: true
+    },
+    mainCounts: {
       type: Object,
       required: true
     }
@@ -113,7 +118,17 @@ export default {
       isHover: false,
       isShowCount: false,
       queue: ['focus', ...cats.map(item => item.value)],
-      system
+      system,
+      config
+    }
+  },
+  computed: {
+    showCounts () {
+      if (this.config.leftnavNumbersMode === 'main') {
+        return this.mainCounts
+      } else {
+        return this.counts
+      }
     }
   },
 

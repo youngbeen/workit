@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <left-nav :counts="catCounts"></left-nav>
+    <left-nav :counts="catCounts" :mainCounts="catMainTaskCounts"></left-nav>
 
     <note-panel :data="relatedNotes"></note-panel>
 
@@ -9,6 +9,7 @@
 
       <!-- list -->
       <div class="box-list">
+        <!-- <button @click="autoClearHistory()">TODO Test</button> -->
         <div class="box-item" :class="[item.index === focusIndex && 'focused', 'animated']"
           :style="{ transitionDelay: index / 20 + 's' }"
           :draggable="system.tab !== 'focus'"
@@ -85,6 +86,7 @@
     <detail-panel></detail-panel>
     <filter-panel :labels="currentCatLabels"></filter-panel>
     <search-panel :list="list"></search-panel>
+    <config-panel></config-panel>
 
     <date-picker></date-picker>
   </div>
@@ -112,6 +114,7 @@ import AddPanel from './components/AddPanel.vue'
 import DetailPanel from './components/DetailPanel.vue'
 import FilterPanel from './components/FilterPanel.vue'
 import SearchPanel from './components/SearchPanel.vue'
+import ConfigPanel from './components/ConfigPanel.vue'
 import DueTag from '@/components/DueTag.vue'
 import IndexIndicator from '@/components/IndexIndicator.vue'
 import CatIndicator from '@/components/CatIndicator.vue'
@@ -130,6 +133,7 @@ export default {
     DetailPanel,
     FilterPanel,
     SearchPanel,
+    ConfigPanel,
     DueTag,
     IndexIndicator,
     CatIndicator,
@@ -284,6 +288,33 @@ export default {
         history: 0
       })
     },
+    catMainTaskCounts () {
+      return this.list.reduce((soFar, item) => {
+        if (item.parentId) {
+          // 子任务不统计
+          return soFar
+        }
+        if (item.cat) {
+          soFar[item.cat]++
+        } else {
+          soFar.inbox++
+        }
+        if (item.cat !== 'history' && item.status === 0 && item.dueTime && this.nowDate === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime)) {
+          soFar.focus++
+        }
+        return soFar
+      }, {
+        focus: 0,
+        inbox: 0,
+        current: 0,
+        coming: 0,
+        anytime: 0,
+        someday: 0,
+        tracking: 0,
+        note: 0,
+        history: 0
+      })
+    },
     relatedNotes () {
       if (this.system.tab && !['note', 'history'].includes(this.system.tab)) {
         return this.list.filter(n => {
@@ -320,13 +351,32 @@ export default {
     //   deep: true,
     //   immediate: true
     // }
+    nowDate: function (newVal, oldVal) {
+      if (newVal && oldVal) {
+        // 每日执行
+        if (config.historyClearMode === 'auto') {
+          this.autoClearHistory()
+        }
+      }
+    }
   },
 
   created () {
+    // 读取之前的配置
+    const savedConfig = dataCtrl.readConfig()
+    if (savedConfig) {
+      config.leftnavNumbersMode = savedConfig.leftnavNumbersMode
+      config.historyClearMode = savedConfig.historyClearMode
+      config.historyClearDaysFilter = savedConfig.historyClearDaysFilter
+      config.historyWarningCount = savedConfig.historyWarningCount
+    }
     // 读取之前缓存的旧数据
     const saveData = dataCtrl.read()
     if (saveData) {
       this.list = saveData
+      if (config.historyClearMode === 'auto') {
+        this.autoClearHistory()
+      }
     }
     // 初始化激活nav
     let initTab = 'inbox'
@@ -350,7 +400,7 @@ export default {
     systemCtrl.changeTab(initTab)
 
     // 历史数据过多提示
-    if (this.catCounts.history > config.historyWarningCount) {
+    if (config.historyClearMode === 'manual' && this.list.filter(item => item.cat === 'history').length > config.historyWarningCount) {
       const historyNotify = new Notification('Too many history items', {
         body: 'Begin to clean...'
       })
@@ -405,6 +455,9 @@ export default {
     })
     ipcRenderer.on('sys_resetdata', () => {
       this.resetData()
+    })
+    ipcRenderer.on('sys_openconfig', () => {
+      eventBus.$emit('showConfig')
     })
   },
 
@@ -769,7 +822,7 @@ export default {
       const task = this.list[data.tag.index]
       if (task.parentId && task.status === 1) {
         // 已完成的子任务正在修改分类
-        console.warn('已完成的子任务不允许修改分类')
+        console.warn('Cannot change a finished task\'s category')
         return
       }
       if (!task.parentId) {
@@ -792,18 +845,22 @@ export default {
         }
         // 变更主任务分类
         const item = this.list.splice(task.index, 1)[0]
+        if (item.cat === 'history') {
+          item.status = 0
+          item.doneTime = null
+        }
         item.cat = data.value
-        item.status = 0
-        item.doneTime = null
         this.list.push(item)
         this.list = [...this.list, ...changedSubTasks]
       } else {
         // 子任务修改分类，弹出为主任务
         const item = this.list.splice(task.index, 1)[0]
+        if (item.cat === 'history') {
+          item.status = 0
+          item.doneTime = null
+        }
         item.cat = data.value
         item.parentId = null
-        item.status = 0
-        item.doneTime = null
         this.list.push(item)
       }
       dataCtrl.save(this.list)
@@ -925,7 +982,7 @@ export default {
       // const sourceCat = e.dataTransfer.getData('sourceCat')
       const sourceIndex = parseInt(e.dataTransfer.getData('sourceIndex'))
       if (sourceIndex === index) {
-        console.log('drop自己，不处理')
+        console.log('dropping onto self, do nothing')
         return
       }
       const sourceTask = this.list[sourceIndex]
@@ -967,6 +1024,23 @@ export default {
       dataCtrl.clearTags()
       system.lastOperation = null
       systemCtrl.resetFilters()
+    },
+    autoClearHistory () {
+      console.log('starting to clear history tasks automatically...')
+      let edited = false
+      for (let i = this.list.length - 1; i >= 0; i--) {
+        const task = this.list[i]
+        if (task.cat === 'history' && task.status === 1 && task.doneTime) {
+          const now = (new Date()).getTime()
+          if (now - task.doneTime > 1000 * 60 * 60 * 24 * config.historyClearDaysFilter) {
+            console.log('removing a old done task', i, task)
+            this.list.splice(i, 1)
+            edited = true
+          }
+        }
+      }
+      edited && dataCtrl.save(this.list)
+      console.log('clear process done')
     }
   }
 }
