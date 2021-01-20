@@ -63,6 +63,11 @@
               @click="handleChangeCat($event, item)">
               <font-awesome-icon :icon="['fas', 'paper-plane']" title="Change Category" />
             </div>
+            <div class="icon-btn btn"
+              v-show="!(item.parentId && item.status === 1)"
+              @click="handleShowEdit(item.cat, item.index)">
+              <font-awesome-icon :icon="['fas', 'edit']" title="Edit" />
+            </div>
             <div class="icon-btn btn" @click="handleShowMore($event, item, index)">
               <font-awesome-icon :icon="['fas', 'ellipsis-h']" title="More" />
             </div>
@@ -882,9 +887,6 @@ export default {
       if (system.tab === 'focus') {
         options = options.slice(0, options.length - 2)
       }
-      if (task.parentId && task.status === 1) {
-        options = options.slice(1)
-      }
       eventBus.$emit('showPopActions', {
         options,
         position: {
@@ -907,9 +909,9 @@ export default {
         case 'stb':
           this.handleSetToBottom(data.tag.cat, data.tag.index)
           break
-        case 'edit':
-          this.handleShowEdit(data.tag.cat, data.tag.index)
-          break
+        // case 'edit':
+        //   this.handleShowEdit(data.tag.cat, data.tag.index)
+        //   break
         case 'detail':
           this.handleShowDetail(data.tag.cat, data.tag.showIndex)
           break
