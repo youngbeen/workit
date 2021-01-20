@@ -15,13 +15,17 @@ npm run e:build
 ## Features
 
 * Sub Tasks
-* Categories focused on work
-* Show related notes automatically
 * Tag your tasks (labels)
 * Setting due date to tasks
 * Filter tasks
 * Search tasks by keyword/label
+* Show related notes automatically
+* Categories focused on work
 * Import/Export your data
+* Auto history tasks clear
+* Auto saving
+* Shortcuts
+* Choose your own config
 * Clean UI design (follows new MacOS design)
 * Dark mode support
 

@@ -247,7 +247,6 @@ export default {
     },
     show () {
       this.hasSearched = false
-      this.category = 'all'
       this.keyword = ''
       this.searchResults = []
       this.isShow = true

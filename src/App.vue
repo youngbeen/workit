@@ -1147,9 +1147,6 @@ select, input {
   border-radius: $border-radius;
   background: $input-bgcolor;
   color: $primary-font-color;
-  // outline: none;
-  // -webkit-appearance: none;
-  // -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   font-size: $primary-font-size;
   font-weight: 500;
   &:focus {
@@ -1351,15 +1348,16 @@ select, input {
           font-size: 13px;
         }
         &.done {
-          color: #555;
+          color: $sub-font-color;
           text-decoration: line-through;
         }
         &.highlight {
-          color: #000;
-          font-weight: bold;
+          color: $primary-font-color;
+          // font-weight: bold;
         }
         .sub-icon {
           color: $sub-font-color;
+          font-size: 12px;
         }
       }
       .labels {
@@ -1551,7 +1549,7 @@ select, input {
             color: $sub-font-color-dark;
           }
           &.highlight {
-            color: $secondary-font-color-dark;
+            color: $primary-font-color-dark;
           }
           .sub-icon {
             color: $sub-font-color-dark;

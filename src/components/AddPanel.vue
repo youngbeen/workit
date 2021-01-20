@@ -80,8 +80,11 @@
           </div>
         </div>
         <div class="box-date-shortcuts">
+          <div class="date-btn" @click="setDueDate('today')">Today</div>
+          <div class="date-btn" @click="setDueDate('tomorrow')">Tomorrow</div>
+          <div class="date-btn" style="margin-right: 12px;" @click="setDueDate('friday')">Friday</div>
           <div class="date-shortcuts">
-            <div class="cell" :class="[halfDays >= c && 'active']" v-for="(c, index) in 20" :key="index" @mouseover="handleMouseOver(c)" @mouseout="handleMouseOut(c)" @click="handleSetDueDate(c)">{{ c % 2 ? '&nbsp;' : c / 2 }}</div>
+            <div class="cell" :class="[halfDays >= c && 'active']" v-for="(c, index) in 12" :key="index" @mouseover="handleMouseOver(c)" @mouseout="handleMouseOut(c)" @click="handleSetDueDate(c)">{{ c % 2 ? '&nbsp;' : c / 2 }}</div>
           </div>
           <div class="date-preview">{{ previewDateText }}</div>
         </div>
@@ -113,7 +116,7 @@ export default {
       tags: [],
       // catOptions: cats.slice(0, cats.length - 1),
       usedTags: [],
-      dueTime: '',
+      dueTime: '', // YYYY-MM-DD HH:mm:ss
       halfDays: 0
     }
   },
@@ -254,6 +257,27 @@ export default {
     },
     handleSetDueDate (halfDays) {
       this.dueTime = this.previewDueDate
+    },
+    setDueDate (type) {
+      const now = new Date()
+      switch (type) {
+        case 'today':
+          this.dueTime = dateUtil.formatDateTime('YYYY-MM-DD', now) + ' 18:00:00'
+          break
+        case 'tomorrow': {
+          const tomorrow = now.getTime() + 1000 * 60 * 60 * 24
+          this.dueTime = dateUtil.formatDateTime('YYYY-MM-DD', tomorrow) + ' 18:00:00'
+          break
+        }
+        case 'friday': {
+          const nowWeekday = now.getDay()
+          let leftDays = 5 - nowWeekday
+          leftDays < 0 && (leftDays += 7)
+          const friday = now.getTime() + 1000 * 60 * 60 * 24 * leftDays
+          this.dueTime = dateUtil.formatDateTime('YYYY-MM-DD', friday) + ' 18:00:00'
+          break
+        }
+      }
     },
     save (reverse = false) {
       if (this.content) {
@@ -477,6 +501,23 @@ export default {
       .box-date-shortcuts {
         display: flex;
         padding-left: 56px;
+        .date-btn {
+          margin-right: 6px;
+          height: 18px;
+          line-height: 18px;
+          padding: 0 3px;
+          border: 1px solid $color-active;
+          border-radius: 3px;
+          text-align: center;
+          font-size: 12px;
+          transition: all 0.2s;
+          cursor: pointer;
+          user-select: none;
+          &:hover {
+            background: $color-active;
+            color: #fff;
+          }
+        }
         .date-shortcuts {
           margin-right: 12px;
           // width: 220px;
@@ -551,6 +592,14 @@ export default {
           }
         }
         .box-date-shortcuts {
+          .date-btn {
+            color: $secondary-font-color-dark;
+            border: 1px solid $color-active-dark;
+            &:hover {
+              background: $color-active-dark;
+              color: $primary-font-color-dark;
+            }
+          }
           .date-shortcuts {
             .cell {
               color: $secondary-font-color-dark;
