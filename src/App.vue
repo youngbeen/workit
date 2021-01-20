@@ -94,7 +94,7 @@
 
 <script>
 import { ipcRenderer, clipboard } from 'electron'
-// import { sleep } from '@youngbeen/sleep'
+import { sleep } from '@youngbeen/sleep'
 import { dateUtil } from '@youngbeen/angle-util'
 import eventBus from '@/eventBus'
 import { cats, actions } from '@/models/DictMap'
@@ -365,10 +365,11 @@ export default {
     // 读取之前的配置
     const savedConfig = dataCtrl.readConfig()
     if (savedConfig) {
-      config.leftnavNumbersMode = savedConfig.leftnavNumbersMode
-      config.historyClearMode = savedConfig.historyClearMode
-      config.historyClearDaysFilter = savedConfig.historyClearDaysFilter
-      config.historyWarningCount = savedConfig.historyWarningCount
+      savedConfig.leftnavNumbersMode && (config.leftnavNumbersMode = savedConfig.leftnavNumbersMode)
+      config.addNewAfterSubTaskAdded = savedConfig.addNewAfterSubTaskAdded || false
+      savedConfig.historyClearMode && (config.historyClearMode = savedConfig.historyClearMode)
+      savedConfig.historyClearDaysFilter && (config.historyClearDaysFilter = savedConfig.historyClearDaysFilter)
+      savedConfig.historyWarningCount && (config.historyWarningCount = savedConfig.historyWarningCount)
     }
     // 读取之前缓存的旧数据
     const saveData = dataCtrl.read()
@@ -536,6 +537,15 @@ export default {
       dataCtrl.save(this.list)
       dataCtrl.saveTag(labelArray)
       dataCtrl.saveLastUsedTag(labelArray)
+
+      if (parentId && config.addNewAfterSubTaskAdded) {
+        // 继续添加子任务
+        console.log('should add another sub task')
+        const parentTask = this.list.find(t => t.createTime === parentId)
+        sleep(1000).then(() => {
+          this.handleAddSubTask(parentTask)
+        })
+      }
     },
     editItem ({ parentId = null, category, content, tags, dueTime = null }) {
       let labelArray = []

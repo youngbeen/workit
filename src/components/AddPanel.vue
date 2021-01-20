@@ -11,7 +11,7 @@
           </select>
         </div>
         <div class="box-info" v-show="parentId">
-          Sub task under <span class="sub-title">{{ category }}</span> / <span class="title">{{ parentName }}</span>
+          Sub task under <span class="sub-title">{{ category }}</span> / <span class="title" :title="parentName">{{ parentName }}</span>
         </div>
         <div class="box-btns">
           <div class="icon-btn" @click="save()">

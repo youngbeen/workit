@@ -13,14 +13,21 @@
       <!-- result list -->
       <div class="box-content">
         <div class="box-config-item">
-          <div class="title">Numbers Display In Left Navigation</div>
+          <div class="title">Numbers display in left navigation</div>
           <input type="radio" id="leftnav-numbers-all" value="all" v-model="config.leftnavNumbers">
-          <label for="leftnav-numbers-all">All Tasks</label>
+          <label for="leftnav-numbers-all">All tasks</label>
           <input type="radio" id="leftnav-numbers-main" value="main" v-model="config.leftnavNumbers">
-          <label for="leftnav-numbers-main">Only Main Tasks</label>
+          <label for="leftnav-numbers-main">Only main tasks</label>
         </div>
         <div class="box-config-item">
-          <div class="title">Clear History Tasks</div>
+          <div class="title">Add another new sub task when last one added</div>
+          <input type="radio" id="addnew-subtask-no" :value="false" v-model="config.addNewAfterSubTaskAdded">
+          <label for="addnew-subtask-no">No</label>
+          <input type="radio" id="addnew-subtask-yes" :value="true" v-model="config.addNewAfterSubTaskAdded">
+          <label for="addnew-subtask-yes">Yes</label>
+        </div>
+        <div class="box-config-item">
+          <div class="title">History tasks clear</div>
           <input type="radio" id="history-clear-manual" value="manual-60" v-model="config.historyClear">
           <label for="history-clear-manual">Manual</label>
           <input type="radio" id="history-clear-60d" value="auto-60" v-model="config.historyClear">
@@ -29,7 +36,7 @@
           <label for="history-clear-180d">Auto(over 180 days)</label>
         </div>
         <div class="box-config-item" v-show="config.historyClear === 'manual-60'">
-          <div class="title">History Clear Reminder</div>
+          <div class="title">History tasks clear reminder</div>
           Remind me when history tasks count is over <input type="number" class="common-input" v-model="config.historyReminderCount">
         </div>
       </div>
@@ -51,6 +58,7 @@ export default {
       isShow: false,
       config: {
         leftnavNumbers: 'all', // all | main
+        addNewAfterSubTaskAdded: false,
         historyClear: 'manual-60', // {mode}-{days}
         historyReminderCount: 500
       }
@@ -62,6 +70,7 @@ export default {
         // 当配置更改时，保存配置
         // console.log(newVal)
         config.leftnavNumbersMode = newVal.leftnavNumbers
+        config.addNewAfterSubTaskAdded = newVal.addNewAfterSubTaskAdded
         let [clearMode, days] = newVal.historyClear.split('-')
         days = parseInt(days)
         config.historyClearMode = clearMode
@@ -88,6 +97,7 @@ export default {
   methods: {
     show () {
       this.config.leftnavNumbers = config.leftnavNumbersMode
+      this.config.addNewAfterSubTaskAdded = config.addNewAfterSubTaskAdded
       this.config.historyClear = `${config.historyClearMode}-${config.historyClearDaysFilter}`
       this.config.historyReminderCount = config.historyWarningCount
       this.isShow = true
