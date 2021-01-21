@@ -547,7 +547,7 @@ export default {
         // 继续添加子任务
         console.log('should add another sub task')
         const parentTask = this.list.find(t => t.createTime === parentId)
-        sleep(1000).then(() => {
+        sleep(300).then(() => {
           this.handleAddSubTask(parentTask)
         })
       }

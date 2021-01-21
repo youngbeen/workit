@@ -95,6 +95,7 @@
 
 <script>
 import { ipcRenderer } from 'electron'
+import { sleep } from '@youngbeen/sleep'
 import eventBus from '@/eventBus'
 import { cats } from '@/models/DictMap'
 import system from '@/models/system'
@@ -380,18 +381,18 @@ export default {
       }
       this.isShow = true
       system.isPanelActive = true
-      setTimeout(() => {
+      sleep(100).then(() => {
         this.animated = true
         document.querySelector('#task-input').focus()
-      }, 100)
+      })
     },
     close () {
       this.animated = false
-      setTimeout(() => {
+      sleep(200).then(() => {
         this.isShow = false
         this.mode = ''
         system.isPanelActive = false
-      }, 200)
+      })
     }
   }
 }
@@ -510,7 +511,7 @@ export default {
           border-radius: 3px;
           text-align: center;
           font-size: 12px;
-          transition: all 0.2s;
+          transition: all $transition-time;
           cursor: pointer;
           user-select: none;
           &:hover {
@@ -530,7 +531,7 @@ export default {
             border: 1px solid $color-active;
             // border-radius: 3px;
             text-align: center;
-            transition: all 0.2s;
+            transition: all $transition-time;
             cursor: pointer;
             user-select: none;
             &:first-of-type {

@@ -68,6 +68,7 @@
 </template>
 
 <script>
+import { sleep } from '@youngbeen/sleep'
 import eventBus from '@/eventBus'
 import { cats } from '@/models/DictMap'
 import system from '@/models/system'
@@ -251,9 +252,9 @@ export default {
       this.searchResults = []
       this.isShow = true
       system.isPanelActive = true
-      setTimeout(() => {
+      sleep(100).then(() => {
         document.querySelector('#search-input').focus()
-      }, 100)
+      })
     },
     close () {
       this.isShow = false

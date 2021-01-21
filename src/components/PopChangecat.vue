@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import { sleep } from '@youngbeen/sleep'
 import eventBus from '@/eventBus'
 
 export default {
@@ -67,9 +68,9 @@ export default {
     show () {
       this.isAnimationDone = false
       this.isShow = true
-      setTimeout(() => {
+      sleep(10).then(() => {
         this.isAnimationDone = true
-      }, 10)
+      })
     },
     close (isCancel = false) {
       this.isShow = false

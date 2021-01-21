@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import { sleep } from '@youngbeen/sleep'
 import { dateUtil } from '@youngbeen/angle-util'
 import eventBus from '@/eventBus'
 import system from '@/models/system'
@@ -184,16 +185,16 @@ export default {
     show () {
       this.isShow = true
       system.isPanelActive = true
-      setTimeout(() => {
+      sleep(100).then(() => {
         this.animated = true
-      }, 100)
+      })
     },
     close () {
       this.animated = false
-      setTimeout(() => {
+      sleep(200).then(() => {
         this.isShow = false
         system.isPanelActive = false
-      }, 200)
+      })
     }
   }
 }

@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import { sleep } from '@youngbeen/sleep'
 import eventBus from '@/eventBus'
 
 export default {
@@ -184,15 +185,15 @@ export default {
       this.left = params.position.left || 0
       this.top = params.position.top || 0
       this.isShow = true
-      setTimeout(() => {
+      sleep(10).then(() => {
         this.animated = true
-      }, 10)
+      })
     },
     hide () {
       this.animated = false
-      setTimeout(() => {
+      sleep(100).then(() => {
         this.isShow = false
-      }, 100)
+      })
     },
     handleSelect (item) {
       eventBus.$emit(this.callback, {

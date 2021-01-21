@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import { sleep } from '@youngbeen/sleep'
+
 export default {
   props: {
     data: {
@@ -44,9 +46,9 @@ export default {
             this.tc = setTimeout(() => {
               this.animated = true
               this.displayedData = newVal
-              setTimeout(() => {
+              sleep(10).then(() => {
                 this.noteAnimated = true
-              }, 10)
+              })
             }, 400)
           } else if (oldVal && oldVal.length && (!newVal || !newVal.length)) {
             // 折叠关闭
@@ -63,9 +65,9 @@ export default {
             this.displayedData = []
             this.tc = setTimeout(() => {
               this.displayedData = newVal
-              setTimeout(() => {
+              sleep(10).then(() => {
                 this.noteAnimated = true
-              }, 10)
+              })
             }, 400)
           }
         }
