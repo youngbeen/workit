@@ -34,6 +34,23 @@ export default {
       return null
     }
   },
+  saveSnapshot (data) {
+    if (data) {
+      window.sessionStorage.setItem('taskSnapshot', JSON.stringify(data))
+      return true
+    } else {
+      return false
+    }
+  },
+  readSnapshot () {
+    let data = window.sessionStorage.getItem('taskSnapshot') || ''
+    if (data) {
+      data = JSON.parse(data)
+      return data
+    } else {
+      return null
+    }
+  },
   saveTag (newTags) {
     if (newTags && newTags.length) {
       // 最多存储10个标签

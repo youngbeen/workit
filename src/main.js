@@ -14,6 +14,7 @@ import {
   faFilter,
   faEllipsisH,
   faCheck,
+  faCheckDouble,
   faPaperPlane,
   faPlus,
   faSearch,
@@ -53,6 +54,7 @@ library.add(faEraser)
 library.add(faFilter)
 library.add(faEllipsisH)
 library.add(faCheck)
+library.add(faCheckDouble)
 library.add(faPaperPlane)
 library.add(faPlus)
 library.add(faSearch)

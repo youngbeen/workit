@@ -9,7 +9,7 @@
 
       <!-- list -->
       <div class="box-list">
-        <!-- <button @click="autoClearHistory()">TODO Test</button> -->
+        <!-- <button @click="autoClearHistory()">Test</button> -->
         <div class="box-item" :class="[item.index === focusIndex && 'focused', 'animated']"
           :style="{ transitionDelay: index / 20 + 's' }"
           :draggable="system.tab !== 'focus'"
@@ -579,24 +579,6 @@ export default {
       dataCtrl.save(this.list)
       dataCtrl.saveTag(labelArray)
     },
-    abortOperation () {
-      if (system.lastOperation) {
-        const op = system.lastOperation
-        if (op.operation === 'finish') {
-          // 撤销完结
-          const item = this.list.splice(op.targetIndex, 1)[0]
-          item.cat = op.sourceCat
-          item.status = 0
-          item.doneTime = null
-          this.list.splice(op.sourceIndex, 0, item)
-        } else if (op.operation === 'delete') {
-          // 撤销删除
-          this.list.splice(op.sourceIndex, 0, op.dataValue)
-        }
-        system.lastOperation = null
-        dataCtrl.save(this.list)
-      }
-    },
     copyAllContent (withTags = false) {
       let contents = []
       if (withTags) {
@@ -643,6 +625,7 @@ export default {
       }
     },
     handleFinish (index) {
+      dataCtrl.saveSnapshot(this.list)
       const now = (new Date()).getTime()
       const task = this.list[index]
       if (task.parentId) {
@@ -681,20 +664,15 @@ export default {
       }
       // console.table(this.list)
       dataCtrl.save(this.list)
-      // TODO 完善撤回？
-      // system.lastOperation = {
-      //   operation: 'finish',
-      //   sourceCat: cat,
-      //   sourceIndex: index,
-      //   targetCat: 'history',
-      //   targetIndex: this.list.length - 1,
-      //   dataValue: ''
-      // }
       const finishNotify = new Notification('Congratulations!', {
-        body: 'You just finished a task'
+        body: 'You just finished a task, click to cancel...'
       })
       finishNotify.onclick = () => {
-        // this.abortOperation()
+        const snapshot = dataCtrl.readSnapshot()
+        if (snapshot) {
+          this.list = snapshot
+          dataCtrl.save(this.list)
+        }
       }
     },
     // handleLink (e, cat, task, showIndex) {
@@ -916,7 +894,7 @@ export default {
           this.handleShowDetail(data.tag.cat, data.tag.showIndex)
           break
         case 'delete':
-          this.handleShowDelete(data.tag.cat, data.tag.index)
+          this.handleDelete(data.tag.cat, data.tag.index)
           break
       }
     },
@@ -950,22 +928,34 @@ export default {
         index
       })
     },
-    handleShowDelete (cat, index) {
-      const removedItem = this.list.splice(index, 1)[0]
-      dataCtrl.save(this.list)
-      system.lastOperation = {
-        operation: 'delete',
-        sourceCat: cat,
-        sourceIndex: index,
-        targetCat: '',
-        targetIndex: -1,
-        dataValue: removedItem
+    handleDelete (cat, index) {
+      dataCtrl.saveSnapshot(this.list)
+      const task = this.list[index]
+      if (task.parentId) {
+        // 删除子任务
+        this.list.splice(index, 1)
+      } else {
+        // 删除主任务
+        const subTasks = this.list.filter(t => t.parentId === task.createTime && t.cat === task.cat)
+        if (subTasks.length) {
+          // 删除所有关联子任务
+          for (let i = subTasks.length - 1; i >= 0; i--) {
+            const subTask = subTasks[i]
+            this.list.splice(subTask.index, 1)
+          }
+        }
+        this.list.splice(index, 1)
       }
+      dataCtrl.save(this.list)
       const deleteNotify = new Notification('Delete successfully', {
         body: 'Click to cancel'
       })
       deleteNotify.onclick = () => {
-        this.abortOperation()
+        const snapshot = dataCtrl.readSnapshot()
+        if (snapshot) {
+          this.list = snapshot
+          dataCtrl.save(this.list)
+        }
       }
     },
     handlePopClose () {
@@ -1034,7 +1024,6 @@ export default {
       this.list = []
       dataCtrl.save(this.list)
       dataCtrl.clearTags()
-      system.lastOperation = null
       systemCtrl.resetFilters()
     },
     autoClearHistory () {

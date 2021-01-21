@@ -25,20 +25,24 @@
         <font-awesome-icon :icon="['fas', 'chevron-down']" />
       </div>
       <div class="box-current">
-        <div class="box-parent-info" v-show="content.parentId">
-          Sub task under <span class="sub-title">{{ content.cat }}</span> / <span class="title">{{ currentParentName }}</span>
+        <corner-icon :icon="'check-double'"
+          style="transition: all 0.3s;"
+          :style="{ opacity: task.status }"></corner-icon>
+
+        <div class="box-parent-info" v-show="task.parentId">
+          Sub task under <span class="sub-title">{{ task.cat }}</span> / <span class="title">{{ currentParentName }}</span>
         </div>
         <div class="box-content">
-          {{ content.content }}
+          {{ task.content }}
         </div>
-        <div class="box-tags" v-if="content.labels.length">
-          <span class="common-tag" v-for="(item, index) in content.labels" :key="index">{{ item }}</span>
+        <div class="box-tags" v-if="task.labels.length">
+          <span class="common-tag" v-for="(item, index) in task.labels" :key="index">{{ item }}</span>
         </div>
         <div class="comment">
-          <div v-show="content.doneTimeText">Finished: {{ content.doneTimeText }}</div>
-          <div v-show="!content.doneTimeText && content.dueTimeText">Due: {{ content.dueTimeText }}</div>
-          <div>Updated: {{ content.updateTimeText }}</div>
-          <div>Created: {{ content.createTimeText }}</div>
+          <div v-show="task.doneTimeText">Finished: {{ task.doneTimeText }}</div>
+          <div v-show="!task.doneTimeText && task.dueTimeText">Due: {{ task.dueTimeText }}</div>
+          <div>Updated: {{ task.updateTimeText }}</div>
+          <div>Created: {{ task.createTimeText }}</div>
         </div>
       </div>
     </div>
@@ -50,9 +54,14 @@ import { sleep } from '@youngbeen/sleep'
 import { dateUtil } from '@youngbeen/angle-util'
 import eventBus from '@/eventBus'
 import system from '@/models/system'
+import CornerIcon from '@/components/CornerIcon'
 
 export default {
   name: 'detailPanel',
+  components: {
+    CornerIcon
+  },
+
   data () {
     return {
       isShow: false,
@@ -62,7 +71,7 @@ export default {
     }
   },
   computed: {
-    content () {
+    task () {
       if (this.list.length && this.currentIndex > -1) {
         return this.list[this.currentIndex]
       } else {
@@ -99,8 +108,8 @@ export default {
       }
     },
     currentParentName () {
-      if (this.content.content && this.content.parentId) {
-        const parent = this.list.find(item => item.createTime === this.content.parentId)
+      if (this.task.content && this.task.parentId) {
+        const parent = this.list.find(item => item.createTime === this.task.parentId)
         return parent?.content || ''
       } else {
         return ''
@@ -271,6 +280,7 @@ export default {
       padding: 16px 0;
       background: #fcfcfc;
       box-shadow: 0px 0px 8px 1px rgba(12, 12, 12, .3);
+      overflow: hidden;
       .box-parent-info {
         padding: 0 24px;
         color: $sub-font-color;
