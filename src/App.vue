@@ -21,15 +21,14 @@
           <cat-indicator v-show="system.tab === 'focus'" :name="item.cat"></cat-indicator>
           <!-- <div class="group-indicator" v-show="system.tab !== 'history' && item.group" :style="{ 'background': groupColors.get(item.group) }">&nbsp;</div> -->
           <div class="box-radio"
-            v-show="system.tab !== 'history' && system.tab !== 'note' && item.status === 0"
+            v-show="system.tab !== 'note' && item.status === 0"
             @click="finish(item.index)"></div>
           <div class="content"
             :class="[item.parentId && 'sub',
               item.status === 1 && 'done',
-              system.tab === 'history' && 'done',
               system.tab === 'history' && isDoneInToday(item.doneTime) && 'highlight']">
             <font-awesome-icon class="sub-icon" v-if="item.parentId" :icon="['fas', 'atom']" /> {{ item.content }}
-            <due-tag v-if="item.dueTime && system.tab !== 'history'" :time="item.dueTime" :now="nowTime"></due-tag>
+            <due-tag v-if="item.status === 0 && item.dueTime" :time="item.dueTime" :now="nowTime"></due-tag>
           </div>
           <div class="labels"
             :class="[item.parentId && 'sub']"
@@ -44,12 +43,12 @@
               <font-awesome-icon :icon="['fas', 'unlink']" title="Unlink" />
             </div> -->
             <div class="icon-btn btn"
-              v-show="system.tab !== 'history' && !item.parentId"
+              v-show="item.status === 0 && !item.parentId"
               @click="handleAddSubTask(item)">
               <font-awesome-icon :icon="['fas', 'plus']" title="Add Sub Task" />
             </div>
             <div class="icon-btn btn"
-              v-show="system.tab !== 'history' && item.parentId && item.status === 0"
+              v-show="item.status === 0 && item.parentId"
               @click="becomeMainTask(item)">
               <font-awesome-icon :icon="['fas', 'eject']" title="Turn into task" />
             </div>
