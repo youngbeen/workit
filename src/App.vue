@@ -1391,8 +1391,10 @@ select, input {
           // font-weight: bold;
         }
         .sub-icon {
+          position: relative;
+          top: -2px;
           color: $sub-font-color;
-          font-size: 10px;
+          font-size: 8px;
         }
       }
       .labels {
