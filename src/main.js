@@ -38,7 +38,9 @@ import {
   faBullseye,
   faEject,
   faAtom,
-  faEdit
+  faEdit,
+  faCookie,
+  faCookieBite
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -79,6 +81,8 @@ library.add(faBullseye)
 library.add(faEject)
 library.add(faAtom)
 library.add(faEdit)
+library.add(faCookie)
+library.add(faCookieBite)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 

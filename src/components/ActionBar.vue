@@ -4,6 +4,10 @@
       <font-awesome-icon :icon="['fas', 'filter']" />&nbsp;
       <span v-show="isFilterActive">{{ filteredCount }}/{{ totalCount }}</span>
     </div>
+    <div class="icon-btn lg" title="Toggle Sub Task Detail" @click="system.showSubTaskDetail = !system.showSubTaskDetail">
+      <font-awesome-icon :icon="['fas', 'cookie']" v-show="system.showSubTaskDetail" />
+      <font-awesome-icon :icon="['fas', 'cookie-bite']" v-show="!system.showSubTaskDetail" />
+    </div>
     <!-- <div class="icon-btn lg" title="Sort" v-show="system.tab !== 'history'" @click="sort()">
       <font-awesome-icon :icon="['fas', 'sort-amount-down']" />
     </div> -->

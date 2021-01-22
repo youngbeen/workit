@@ -33,10 +33,10 @@
           </div>
           <div class="labels"
             :class="[item.parentId && 'sub']"
-            v-if="item.labels.length">
+            v-show="item.labels.length && (!item.parentId || system.showSubTaskDetail)">
             <span class="common-tag sm label" v-for="(label, i) in item.labels" :key="i">{{ label }}</span>
           </div>
-          <div class="box-btns">
+          <div class="box-btns" v-show="!item.parentId || system.showSubTaskDetail">
             <!-- <div class="icon-btn btn" v-show="system.tab !== 'history' && !item.group && currentList.length > 1" @click="handleLink($event, system.tab, item, index)">
               <font-awesome-icon :icon="['fas', 'link']" title="Link" />
             </div>
@@ -1392,7 +1392,7 @@ select, input {
         }
         .sub-icon {
           color: $sub-font-color;
-          font-size: 12px;
+          font-size: 10px;
         }
       }
       .labels {

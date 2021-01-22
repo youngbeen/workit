@@ -21,23 +21,23 @@ export default {
         },
         {
           type: 'info',
-          content: `You can use ${formatKeystroke('Command/Ctrl')} + ${formatKeystroke('A')} to add a new task`
+          content: `Use ${formatKeystroke('Command/Ctrl')} + ${formatKeystroke('A')} to add a new task`
         },
         {
           type: 'info',
-          content: `You can use ${formatKeystroke('Command/Ctrl')} + ${formatKeystroke('Shift')} + ${formatKeystroke('A')} to add a new task with extra config`
+          content: `Use ${formatKeystroke('Command/Ctrl')} + ${formatKeystroke('Shift')} + ${formatKeystroke('A')} to add a new task with extra config`
         },
         {
           type: 'info',
-          content: `You can use ${formatKeystroke('Command/Ctrl')} + ${formatKeystroke('Up/Down')} to toggle navigations`
+          content: `Use ${formatKeystroke('Command/Ctrl')} + ${formatKeystroke('Up/Down')} to toggle between navigations`
         },
         {
           type: 'info',
-          content: 'You can drag tasks to change their positions'
+          content: 'Drag and drop a task onto another one can change their sequence or relations'
         },
         {
           type: 'info',
-          content: 'You can drag a task and drop it into left navigation to change category'
+          content: 'Drag a task onto left navigation and drop task into that category'
         },
         {
           type: 'info',
