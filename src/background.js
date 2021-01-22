@@ -32,6 +32,21 @@ ipcMain.on('asynchronous-message', (event, arg) => {
         fs.writeFileSync(data.filePath, arg.content, 'utf8')
       }
     })
+  } else if (arg && arg.type === 'sys_confirm_drop_maintask') {
+    dialog.showMessageBox({
+      type: 'question',
+      buttons: ['Change Sequence', 'Become Sub Task'],
+      defaultId: 0,
+      message: 'What are you going to do?'
+    }).then((data) => {
+      switch (data.response) {
+        case 0: // 调整顺序
+          win.webContents.send('sys_changesequence', arg.content)
+          break
+        case 1: // 变为子任务
+          win.webContents.send('sys_becomesubtask', arg.content)
+      }
+    })
   }
   // else if (arg && arg.type === 'unlink_all_tasks') {
   //   // 重置所有当前项的分组

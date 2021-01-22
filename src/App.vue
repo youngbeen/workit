@@ -22,7 +22,7 @@
           <!-- <div class="group-indicator" v-show="system.tab !== 'history' && item.group" :style="{ 'background': groupColors.get(item.group) }">&nbsp;</div> -->
           <div class="box-radio"
             v-show="system.tab !== 'history' && system.tab !== 'note' && item.status === 0"
-            @click="handleFinish(item.index)"></div>
+            @click="finish(item.index)"></div>
           <div class="content"
             :class="[item.parentId && 'sub',
               item.status === 1 && 'done',
@@ -50,12 +50,12 @@
             </div>
             <div class="icon-btn btn"
               v-show="system.tab !== 'history' && item.parentId && item.status === 0"
-              @click="handleTurnTask(item)">
+              @click="becomeMainTask(item)">
               <font-awesome-icon :icon="['fas', 'eject']" title="Turn into task" />
             </div>
             <div class="icon-btn btn lg"
               v-show="system.tab === 'focus'"
-              @click="handleGoto(item)">
+              @click="goto(item)">
               <font-awesome-icon :icon="['fas', 'chevron-right']" :title="'Go to ' + item.cat" />
             </div>
             <div class="icon-btn btn"
@@ -440,6 +440,12 @@ export default {
     eventBus.$on('clearHistory', () => {
       this.clearHistory()
     })
+    ipcRenderer.on('sys_changesequence', (e, data) => {
+      this.changeSequence(data)
+    })
+    ipcRenderer.on('sys_becomesubtask', (e, data) => {
+      this.becomeSubTask(data)
+    })
     ipcRenderer.on('sys_copycontent', () => {
       this.copyAllContent()
     })
@@ -624,7 +630,7 @@ export default {
         dataCtrl.save(this.list)
       }
     },
-    handleFinish (index) {
+    finish (index) {
       dataCtrl.saveSnapshot(this.list)
       const now = (new Date()).getTime()
       const task = this.list[index]
@@ -782,14 +788,30 @@ export default {
         tags: task.labels.join(',')
       })
     },
-    handleTurnTask (task) {
+    changeSequence ({ sourceIndex = -1, targetIndex = -1 }) {
+      if (sourceIndex > -1 && targetIndex > -1 && sourceIndex !== targetIndex) {
+        const item = this.list.splice(sourceIndex, 1)[0]
+        this.list.splice(targetIndex, 0, item)
+        dataCtrl.save(this.list)
+      }
+    },
+    becomeSubTask ({ sourceIndex = -1, targetIndex = -1 }) {
+      if (sourceIndex > -1 && targetIndex > -1 && sourceIndex !== targetIndex) {
+        const targetTask = this.list[targetIndex]
+        const item = this.list.splice(sourceIndex, 1)[0]
+        item.parentId = targetTask.createTime
+        this.list.splice(targetTask.index + 1, 0, item)
+        dataCtrl.save(this.list)
+      }
+    },
+    becomeMainTask (task) {
       const item = this.list.splice(task.index, 1)[0]
       const targetIndex = this.list.findIndex(t => t.createTime === task.parentId)
       item.parentId = null
       this.list.splice(targetIndex, 0, item)
       dataCtrl.save(this.list)
     },
-    handleGoto (task) {
+    goto (task) {
       if (system.tab !== task.cat) {
         systemCtrl.changeTab(task.cat)
       }
@@ -882,10 +904,10 @@ export default {
       this.focusIndex = -1
       switch (data.value) {
         case 'btt':
-          this.handleBringToTop(data.tag.cat, data.tag.index)
+          this.bringToTop(data.tag.cat, data.tag.index)
           break
         case 'stb':
-          this.handleSetToBottom(data.tag.cat, data.tag.index)
+          this.setToBottom(data.tag.cat, data.tag.index)
           break
         // case 'edit':
         //   this.handleShowEdit(data.tag.cat, data.tag.index)
@@ -894,16 +916,16 @@ export default {
           this.handleShowDetail(data.tag.cat, data.tag.showIndex)
           break
         case 'delete':
-          this.handleDelete(data.tag.cat, data.tag.index)
+          this.deleteTask(data.tag.cat, data.tag.index)
           break
       }
     },
-    handleBringToTop (cat, index) {
+    bringToTop (cat, index) {
       const item = this.list.splice(index, 1)[0]
       this.list = [item, ...this.list]
       dataCtrl.save(this.list)
     },
-    handleSetToBottom (cat, index) {
+    setToBottom (cat, index) {
       const item = this.list.splice(index, 1)[0]
       this.list = [...this.list, item]
       dataCtrl.save(this.list)
@@ -928,7 +950,7 @@ export default {
         index
       })
     },
-    handleDelete (cat, index) {
+    deleteTask (cat, index) {
       dataCtrl.saveSnapshot(this.list)
       const task = this.list[index]
       if (task.parentId) {
@@ -980,7 +1002,6 @@ export default {
     handleDrop (e, index) {
       // console.log('drop', index)
       e.dataTransfer.dropEffect = 'move'
-      // 交换2个位置数据
       // const sourceCat = e.dataTransfer.getData('sourceCat')
       const sourceIndex = parseInt(e.dataTransfer.getData('sourceIndex'))
       if (sourceIndex === index) {
@@ -990,14 +1011,27 @@ export default {
       const sourceTask = this.list[sourceIndex]
       const targetTask = this.list[index]
       if (!sourceTask.parentId && !targetTask.parentId) {
-        // 主任务drop主任务，交换位置
-        const item = this.list.splice(sourceIndex, 1)[0]
-        this.list.splice(index, 0, item)
+        // 主任务drop主任务
+        if (!this.list.some(t => t.parentId === sourceTask.createTime)) {
+          // 无子任务的主任务drop主任务，需要确认是交换位置还是变为其子任务
+          ipcRenderer.send('asynchronous-message', {
+            type: 'sys_confirm_drop_maintask',
+            content: {
+              sourceIndex,
+              targetIndex: index
+            }
+          })
+          return
+        } else {
+          // 正常交换位置
+          const item = this.list.splice(sourceIndex, 1)[0]
+          this.list.splice(index, 0, item)
+        }
       } else if (targetTask.parentId) {
-        // drop到子任务，则变更为该子任务兄弟任务，放于该子任务后
+        // drop到子任务，则变更为该子任务兄弟任务，放于该子任务前
         const item = this.list.splice(sourceIndex, 1)[0]
         item.parentId = targetTask.parentId
-        this.list.splice(targetTask.index + 1, 0, item)
+        this.list.splice(targetTask.index, 0, item)
       } else {
         // 子任务drop主任务，变更为该主任务的子任务
         const item = this.list.splice(sourceIndex, 1)[0]
