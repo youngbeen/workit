@@ -239,13 +239,7 @@ export default {
             return [...new Set(labelsTogether)].length < labelsTogether.length
           })
         }
-        if (this.system.tab === 'history') {
-          // 历史特殊处理
-          rawList.reverse()
-          if (this.seePartHistory) {
-            rawList = rawList.slice(0, this.historyLimit)
-          }
-        }
+        this.system.tab === 'history' && rawList.reverse()
         if (rawList.some(item => item.parentId)) {
           // 需要进行子任务调整
           const tasks = []
@@ -264,6 +258,10 @@ export default {
             rawList = [...rawList, ...relatedSubTasks]
           })
         }
+        if (this.system.tab === 'history' && this.seePartHistory) {
+          // 历史特殊处理
+          rawList = rawList.slice(0, this.historyLimit)
+        }
         return rawList
       } else {
         return []
@@ -271,13 +269,15 @@ export default {
     },
     catCounts () {
       return this.list.reduce((soFar, item) => {
-        if (item.cat) {
-          soFar[item.cat]++
-        } else {
-          soFar.inbox++
-        }
-        if (item.cat !== 'history' && item.status === 0 && item.dueTime && this.nowDate === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime)) {
-          soFar.focus++
+        if (item.status === 0 || item.cat === 'history') {
+          if (item.cat) {
+            soFar[item.cat]++
+          } else {
+            soFar.inbox++
+          }
+          if (item.cat !== 'history' && item.status === 0 && item.dueTime && this.nowDate === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime)) {
+            soFar.focus++
+          }
         }
         return soFar
       }, {
@@ -375,6 +375,8 @@ export default {
       savedConfig.historyClearDaysFilter && (config.historyClearDaysFilter = savedConfig.historyClearDaysFilter)
       savedConfig.historyWarningCount && (config.historyWarningCount = savedConfig.historyWarningCount)
     }
+    // 恢复之前的偏好
+    dataCtrl.resumePrefers()
     // 读取之前缓存的旧数据
     const saveData = dataCtrl.read()
     if (saveData) {

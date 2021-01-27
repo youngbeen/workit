@@ -2,7 +2,7 @@
   "name": "workit",
   "description": "Workit is an app to deal with your daily work todo tasks",
   "author": "youngbeen",
-  "version": "1.16.2",
+  "version": "1.16.3",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

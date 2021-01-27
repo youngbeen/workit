@@ -1,3 +1,5 @@
+import system from '@/models/system'
+
 export default {
   save (data) {
     if (data) {
@@ -105,6 +107,20 @@ export default {
     const data = window.localStorage.getItem('workitConfig')
     if (data) {
       return JSON.parse(data)
+    } else {
+      return null
+    }
+  },
+  savePrefers () {
+    window.localStorage.setItem('workitPrefers', JSON.stringify({
+      showSubTaskDetail: system.showSubTaskDetail
+    }))
+  },
+  resumePrefers () {
+    let data = window.localStorage.getItem('workitPrefers')
+    if (data) {
+      data = JSON.parse(data)
+      data.showSubTaskDetail !== undefined && (system.showSubTaskDetail = data.showSubTaskDetail)
     } else {
       return null
     }

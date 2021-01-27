@@ -4,7 +4,7 @@
       <font-awesome-icon :icon="['fas', 'filter']" />&nbsp;
       <span v-show="isFilterActive">{{ filteredCount }}/{{ totalCount }}</span>
     </div>
-    <div class="icon-btn lg" title="Toggle Sub Task Detail" @click="system.showSubTaskDetail = !system.showSubTaskDetail">
+    <div class="icon-btn lg" title="Toggle Sub Task Detail" @click="toggleSubTaskDetail()">
       <font-awesome-icon :icon="['fas', 'cookie']" v-show="system.showSubTaskDetail" />
       <font-awesome-icon :icon="['fas', 'cookie-bite']" v-show="!system.showSubTaskDetail" />
     </div>
@@ -34,6 +34,7 @@
 // import { ipcRenderer } from 'electron'
 import eventBus from '@/eventBus'
 import system from '@/models/system'
+import dataCtrl from '@/ctrls/dataCtrl'
 
 export default {
   name: 'actionBar',
@@ -67,6 +68,10 @@ export default {
     //     type: 'unlink_all_tasks'
     //   })
     // },
+    toggleSubTaskDetail () {
+      system.showSubTaskDetail = !system.showSubTaskDetail
+      dataCtrl.savePrefers()
+    },
     add () {
       eventBus.$emit('showAddItem')
     },
