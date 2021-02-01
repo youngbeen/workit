@@ -1567,7 +1567,7 @@ select, input {
         background: $scrollbar-thumb-color-dark;
       }
       .box-item {
-        border-bottom: 1px solid $border-color-dark;
+        border-bottom: 1px solid $dark-1;
         background: $primary-bgcolor-dark;
         &.focused {
           background: rgba($dark-1, .9)

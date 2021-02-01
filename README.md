@@ -30,9 +30,11 @@ npm run e:build
 * Dark mode support
 
 
-![preview 1](./docs/assets/1.png)
+![preview compare](./docs/assets/compare.png)
+
+**see compare detail in [demo](https://youngbeen.github.io/index/index.html#/workitcompare)*
+
 ![preview 2](./docs/assets/2.png)
-![preview 3](./docs/assets/3.png)
 
 ## LS Data Storage
 
