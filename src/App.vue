@@ -180,7 +180,7 @@ export default {
   computed: {
     currentCatLabels () {
       if (this.system.tab === 'focus') {
-        const list = this.list.filter(item => item.cat !== 'history' && item.status === 0 && item.dueTime && (this.nowDate === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime) || item.dueTime < this.nowTime))
+        const list = this.list.filter(item => item.cat !== 'history' && item.status === 0 && item.dueTime && item.dueTime < this.nowTime + 1000 * 60 * 60 * 24)
         const labels = list.reduce((soFar, item) => {
           soFar = [...soFar, ...item.labels]
           return soFar
@@ -206,7 +206,7 @@ export default {
         })
         if (this.system.tab === 'focus') {
           // 聚焦tab
-          rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.cat !== 'history' && item.status === 0 && item.dueTime && (this.nowDate === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime) || item.dueTime < this.nowTime))))
+          rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.cat !== 'history' && item.status === 0 && item.dueTime && item.dueTime < this.nowTime + 1000 * 60 * 60 * 24)))
         } else {
           // 常规tab
           rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.cat === this.system.tab)))
@@ -275,7 +275,7 @@ export default {
           } else {
             soFar.inbox++
           }
-          if (item.cat !== 'history' && item.status === 0 && item.dueTime && (this.nowDate === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime) || item.dueTime < this.nowTime)) {
+          if (item.cat !== 'history' && item.status === 0 && item.dueTime && item.dueTime < this.nowTime + 1000 * 60 * 60 * 24) {
             soFar.focus++
           }
         }
@@ -303,7 +303,7 @@ export default {
         } else {
           soFar.inbox++
         }
-        if (item.cat !== 'history' && item.status === 0 && item.dueTime && (this.nowDate === dateUtil.formatDateTime('YYYY-MM-DD', item.dueTime) || item.dueTime < this.nowTime)) {
+        if (item.cat !== 'history' && item.status === 0 && item.dueTime && item.dueTime < this.nowTime + 1000 * 60 * 60 * 24) {
           soFar.focus++
         }
         return soFar

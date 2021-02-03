@@ -229,6 +229,11 @@ export default {
         })
       }
     })
+    ipcRenderer.on('sys_cancel', () => {
+      if (system.isPanelActive && this.isShow) {
+        this.close()
+      }
+    })
   },
 
   beforeDestroy () {

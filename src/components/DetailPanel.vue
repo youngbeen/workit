@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import { ipcRenderer } from 'electron'
 import { sleep } from '@youngbeen/sleep'
 import { dateUtil } from '@youngbeen/angle-util'
 import eventBus from '@/eventBus'
@@ -174,6 +175,12 @@ export default {
       })
       this.currentIndex = params.index || 0
       this.show()
+    })
+
+    ipcRenderer.on('sys_cancel', () => {
+      if (system.isPanelActive && this.isShow) {
+        this.close()
+      }
     })
   },
 

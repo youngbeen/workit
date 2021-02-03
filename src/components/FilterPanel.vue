@@ -67,6 +67,7 @@
 </template>
 
 <script>
+import { ipcRenderer } from 'electron'
 import { sleep } from '@youngbeen/sleep'
 import { dateUtil } from '@youngbeen/angle-util'
 import eventBus from '@/eventBus'
@@ -105,6 +106,12 @@ export default {
     eventBus.$on('whenSelectToDateDone', data => {
       const { year, month, day } = data.data
       this.toTime = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
+    })
+
+    ipcRenderer.on('sys_cancel', () => {
+      if (system.isPanelActive && this.isShow) {
+        this.close()
+      }
     })
   },
 

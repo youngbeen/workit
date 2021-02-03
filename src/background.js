@@ -151,7 +151,14 @@ async function createWindow () {
         { role: 'copy' },
         { role: 'paste' },
         { role: 'cut' },
-        { role: 'delete' }
+        { role: 'delete' },
+        {
+          label: 'Cancel',
+          accelerator: 'Esc',
+          click: () => {
+            win.webContents.send('sys_cancel')
+          }
+        }
       ]
     },
     { role: 'windowMenu' },
