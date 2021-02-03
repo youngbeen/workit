@@ -110,12 +110,15 @@ export default {
   font-size: 11px;
   font-weight: 500;
   border: 1px solid $color-active;
+  background: transparent;
   overflow: hidden;
   &.warning {
     border: 1px solid $color-warning;
+    background: $color-warning;
   }
   &.danger {
     border: 1px solid $color-danger;
+    background: $color-danger;
   }
   .label {
     padding: 0 4px;
@@ -130,10 +133,10 @@ export default {
   .time {
     padding: 0 4px;
     // border-radius: 2px;
-    background: $color-warning;
+    // background: $color-warning;
     // color: #fff;
     &.danger {
-      background: $color-danger;
+      // background: $color-danger;
       color: #fff;
     }
   }
