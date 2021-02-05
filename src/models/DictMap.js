@@ -18,7 +18,7 @@ export const cats = [
 export const actions = [
   // { value: 'edit', label: 'Edit' },
   { value: 'detail', label: 'Detail' },
-  { value: 'delete', label: 'Delete' },
   { value: 'btt', label: 'Bring To Top' },
-  { value: 'stb', label: 'Set To Bottom' }
+  { value: 'stb', label: 'Set To Bottom' },
+  { value: 'delete', label: 'Delete' }
 ]

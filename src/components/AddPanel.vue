@@ -62,11 +62,22 @@
             </div>
           </div>
         </div>
-        <div class="row">
+        <div class="row" style="padding-bottom: 0;">
           <div class="icon-image">
             <font-awesome-icon :icon="['fas', 'stopwatch']" />
           </div>
-          <div class="box-input">
+          <div class="box-date-shortcuts">
+            <div class="date-btn" @click="setDueDate('today')">Today</div>
+            <div class="date-btn" @click="setDueDate('tomorrow')">Tomorrow</div>
+            <div class="date-btn" style="margin-right: 12px;" @click="setDueDate('friday')">Friday</div>
+            <div class="date-shortcuts">
+              <div class="cell" :class="[halfDays >= c && 'active']" v-for="(c, index) in 12" :key="index" @mouseover="handleMouseOver(c)" @mouseout="handleMouseOut(c)" @click="handleSetDueDate(c)">{{ c % 2 ? '&nbsp;' : c / 2 }}</div>
+            </div>
+            <div class="date-preview">{{ previewDateText }}</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="box-input" style="margin-left: 38px;">
             <input class="common-input" id="due-date-input" type="text" placeholder="due date" v-model="dueTime" @keypress.enter="save()">
             <div class="box-btns">
               <div class="weekday-tip">{{ currentWeekday }}</div>
@@ -78,15 +89,6 @@
               </div>
             </div>
           </div>
-        </div>
-        <div class="box-date-shortcuts">
-          <div class="date-btn" @click="setDueDate('today')">Today</div>
-          <div class="date-btn" @click="setDueDate('tomorrow')">Tomorrow</div>
-          <div class="date-btn" style="margin-right: 12px;" @click="setDueDate('friday')">Friday</div>
-          <div class="date-shortcuts">
-            <div class="cell" :class="[halfDays >= c && 'active']" v-for="(c, index) in 12" :key="index" @mouseover="handleMouseOver(c)" @mouseout="handleMouseOut(c)" @click="handleSetDueDate(c)">{{ c % 2 ? '&nbsp;' : c / 2 }}</div>
-          </div>
-          <div class="date-preview">{{ previewDateText }}</div>
         </div>
       </div>
     </div>
@@ -506,7 +508,7 @@ export default {
       }
       .box-date-shortcuts {
         display: flex;
-        padding-left: 56px;
+        width: 526px;
         .date-btn {
           margin-right: 6px;
           height: 18px;

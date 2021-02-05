@@ -43,6 +43,11 @@
               <font-awesome-icon :icon="['fas', 'unlink']" title="Unlink" />
             </div> -->
             <div class="icon-btn btn"
+              v-show="system.tab === 'focus'"
+              @click="goto(item)">
+              <font-awesome-icon :icon="['fas', 'chevron-right']" :title="'Go to ' + item.cat" />
+            </div>
+            <div class="icon-btn btn"
               v-show="item.status === 0 && !item.parentId"
               @click="handleAddSubTask(item)">
               <font-awesome-icon :icon="['fas', 'plus']" title="Add Sub Task" />
@@ -50,22 +55,17 @@
             <div class="icon-btn btn"
               v-show="item.status === 0 && item.parentId"
               @click="becomeMainTask(item)">
-              <font-awesome-icon :icon="['fas', 'eject']" title="Turn into task" />
-            </div>
-            <div class="icon-btn btn lg"
-              v-show="system.tab === 'focus'"
-              @click="goto(item)">
-              <font-awesome-icon :icon="['fas', 'chevron-right']" :title="'Go to ' + item.cat" />
-            </div>
-            <div class="icon-btn btn"
-              v-show="!(item.parentId && item.status === 1)"
-              @click="handleChangeCat($event, item)">
-              <font-awesome-icon :icon="['fas', 'paper-plane']" title="Change Category" />
+              <font-awesome-icon :icon="['fas', 'eject']" title="Become Main Task" />
             </div>
             <div class="icon-btn btn"
               v-show="!(item.parentId && item.status === 1)"
               @click="handleShowEdit(item.cat, item.index)">
               <font-awesome-icon :icon="['fas', 'edit']" title="Edit" />
+            </div>
+            <div class="icon-btn btn"
+              v-show="!(item.parentId && item.status === 1)"
+              @click="handleChangeCat($event, item)">
+              <font-awesome-icon :icon="['fas', 'paper-plane']" title="Change Category" />
             </div>
             <div class="icon-btn btn" @click="handleShowMore($event, item, index)">
               <font-awesome-icon :icon="['fas', 'ellipsis-h']" title="More" />
@@ -886,7 +886,7 @@ export default {
       this.focusIndex = task.index
       let options = [...this.actionOptions]
       if (system.tab === 'focus') {
-        options = options.slice(0, options.length - 2)
+        options = options.filter((o, index) => index !== 1 && index !== 2)
       }
       eventBus.$emit('showPopActions', {
         options,

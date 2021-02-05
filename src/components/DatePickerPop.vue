@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import { ipcRenderer } from 'electron'
 import { sleep } from '@youngbeen/sleep'
 import eventBus from '@/eventBus'
 
@@ -172,6 +173,12 @@ export default {
         this.previewYear = this.year
         this.previewMonth = this.month
         this.show(params)
+      }
+    })
+
+    ipcRenderer.on('sys_cancel', () => {
+      if (this.isShow) {
+        this.hide()
       }
     })
   },
