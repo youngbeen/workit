@@ -31,7 +31,16 @@
           <div class="cell" v-for="item in weekLegends" :key="item">{{ item }}</div>
         </div>
         <div class="box-month-data">
-          <div class="cell" :class="{ 'faded': d.year !== previewYear || d.month !== previewMonth, 'active': d.year === year && d.month === month && d.day === day, 'today': d.year === today.year && d.month === today.month && d.day === today.day }" v-for="(d, index) in previewDays" :key="index" @click="handleSelect(d)">{{ d.day }}</div>
+          <div class="cell"
+            :class="{
+              'faded': d.year !== previewYear || d.month !== previewMonth,
+              'active': d.year === year && d.month === month && d.day === day,
+              'today': d.year === today.year && d.month === today.month && d.day === today.day,
+              'holiday': d.dayType === 'holiday'
+            }"
+            v-for="(d, index) in previewDays"
+            :key="index"
+            @click="handleSelect(d)">{{ d.day }}</div>
         </div>
       </div>
     </div>
@@ -42,6 +51,7 @@
 import { ipcRenderer } from 'electron'
 import { sleep } from '@youngbeen/sleep'
 import eventBus from '@/eventBus'
+import { getDayType } from '@/utils/holiday/HolidayUtil'
 
 export default {
   data () {
@@ -111,7 +121,8 @@ export default {
           days.push({
             year: day.getFullYear(),
             month: day.getMonth() + 1,
-            day: day.getDate()
+            day: day.getDate(),
+            dayType: getDayType(day)
           })
         }
         // 正常放置数据
@@ -119,7 +130,8 @@ export default {
           days.push({
             year: this.previewYear,
             month: this.previewMonth,
-            day: i
+            day: i,
+            dayType: getDayType(`${this.previewYear}-${this.previewMonth}-${i.toString().padStart(2, '0')}`)
           })
         }
         // 补充下个月的数据
@@ -128,7 +140,8 @@ export default {
           days.push({
             year: day.getFullYear(),
             month: day.getMonth() + 1,
-            day: day.getDate()
+            day: day.getDate(),
+            dayType: getDayType(day)
           })
         }
       }
@@ -300,7 +313,7 @@ export default {
         // display: flex;
         width: 168px;
         border-radius: $border-radius;
-        background: $itoolbar-bgcolor;
+        // background: $itoolbar-bgcolor;
         color: $itoolbar-color;
         .cell {
           display: inline-block;
@@ -316,6 +329,9 @@ export default {
           user-select: none;
           &:hover {
             color: $color-active;
+          }
+          &.holiday {
+            background: rgba(#ddd, .4);
           }
           &.today {
             color: $color-active;
@@ -354,10 +370,13 @@ export default {
           color: $secondary-font-color-dark;
         }
         .box-month-data {
-          background: $itoolbar-bgcolor-dark;
+          // background: $itoolbar-bgcolor-dark;
           // background: $dark-3;
           color: $secondary-font-color-dark;
           .cell {
+            &.holiday {
+              background: rgba($dark-3, .6);
+            }
             &.today {
               color: $color-active-dark;
             }

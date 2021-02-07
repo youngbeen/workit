@@ -5,11 +5,11 @@
     <span class="time" :class="[dueDanger && 'danger']" v-if="dueWarning || dueDanger">{{ showTime.days ? showTime.days + 'd' : '' }}{{ showTime.hours }}h</span>
     <span class="day" v-if="dueNormal">
       <span class="day-block"
-        :class="[todayType === 'weekend' && 'weekend']"
+        :class="[todayType === 'holiday' && 'holiday']"
         v-if="withHalfDay"
         :style="{'width': asisPercent * 10 + 'px'}">&nbsp;</span>
       <span class="day-block"
-        :class="[dayTypes[index] === 'weekend' && 'weekend']"
+        :class="[dayTypes[index] === 'holiday' && 'holiday']"
         v-for="(d, index) in dayCount" :key="d">&nbsp;</span>
     </span>
   </span>
@@ -17,6 +17,7 @@
 
 <script>
 import { dateUtil } from '@youngbeen/angle-util'
+import { getDayType } from '@/utils/holiday/HolidayUtil'
 
 export default {
   props: {
@@ -85,8 +86,7 @@ export default {
       return leftHour / 8
     },
     todayType () {
-      const todayWeekday = (new Date(this.nowDate)).getDay()
-      return todayWeekday === 0 || todayWeekday === 6 ? 'weekend' : 'weekday'
+      return getDayType(this.nowDate)
     },
     dayTypes () {
       const hour = (new Date(this.now)).getHours()
@@ -97,15 +97,10 @@ export default {
       } else {
         // 今日上午，首日是以今天开始算起
       }
-      let weekday = (new Date(startDay)).getDay()
       const result = []
       for (let i = 0; i < this.dayCount; i++) {
-        result.push(weekday === 0 || weekday === 6 ? 'weekend' : 'weekday')
-        if (weekday >= 6) {
-          weekday = 0
-        } else {
-          weekday++
-        }
+        result.push(getDayType(startDay))
+        startDay += 1000 * 60 * 60 * 24
       }
       return result
     }
@@ -169,7 +164,7 @@ export default {
       &:not(:last-of-type) {
         border-right: 1px solid #fff;
       }
-      &.weekend {
+      &.holiday {
         background: #ded1d2;
       }
       &.half {
@@ -188,7 +183,7 @@ export default {
         &:not(:last-of-type) {
           border-right: 1px solid #ccc;
         }
-        &.weekend {
+        &.holiday {
           background: $dark-3;
         }
       }

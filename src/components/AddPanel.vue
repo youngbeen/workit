@@ -71,7 +71,13 @@
             <div class="date-btn" @click="setDueDate('tomorrow')">Tomorrow</div>
             <div class="date-btn" style="margin-right: 12px;" @click="setDueDate('friday')">Friday</div>
             <div class="date-shortcuts">
-              <div class="cell" :class="[halfDays >= c && 'active']" v-for="(c, index) in 12" :key="index" @mouseover="handleMouseOver(c)" @mouseout="handleMouseOut(c)" @click="handleSetDueDate(c)">{{ c % 2 ? '&nbsp;' : c / 2 }}</div>
+              <div class="cell"
+                :class="[halfDays >= c && 'active']"
+                v-for="(c, index) in 12"
+                :key="index"
+                @mouseover="handleMouseOver(c)"
+                @mouseout="handleMouseOut(c)"
+                @click="handleSetDueDate(c)">{{ c % 2 ? '&nbsp;' : c / 2 }}</div>
             </div>
             <div class="date-preview">{{ previewDateText }}</div>
           </div>
@@ -101,6 +107,7 @@ import { sleep } from '@youngbeen/sleep'
 import eventBus from '@/eventBus'
 import { cats } from '@/models/DictMap'
 import system from '@/models/system'
+import { getFollowWorkday } from '@/utils/holiday/HolidayUtil'
 import dataCtrl from '@/ctrls/dataCtrl'
 import { dateUtil } from '@youngbeen/angle-util'
 
@@ -127,20 +134,10 @@ export default {
     previewDueDate () {
       if (this.halfDays) {
         const now = new Date()
-        const year = now.getFullYear()
-        const month = now.getMonth()
-        const day = now.getDate()
-        const hour = now.getHours()
-        let leftDays = Math.ceil(this.halfDays / 2) - 1
+        const divDays = Math.ceil(this.halfDays / 2)
         const isHalfDayLeft = this.halfDays % 2
-        if (hour >= 12) {
-          // 今日下午，设置的due date以明天算起
-          leftDays++
-        } else {
-          // 今日上午，due date以今天算起
-        }
-        const date = new Date(year, month, day + leftDays, isHalfDayLeft ? 12 : 18, 0, 0)
-        return dateUtil.formatDateTime('YYYY-MM-DD HH:mm:ss', date)
+        const date = getFollowWorkday(now, divDays)
+        return dateUtil.formatDateTime('YYYY-MM-DD', date) + (isHalfDayLeft ? ' 12:00:00' : ' 18:00:00')
       } else {
         return ''
       }
@@ -260,10 +257,10 @@ export default {
     handleMouseOver (halfDays) {
       this.halfDays = halfDays
     },
-    handleMouseOut (halfDays) {
+    handleMouseOut () {
       this.halfDays = 0
     },
-    handleSetDueDate (halfDays) {
+    handleSetDueDate () {
       this.dueTime = this.previewDueDate
     },
     setDueDate (type) {
