@@ -4,8 +4,13 @@
     <span class="label" v-if="dueNormal">{{ dueWeekday }}</span>
     <span class="time" :class="[dueDanger && 'danger']" v-if="dueWarning || dueDanger">{{ showTime.days ? showTime.days + 'd' : '' }}{{ showTime.hours }}h</span>
     <span class="day" v-if="dueNormal">
-      <span class="day-block" v-if="withHalfDay" :style="{'width': asisPercent * 10 + 'px'}">&nbsp;</span>
-      <span class="day-block" :class="[dayTypes[index] === 'weekend' && 'weekend']" v-for="(d, index) in dayCount" :key="d">&nbsp;</span>
+      <span class="day-block"
+        :class="[todayType === 'weekend' && 'weekend']"
+        v-if="withHalfDay"
+        :style="{'width': asisPercent * 10 + 'px'}">&nbsp;</span>
+      <span class="day-block"
+        :class="[dayTypes[index] === 'weekend' && 'weekend']"
+        v-for="(d, index) in dayCount" :key="d">&nbsp;</span>
     </span>
   </span>
 </template>
@@ -21,6 +26,10 @@ export default {
     },
     now: {
       type: Number,
+      required: true
+    },
+    nowDate: {
+      type: String,
       required: true
     }
   },
@@ -74,6 +83,10 @@ export default {
     asisPercent () {
       const leftHour = this.showTime.hours > 8 ? 8 : this.showTime.hours
       return leftHour / 8
+    },
+    todayType () {
+      const todayWeekday = (new Date(this.nowDate)).getDay()
+      return todayWeekday === 0 || todayWeekday === 6 ? 'weekend' : 'weekday'
     },
     dayTypes () {
       const hour = (new Date(this.now)).getHours()

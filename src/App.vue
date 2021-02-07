@@ -30,7 +30,7 @@
               item.status === 1 && 'done',
               system.tab === 'history' && isDoneInToday(item.doneTime) && 'highlight']">
             <font-awesome-icon class="sub-icon" v-if="item.parentId" :icon="['fas', 'atom']" /> {{ item.content }}
-            <due-tag v-if="item.status === 0 && item.dueTime" :time="item.dueTime" :now="nowTime"></due-tag>
+            <due-tag v-if="item.status === 0 && item.dueTime" :time="item.dueTime" :now="nowTime" :now-date="nowDate"></due-tag>
           </div>
           <div class="labels"
             :class="[item.parentId && 'sub']"
