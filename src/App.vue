@@ -24,7 +24,9 @@
             v-show="system.tab !== 'note' && item.status === 0"
             @click="finish(item.index)"></div>
           <div class="content"
-            :class="[item.parentId && 'sub',
+            :class="[
+              item.parentId && 'sub',
+              item.parentId && !system.showSubTaskDetail && 'padded-right',
               item.status === 1 && 'done',
               system.tab === 'history' && isDoneInToday(item.doneTime) && 'highlight']">
             <font-awesome-icon class="sub-icon" v-if="item.parentId" :icon="['fas', 'atom']" /> {{ item.content }}
@@ -35,7 +37,7 @@
             v-show="item.labels.length && (!item.parentId || system.showSubTaskDetail)">
             <span class="common-tag sm label" v-for="(label, i) in item.labels" :key="i">{{ label }}</span>
           </div>
-          <div class="box-btns" v-show="!item.parentId || system.showSubTaskDetail">
+          <div class="box-btns">
             <!-- <div class="icon-btn btn" v-show="system.tab !== 'history' && !item.group && currentList.length > 1" @click="handleLink($event, system.tab, item, index)">
               <font-awesome-icon :icon="['fas', 'link']" title="Link" />
             </div>
@@ -1382,6 +1384,9 @@ select, input {
         &.sub {
           margin-left: 36px;
           font-size: 13px;
+        }
+        &.padded-right {
+          margin-right: 120px;
         }
         &.done {
           color: $sub-font-color;
