@@ -61,7 +61,9 @@ Task content blahblah...#tag1,tag-2#
 
 ### Fast due date setting/postpone by `~~`
 
-Whenever you input something in `~~` pair, the content inside will be treated as post days after today and current task due date will be set automatically. e.g.
+Whenever you input something in `~~` pair, the content inside will be fixed into due date and current task due date will be set automatically.
+
+Numbers are treated as post days after today. e.g.
 
 ```string
 # Task due date will be set as today 6pm
@@ -69,6 +71,19 @@ Task content blahblah...~0~
 
 # Task due date will be set as next workday 6pm
 Task content blahblah...~1~
+```
+
+Weekdays are supported as well. e.g.
+
+```string
+# Task due date will be set as the target day 6pm
+Task content blahblah...~mo~
+Task content blahblah...~Mo~
+Task content blahblah...~Monday~
+Task content blahblah...~星期三~
+Task content blahblah...~星期4~
+Task content blahblah...~星期日~
+Task content blahblah...~星期天~
 ```
 
 ### Fast repeat task setting by `$$`

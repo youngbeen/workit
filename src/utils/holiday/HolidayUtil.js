@@ -37,3 +37,9 @@ export const getFollowWorkday = (date, divDays = 1) => {
   }
   return date
 }
+
+export const getFollowDay = (date, divDays = 1) => {
+  let targetDate = (new Date(date)).getTime()
+  targetDate += 1000 * 60 * 60 * 24 * divDays
+  return targetDate
+}
