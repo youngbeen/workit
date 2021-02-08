@@ -255,9 +255,8 @@ export default {
         })
         this.isMoreShow = true
       }
-      if (analysedContent.postDays > -1) {
-        const date = this.getDateByPostDays(analysedContent.postDays)
-        this.dueTime = (dateUtil.formatDateTime('YYYY-MM-DD', date) + ' 18:00:00')
+      if (analysedContent.dueDate) {
+        this.dueTime = analysedContent.dueDate
       }
     },
     handlePickDate () {

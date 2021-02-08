@@ -1,4 +1,7 @@
 
+import { dateUtil } from '@youngbeen/angle-util'
+import { getFollowWorkday } from './holiday/HolidayUtil'
+
 const analyseLabels = (content) => {
   // 分析标签，以##包裹
   let matchedLabel = content.match(/(?<=#).+(?=#)/)
@@ -19,35 +22,46 @@ const analyseLabels = (content) => {
 }
 
 const analyseDueDate = (content) => {
-  // 分析due date，以~~包裹的数字
-  let matched = content.match(/(?<=~)[0-9]+(?=~)/)
   let trimContent = content
-  let postDays = -1
-  if (matched) {
+  let dueDate = ''
+  // 分析due date，以~~包裹的数字
+  let matchedDays = content.match(/(?<=~)[0-9]+(?=~)/)
+  if (matchedDays) {
     // 存在输入标签
-    matched = matched[0]
-    postDays = parseInt(matched)
-    trimContent = trimContent.replace(`~${matched}~`, '')
+    matchedDays = matchedDays[0]
+    trimContent = trimContent.replace(`~${matchedDays}~`, '')
+    const postDays = parseInt(matchedDays)
+    const date = getDateByPostDays(postDays)
+    dueDate = (dateUtil.formatDateTime('YYYY-MM-DD', date) + ' 18:00:00')
   }
   return {
     content,
     trimContent,
-    postDays,
-    matchedPostDays: matched
+    dueDate,
+    matchedDays
   }
+}
+
+const getDateByPostDays = (postDays = 0) => {
+  const now = new Date()
+  let date = now
+  if (postDays) {
+    date = getFollowWorkday(now, postDays)
+  }
+  return date
 }
 
 export const analyse = (content) => {
   let { trimContent, labels, matchedLabel } = analyseLabels(content)
   const contentAfterDueDate = analyseDueDate(trimContent)
-  const { postDays, matchedPostDays } = contentAfterDueDate
+  const { dueDate, matchedDays } = contentAfterDueDate
   trimContent = contentAfterDueDate.trimContent
   return {
     content,
     trimContent,
     labels,
     matchedLabel,
-    postDays,
-    matchedPostDays
+    dueDate,
+    matchedDays
   }
 }

@@ -61,7 +61,7 @@ Task content blahblah...#tag1,tag-2#
 
 ### Fast due date setting/postpone by `~~`
 
-Whenever you input something in `~~` pair, the content inside will be treated as due date operation and automatically be merged into current task. e.g.
+Whenever you input something in `~~` pair, the content inside will be treated as post days after today and current task due date will be set automatically. e.g.
 
 ```string
 # Task due date will be set as today 6pm
