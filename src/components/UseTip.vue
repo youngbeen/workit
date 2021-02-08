@@ -33,6 +33,18 @@ export default {
         },
         {
           type: 'info',
+          content: 'Try #labels# in content input to add labels in swift'
+        },
+        {
+          type: 'info',
+          content: 'Try ~1~ in content input to set due date to tomorrow in swift'
+        },
+        {
+          type: 'info',
+          content: 'Try ~monday~ in content input to set due date to Monday in swift'
+        },
+        {
+          type: 'info',
           content: 'Drag and drop a task onto another one can change their sequence or relations'
         },
         {
