@@ -8,7 +8,7 @@
       <action-bar :filteredCount="currentList.length" :totalCount="catCounts[system.tab]"></action-bar>
 
       <!-- list -->
-      <div class="box-list">
+      <div class="box-list" v-show="system.tab !== 'calendar'">
         <!-- <button @click="autoClearHistory()">Test</button> -->
         <div class="box-item" :class="[item.index === focusIndex && 'focused', 'animated']"
           :style="{ transitionDelay: index / 20 + 's' }"
@@ -80,9 +80,11 @@
         </div>
       </div>
 
-      <div class="no-data" v-show="!catCounts[system.tab]">
+      <div class="no-data" v-show="system.tab !== 'calendar' && !catCounts[system.tab]">
         <use-tip></use-tip>
       </div>
+
+      <calendar-view v-show="system.tab === 'calendar'" :due-counts="calendarDueCounts"></calendar-view>
     </div>
 
     <!-- <pop-link :callback="link" :cancel="handlePopClose"></pop-link> -->
@@ -113,6 +115,7 @@ import LeftNav from './components/LeftNav.vue'
 import ActionBar from './components/ActionBar.vue'
 import UseTip from './components/UseTip.vue'
 import NotePanel from './components/NotePanel.vue'
+import CalendarView from './components/CalendarView.vue'
 // import PopLink from './components/PopLink.vue'
 import PopChangecat from './components/PopChangecat.vue'
 import PopActions from './components/PopActions.vue'
@@ -132,6 +135,7 @@ export default {
     ActionBar,
     UseTip,
     NotePanel,
+    CalendarView,
     // PopLink,
     PopChangecat,
     PopActions,
@@ -188,6 +192,8 @@ export default {
           return soFar
         }, [])
         return [...new Set(labels)]
+      } else if (this.system.tab === 'calendar') {
+        return []
       } else if (this.system.tab) {
         const list = this.list.filter(item => item.cat === this.system.tab)
         const labels = list.reduce((soFar, item) => {
@@ -200,7 +206,9 @@ export default {
       }
     },
     currentList () {
-      if (this.system.tab) {
+      if (this.system.tab === 'calendar') {
+        return []
+      } else if (this.system.tab) {
         // 根据筛选条件筛选
         let rawList = this.list.map((item, index) => {
           item.index = index
@@ -291,6 +299,7 @@ export default {
         someday: 0,
         tracking: 0,
         note: 0,
+        calendar: 0,
         history: 0
       })
     },
@@ -322,13 +331,28 @@ export default {
       })
     },
     relatedNotes () {
-      if (this.system.tab && !['note', 'history'].includes(this.system.tab)) {
+      if (this.system.tab && !['note', 'history', 'calendar'].includes(this.system.tab)) {
         return this.list.filter(n => {
           return n.cat === 'note' && n.labels.some(l => this.currentCatLabels.includes(l))
         })
       } else {
         return []
       }
+    },
+    calendarDueCounts () {
+      return this.list.reduce((soFar, task) => {
+        if (task.cat !== 'history' && task.status === 0 && task.dueTime) {
+          const ymd = dateUtil.formatDateTime('YYYY-MM-DD', task.dueTime)
+          if (soFar[ymd]) {
+            soFar[ymd]++
+          } else {
+            soFar[ymd] = 1
+          }
+          return soFar
+        } else {
+          return soFar
+        }
+      }, {})
     }
   },
   watch: {

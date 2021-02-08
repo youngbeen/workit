@@ -52,7 +52,7 @@
       <div class="nav" :class="[system.tab === 'someday' && 'active']" @click="changeTab('someday')" @dragover.prevent="handleDragover" @drop.prevent="handleDrop($event, 'someday')">
         <div class="title">
           <span class="icon-image">
-            <font-awesome-icon :icon="['fas', 'calendar-alt']" />
+            <font-awesome-icon :icon="['fas', 'calendar-check']" />
           </span>
           Someday
         </div>
@@ -78,6 +78,14 @@
         </div>
         <span class="badge" :class="[(isShowCount || system.tab === 'note') && showCounts.note && 'show']">{{ showCounts.note }}</span>
       </div>
+      <div class="nav" :class="[system.tab === 'calendar' && 'active']" @click="changeTab('calendar')">
+        <div class="title">
+          <span class="icon-image">
+            <font-awesome-icon :icon="['fas', 'calendar-alt']" />
+          </span>
+          Calendar
+        </div>
+      </div>
     </div>
     <div class="box-group">
       <div class="nav" :class="[system.tab === 'history' && 'active']" @click="changeTab('history')">
@@ -96,7 +104,7 @@
 <script>
 import eventBus from '@/eventBus'
 import { ipcRenderer } from 'electron'
-import { cats } from '@/models/DictMap'
+import { navigations } from '@/models/DictMap'
 import system from '@/models/system'
 import config from '@/models/config'
 import systemCtrl from '@/ctrls/systemCtrl'
@@ -117,7 +125,7 @@ export default {
     return {
       isHover: false,
       isShowCount: false,
-      queue: ['focus', ...cats.map(item => item.value)],
+      queue: navigations.map(item => item.value),
       system,
       config
     }

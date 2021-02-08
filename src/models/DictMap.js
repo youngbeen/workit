@@ -10,6 +10,19 @@ export const cats = [
   { value: 'history', label: 'History' }
 ]
 
+export const navigations = [
+  { value: 'focus', label: 'Focus' },
+  { value: 'inbox', label: 'Inbox' },
+  { value: 'current', label: 'Current' },
+  { value: 'coming', label: 'Coming' },
+  { value: 'anytime', label: 'Anytime' },
+  { value: 'someday', label: 'Someday' },
+  { value: 'tracking', label: 'Tracking' },
+  { value: 'note', label: 'Note' },
+  { value: 'calendar', label: 'Calendar' },
+  { value: 'history', label: 'History' }
+]
+
 export const actions = [
   // { value: 'edit', label: 'Edit' },
   { value: 'detail', label: 'Detail' },

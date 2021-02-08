@@ -389,7 +389,7 @@ export default {
         // 新增主任务
         this.isMoreShow = false
         // 不允许主动添加数据
-        if (['history', 'focus'].includes(system.tab)) {
+        if (['history', 'focus', 'calendar'].includes(system.tab)) {
           this.category = 'inbox'
         } else {
           this.category = system.tab

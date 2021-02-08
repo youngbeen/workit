@@ -7,6 +7,7 @@ import {
   faHistory,
   faMugHot,
   faCalendarAlt,
+  faCalendarCheck,
   faBook,
   faCompass,
   faTrashAlt,
@@ -49,6 +50,7 @@ library.add(faInbox)
 library.add(faHistory)
 library.add(faMugHot)
 library.add(faCalendarAlt)
+library.add(faCalendarCheck)
 library.add(faBook)
 library.add(faCompass)
 library.add(faTrashAlt)

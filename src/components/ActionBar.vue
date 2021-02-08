@@ -1,10 +1,17 @@
 <template>
   <section class="bed-action-bar">
-    <div class="icon-btn" :class="[isFilterActive && 'active']" title="Filter" @click="showFilter()">
+    <div class="icon-btn"
+      :class="[isFilterActive && 'active']"
+      v-show="system.tab !== 'calendar'"
+      title="Filter"
+      @click="showFilter()">
       <font-awesome-icon :icon="['fas', 'filter']" />&nbsp;
       <span v-show="isFilterActive">{{ filteredCount }}/{{ totalCount }}</span>
     </div>
-    <div class="icon-btn lg" title="Toggle Sub Task Detail" @click="toggleSubTaskDetail()">
+    <div class="icon-btn lg"
+      title="Toggle Sub Task Detail"
+      v-show="system.tab !== 'calendar'"
+      @click="toggleSubTaskDetail()">
       <font-awesome-icon :icon="['fas', 'cookie']" v-show="system.showSubTaskDetail" />
       <font-awesome-icon :icon="['fas', 'cookie-bite']" v-show="!system.showSubTaskDetail" />
     </div>
@@ -14,10 +21,16 @@
     <!-- <div class="icon-btn" title="Unlink All" v-show="system.tab !== 'history'" @click="unlink()">
       <font-awesome-icon :icon="['fas', 'unlink']" />
     </div> -->
-    <div class="icon-btn lg" title="Clear" v-show="system.tab === 'history'" @click="clear()">
+    <div class="icon-btn lg"
+      v-show="system.tab === 'history'"
+      title="Clear"
+      @click="clear()">
       <font-awesome-icon :icon="['fas', 'trash-alt']" />
     </div>
-    <div class="icon-btn lg" title="Add New" v-show="system.tab !== 'history'" @click="add()">
+    <div class="icon-btn lg"
+      v-show="system.tab !== 'history'"
+      title="Add New"
+      @click="add()">
       <font-awesome-icon :icon="['fas', 'plus']" />
     </div>
 
