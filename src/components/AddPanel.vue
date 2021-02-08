@@ -27,7 +27,12 @@
         </div>
       </div>
       <div class="box-row">
-        <textarea id="task-input" class="common-textarea" autofocus :placeholder="parentId ? 'sub todo task content' : 'todo task content'" v-model="content" @keypress.enter="save()"></textarea>
+        <textarea id="task-input" class="common-textarea"
+          autofocus
+          :placeholder="parentId ? 'sub todo task content' : 'todo task content'"
+          v-model="content"
+          @keydown="handleContentChange()"
+          @keypress.enter="save()"></textarea>
       </div>
       <!-- 更多录入 -->
       <div class="more">
@@ -107,6 +112,7 @@ import { sleep } from '@youngbeen/sleep'
 import eventBus from '@/eventBus'
 import { cats } from '@/models/DictMap'
 import system from '@/models/system'
+import { analyse } from '@/utils/analyzer'
 import { getFollowWorkday } from '@/utils/holiday/HolidayUtil'
 import dataCtrl from '@/ctrls/dataCtrl'
 import { dateUtil } from '@youngbeen/angle-util'
@@ -133,10 +139,9 @@ export default {
   computed: {
     previewDueDate () {
       if (this.halfDays) {
-        const now = new Date()
         const divDays = Math.ceil(this.halfDays / 2)
         const isHalfDayLeft = this.halfDays % 2
-        const date = getFollowWorkday(now, divDays)
+        const date = this.getDateByPostDays(divDays)
         return dateUtil.formatDateTime('YYYY-MM-DD', date) + (isHalfDayLeft ? ' 12:00:00' : ' 18:00:00')
       } else {
         return ''
@@ -241,6 +246,20 @@ export default {
   },
 
   methods: {
+    handleContentChange () {
+      const analysedContent = analyse(this.content)
+      this.content = analysedContent.trimContent
+      if (analysedContent.labels.length) {
+        analysedContent.labels.forEach(l => {
+          this.toggleTag(l, 'new')
+        })
+        this.isMoreShow = true
+      }
+      if (analysedContent.postDays > -1) {
+        const date = this.getDateByPostDays(analysedContent.postDays)
+        this.dueTime = (dateUtil.formatDateTime('YYYY-MM-DD', date) + ' 18:00:00')
+      }
+    },
     handlePickDate () {
       // console.log(document.querySelector('#due-date-input'))
       const { top, left, height } = document.querySelector('#due-date-input').getBoundingClientRect()
@@ -284,6 +303,14 @@ export default {
         }
       }
     },
+    getDateByPostDays (postDays = 0) {
+      const now = new Date()
+      let date = now
+      if (postDays) {
+        date = getFollowWorkday(now, postDays)
+      }
+      return date
+    },
     save (reverse = false) {
       if (this.content) {
         let dueTime = ''
@@ -309,11 +336,14 @@ export default {
     toggleMore () {
       this.isMoreShow = !this.isMoreShow
     },
-    toggleTag (tag) {
+    toggleTag (tag, mode = 'toggle') {
       const targetIndex = this.tags.indexOf(tag)
       if (targetIndex > -1) {
-        // 已选中，则取消选中
-        this.tags.splice(targetIndex, 1)
+        // 已选中
+        if (mode === 'toggle') {
+          // 取消选中
+          this.tags.splice(targetIndex, 1)
+        }
       } else {
         // 未选中，则选中
         this.tags.push(tag)
