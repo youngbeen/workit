@@ -71,8 +71,6 @@ Task content blahblah...~0~
 Task content blahblah...~1~
 ```
 
-**This feature is a plan, not deployed yet.**
-
 ### Fast repeat task setting by `$$`
 
 **This feature is a plan, not deployed yet.**
