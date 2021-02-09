@@ -51,6 +51,11 @@ import { getDayType } from '@/utils/holiday/HolidayUtil'
 
 export default {
   props: {
+    today: {
+      type: String,
+      required: false,
+      default: () => dateUtil.formatDateTime('YYYY-MM-DD', new Date())
+    },
     dueCounts: {
       type: Object,
       required: false,
@@ -161,15 +166,21 @@ export default {
       return days
     }
   },
-
-  mounted () {
-    const time = new Date()
-    this.year = time.getFullYear()
-    this.month = time.getMonth() + 1
-    this.day = time.getDate()
-    this.previewYear = this.year
-    this.yearOptions = [this.year - 1, this.year, this.year + 1]
-    this.previewMonth = this.month
+  watch: {
+    today: {
+      handler: function (newVal, oldVal) {
+        if (newVal) {
+          const [year, month, day] = this.today.split('-')
+          this.year = parseInt(year, 10)
+          this.month = parseInt(month, 10)
+          this.day = parseInt(day, 10)
+          this.previewYear = this.year
+          this.yearOptions = [this.year - 1, this.year, this.year + 1]
+          this.previewMonth = this.month
+        }
+      },
+      immediate: true
+    }
   }
 }
 </script>

@@ -5,6 +5,7 @@ const supportYears = ['2021']
 
 let yearPlan = null
 
+// 判断日期是工作日/假日
 export const getDayType = (date) => {
   const year = new Date(date).getFullYear().toString()
   if (supportYears.includes(year)) {
@@ -26,6 +27,7 @@ export const getDayType = (date) => {
   }
 }
 
+// 获取日期的下N个工作日
 export const getFollowWorkday = (date, divDays = 1) => {
   date = (new Date(date)).getTime()
   let meetsCount = 0
@@ -38,6 +40,7 @@ export const getFollowWorkday = (date, divDays = 1) => {
   return date
 }
 
+// 获取日期的下一个自然日
 export const getFollowDay = (date, divDays = 1) => {
   let targetDate = (new Date(date)).getTime()
   targetDate += 1000 * 60 * 60 * 24 * divDays

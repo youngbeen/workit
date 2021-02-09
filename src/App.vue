@@ -9,7 +9,7 @@
 
       <!-- list -->
       <div class="box-list" v-show="system.tab !== 'calendar'">
-        <!-- <button @click="autoClearHistory()">Test</button> -->
+        <!-- <button @click="checkNearHoliday()">Test</button> -->
         <div class="box-item" :class="[item.index === focusIndex && 'focused', 'animated']"
           :style="{ transitionDelay: index / 20 + 's' }"
           :draggable="system.tab !== 'focus'"
@@ -84,7 +84,7 @@
         <use-tip></use-tip>
       </div>
 
-      <calendar-view v-show="system.tab === 'calendar'" :due-counts="calendarDueCounts"></calendar-view>
+      <calendar-view v-show="system.tab === 'calendar'" :today="nowDate" :due-counts="calendarDueCounts"></calendar-view>
     </div>
 
     <!-- <pop-link :callback="link" :cancel="handlePopClose"></pop-link> -->
@@ -108,7 +108,7 @@ import eventBus from '@/eventBus'
 import { cats, actions } from '@/models/DictMap'
 import system from '@/models/system'
 import config from '@/models/config'
-// import colorUtil from '@/utils/ColorUtil'
+import { getFollowDay, getDayType } from '@/utils/holiday/HolidayUtil'
 import systemCtrl from '@/ctrls/systemCtrl'
 import dataCtrl from '@/ctrls/dataCtrl'
 import LeftNav from './components/LeftNav.vue'
@@ -177,8 +177,9 @@ export default {
       // displayedList: [],
       catOptions: cats.slice(0, cats.length - 1),
       actionOptions: actions,
-      nowTime: 0,
-      nowDate: '', // 当前日期，YYYY-MM-DD格式。因为有些判断是根据当前日期进行变动的，但是不能根据当前秒数判断（过于频繁）
+      nowTime: 0, // 当前时间戳，随秒变化
+      nowHour: null, // 当前小时，0~23
+      nowDate: '', // 当前日期，YYYY-MM-DD格式。有些判断需根据当前日期进行变动的，不能根据当前秒数判断（过于频繁）
       tc: null,
       system
     }
@@ -388,6 +389,12 @@ export default {
           this.autoClearHistory()
         }
       }
+    },
+    nowHour: function (newVal, oldVal) {
+      // 每小时执行
+      if (newVal) {
+        this.checkNearHoliday()
+      }
     }
   },
 
@@ -447,7 +454,9 @@ export default {
   mounted () {
     // ticking
     this.tc = setInterval(() => {
-      this.nowTime = (new Date()).getTime()
+      const now = new Date()
+      this.nowTime = now.getTime()
+      this.nowHour = now.getHours()
       this.nowDate = dateUtil.formatDateTime('YYYY-MM-DD', this.nowTime)
     }, 1000)
 
@@ -629,7 +638,7 @@ export default {
         contents = this.currentList.map(item => item.content)
       }
       clipboard.writeText(contents.join('\n'))
-      const copyNotify = new Notification('Content Copied', {
+      const copyNotify = new Notification('✅ Content Copied', {
         body: 'Content was copied into clipboard'
       })
       copyNotify.onclick = () => {
@@ -697,7 +706,7 @@ export default {
       }
       // console.table(this.list)
       dataCtrl.save(this.list)
-      const finishNotify = new Notification('Congratulations!', {
+      const finishNotify = new Notification('🎉 Congratulations!', {
         body: 'You just finished a task, click to cancel...'
       })
       finishNotify.onclick = () => {
@@ -1103,6 +1112,14 @@ export default {
       }
       edited && dataCtrl.save(this.list)
       console.log('clear process done')
+    },
+    checkNearHoliday () {
+      if ((this.nowHour === 10 || this.nowHour === 17) && getDayType(getFollowDay(this.nowDate)) === 'holiday') {
+        const notify = new Notification('Wish you have a nice holiday 🎉', {
+          body: 'Thanks for your great work'
+        })
+        notify.onclick = () => {}
+      }
     }
   }
 }
