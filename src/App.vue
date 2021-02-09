@@ -95,7 +95,7 @@
     <filter-panel :labels="currentCatLabels"></filter-panel>
     <search-panel :list="list"></search-panel>
     <config-panel></config-panel>
-    <statistics-panel></statistics-panel>
+    <statistics-panel :list="list" :today="nowDate"></statistics-panel>
 
     <date-picker></date-picker>
   </div>
