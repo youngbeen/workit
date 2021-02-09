@@ -98,19 +98,30 @@
         <span class="badge" :class="[(isShowCount || system.tab === 'history') && showCounts.history && 'show']">{{ showCounts.history }}</span>
       </div>
     </div>
+
+    <div class="icon-btn sys-btn"
+      @click="handleShowSysActions">
+      <font-awesome-icon :icon="['fas', 'cog']" />
+    </div>
+
+    <pop-actions :callback="confirmAction"></pop-actions>
   </section>
 </template>
 
 <script>
 import eventBus from '@/eventBus'
 import { ipcRenderer } from 'electron'
-import { navigations } from '@/models/DictMap'
+import { navigations, sysActions } from '@/models/DictMap'
 import system from '@/models/system'
 import config from '@/models/config'
 import systemCtrl from '@/ctrls/systemCtrl'
+import PopActions from '@/components/PopSysActions.vue'
 
 export default {
-  name: 'leftNav',
+  components: {
+    PopActions
+  },
+
   props: {
     counts: {
       type: Object,
@@ -126,6 +137,7 @@ export default {
       isHover: false,
       isShowCount: false,
       queue: navigations.map(item => item.value),
+      sysActionOptions: sysActions,
       system,
       config
     }
@@ -200,6 +212,26 @@ export default {
         },
         value: cat
       })
+    },
+    handleShowSysActions (e) {
+      const options = [...this.sysActionOptions]
+      eventBus.$emit('showPopSysActions', {
+        options,
+        position: {
+          left: e.clientX,
+          top: e.clientY
+        }
+      })
+    },
+    confirmAction (data) {
+      switch (data.value) {
+        case 'statistics':
+          eventBus.$emit('showStatistics')
+          break
+        case 'config':
+          eventBus.$emit('showConfig')
+          break
+      }
     }
   }
 }
@@ -209,6 +241,7 @@ export default {
 @import "../assets/css/var.scss";
 
 .bed-left-nav {
+  position: relative;
   width: 180px;
   height: 100%;
   // border-right: 1px solid $border-color;
@@ -314,6 +347,11 @@ export default {
         }
       }
     }
+  }
+  .sys-btn {
+    position: absolute;
+    left: 3px;
+    bottom: 3px;
   }
   &:hover {
     box-shadow: 0px 0px 2px 0 rgba(122, 122, 122, .2) inset;

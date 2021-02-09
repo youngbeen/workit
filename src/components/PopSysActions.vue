@@ -12,16 +12,15 @@ import { sleep } from '@youngbeen/sleep'
 import eventBus from '@/eventBus'
 
 export default {
-  name: 'popActions',
   props: {
     callback: {
       type: Function,
       required: true
-    },
-    cancel: {
-      type: Function,
-      required: true
     }
+    // cancel: {
+    //   type: Function,
+    //   required: true
+    // }
   },
   data () {
     return {
@@ -29,38 +28,32 @@ export default {
       isAnimationDone: false,
       options: [],
       left: 0,
-      top: 0,
-      tag: null
+      top: 0
     }
   },
 
   mounted () {
-    eventBus.$on('showPopActions', params => {
+    eventBus.$on('showPopSysActions', params => {
       this.options = params.options || []
       this.left = params.position.left || 0
       this.top = params.position.top || 0
       // 修正位置
-      if (this.left > 0) {
-        this.left -= 128
-      }
-      if (this.top > 400) {
-        this.top -= 24 * this.options.length
-      }
-      this.tag = params.tag
+      // if (this.left > 0) {
+      //   this.left -= 128
+      this.top -= 24 * this.options.length
       this.show()
     })
   },
 
   beforeDestroy () {
-    eventBus.$off('showPopActions')
+    eventBus.$off('showPopSysActions')
   },
 
   methods: {
     select (value, index) {
       this.callback({
         value,
-        index,
-        tag: this.tag
+        index
       })
       this.close()
     },
@@ -71,11 +64,8 @@ export default {
         this.isAnimationDone = true
       })
     },
-    close (isCancel = false) {
+    close () {
       this.isShow = false
-      if (isCancel) {
-        this.cancel()
-      }
     }
   }
 }

@@ -41,7 +41,8 @@ import {
   faAtom,
   faEdit,
   faCookie,
-  faCookieBite
+  faCookieBite,
+  faCog
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -85,6 +86,7 @@ library.add(faAtom)
 library.add(faEdit)
 library.add(faCookie)
 library.add(faCookieBite)
+library.add(faCog)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 

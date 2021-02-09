@@ -120,11 +120,6 @@ function resetData () {
   })
 }
 
-// 打开配置
-function openConfig () {
-  win.webContents.send('sys_openconfig')
-}
-
 async function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({
@@ -226,18 +221,6 @@ async function createWindow () {
           accelerator: 'CommandOrControl+Up',
           click: () => {
             win.webContents.send('sys_navup')
-          }
-        }
-      ]
-    },
-    {
-      label: 'Config',
-      submenu: [
-        // { role: 'about' }
-        {
-          label: 'Open Config',
-          click: () => {
-            openConfig()
           }
         }
       ]

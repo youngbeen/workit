@@ -95,6 +95,7 @@
     <filter-panel :labels="currentCatLabels"></filter-panel>
     <search-panel :list="list"></search-panel>
     <config-panel></config-panel>
+    <statistics-panel></statistics-panel>
 
     <date-picker></date-picker>
   </div>
@@ -124,6 +125,7 @@ import DetailPanel from './components/DetailPanel.vue'
 import FilterPanel from './components/FilterPanel.vue'
 import SearchPanel from './components/SearchPanel.vue'
 import ConfigPanel from './components/ConfigPanel.vue'
+import StatisticsPanel from './components/StatisticsPanel.vue'
 import DueTag from '@/components/DueTag.vue'
 import IndexIndicator from '@/components/IndexIndicator.vue'
 import CatIndicator from '@/components/CatIndicator.vue'
@@ -144,6 +146,7 @@ export default {
     FilterPanel,
     SearchPanel,
     ConfigPanel,
+    StatisticsPanel,
     DueTag,
     IndexIndicator,
     CatIndicator,
@@ -503,9 +506,6 @@ export default {
     })
     ipcRenderer.on('sys_resetdata', () => {
       this.resetData()
-    })
-    ipcRenderer.on('sys_openconfig', () => {
-      eventBus.$emit('showConfig')
     })
   },
 

@@ -30,3 +30,8 @@ export const actions = [
   { value: 'stb', label: 'Set To Bottom' },
   { value: 'delete', label: 'Delete' }
 ]
+
+export const sysActions = [
+  { value: 'statistics', label: 'Statistics' },
+  { value: 'config', label: 'Config' }
+]
