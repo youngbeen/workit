@@ -246,7 +246,7 @@ export default {
           }
         }
         &.holiday {
-          background: rgba(#ddd, .4);
+          background: rgba(#eee, .4);
         }
         &.active {
           box-shadow: $itoolbar-item-boxshadow-active;

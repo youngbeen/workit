@@ -52,6 +52,7 @@ export default {
   position: relative;
   height: 24px;
   // background: red;
+  overflow: hidden;
   .base {
     box-sizing: border-box;
     position: absolute;

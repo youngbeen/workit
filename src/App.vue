@@ -180,7 +180,7 @@ export default {
       // displayedList: [],
       catOptions: cats.slice(0, cats.length - 1),
       actionOptions: actions,
-      nowTime: 0, // 当前时间戳，随秒变化
+      nowTime: 0, // 当前时间戳，随分钟变化
       nowHour: null, // 当前小时，0~23
       nowDate: '', // 当前日期，YYYY-MM-DD格式。有些判断需根据当前日期进行变动的，不能根据当前秒数判断（过于频繁）
       tc: null,
@@ -455,13 +455,11 @@ export default {
   },
 
   mounted () {
-    // ticking
+    this.freshTime()
+    // ticking by minute
     this.tc = setInterval(() => {
-      const now = new Date()
-      this.nowTime = now.getTime()
-      this.nowHour = now.getHours()
-      this.nowDate = dateUtil.formatDateTime('YYYY-MM-DD', this.nowTime)
-    }, 1000)
+      this.freshTime()
+    }, 1000 * 60)
 
     // 重构传入的参数，对象化处理
     eventBus.$on('addItem', (params) => {
@@ -518,6 +516,12 @@ export default {
   },
 
   methods: {
+    freshTime () {
+      const now = new Date()
+      this.nowTime = now.getTime()
+      this.nowHour = now.getHours()
+      this.nowDate = dateUtil.formatDateTime('YYYY-MM-DD', this.nowTime)
+    },
     toggleHistoryViewMode () {
       this.seePartHistory = !this.seePartHistory
     },
@@ -1114,7 +1118,7 @@ export default {
       console.log('clear process done')
     },
     checkNearHoliday () {
-      if ((this.nowHour === 10 || this.nowHour === 17) && getDayType(getFollowDay(this.nowDate)) === 'holiday') {
+      if ((this.nowHour === 10 || this.nowHour === 17) && getDayType(this.nowDate) === 'workday' && getDayType(getFollowDay(this.nowDate)) === 'holiday') {
         const notify = new Notification('Wish you have a nice holiday 🎉', {
           body: 'Thanks for your great work'
         })
@@ -1245,6 +1249,7 @@ select, input {
     border-radius: $border-radius;
     font-weight: 600;
     transition: all $transition-time;
+    cursor: default;
     &.active {
       background: $toolbar-bgcolor-active;
     }
