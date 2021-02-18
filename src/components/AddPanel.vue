@@ -72,10 +72,10 @@
           <div class="icon-image">
             <font-awesome-icon :icon="['fas', 'stopwatch']" />
           </div>
-          <div class="box-date-shortcuts">
-            <div class="date-btn" @click="setDueDate('today')">Today</div>
-            <div class="date-btn" @click="setDueDate('tomorrow')">Tomorrow</div>
-            <div class="date-btn" style="margin-right: 12px;" @click="setDueDate('friday')">Friday</div>
+          <div class="box-shortcuts">
+            <div class="shortcuts-btn" @click="setDueDate('today')">Today</div>
+            <div class="shortcuts-btn" @click="setDueDate('tomorrow')">Tomorrow</div>
+            <div class="shortcuts-btn" style="margin-right: 12px;" @click="setDueDate('friday')">Friday</div>
             <div class="date-shortcuts">
               <div class="cell"
                 :class="[halfDays >= c && 'active']"
@@ -100,6 +100,20 @@
                 <font-awesome-icon :icon="['fas', 'chevron-circle-down']" />
               </div>
             </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="icon-image">
+            <font-awesome-icon :icon="['fas', 'sync']" />
+          </div>
+          <div class="">
+            <select class="common-select"
+              v-model="repeatType"
+              style="width: 526px;">
+              <option v-for="r in repeatTypeOptions"
+                :key="r.value"
+                :value="r.value">{{ r.label }}</option>
+            </select>
           </div>
         </div>
       </div>
@@ -134,7 +148,19 @@ export default {
       // catOptions: cats.slice(0, cats.length - 1),
       usedTags: [],
       dueTime: '', // YYYY-MM-DD HH:mm:ss
-      halfDays: 0
+      halfDays: 0,
+      repeatType: '',
+      repeatTypeOptions: [
+        { label: 'One Time', value: '' },
+        { label: 'Every Workday', value: 'everyWorkday' },
+        { label: 'Every Monday', value: 'everyMonday' },
+        { label: 'Every Tuesday', value: 'everyTuesday' },
+        { label: 'Every Wednesday', value: 'everyWednesday' },
+        { label: 'Every Thursday', value: 'everyThursday' },
+        { label: 'Every Friday', value: 'everyFriday' },
+        { label: 'Every Saturday', value: 'everySaturday' },
+        { label: 'Every Sunday', value: 'everySunday' }
+      ]
     }
   },
   computed: {
@@ -327,6 +353,7 @@ export default {
           content: this.content,
           tags: this.inputTags,
           dueTime,
+          repeatType: this.repeatType,
           reverse
         })
         this.close()
@@ -371,6 +398,7 @@ export default {
           this.tags = []
         }
         this.dueTime = params.dueTime ? dateUtil.formatDateTime('YYYY-MM-DD HH:mm:ss', params.dueTime) : ''
+        this.repeatType = params.repeatType || ''
       } else if (this.parentId) {
         // 新增子任务
         this.isMoreShow = true
@@ -387,6 +415,7 @@ export default {
           this.content = ''
         }
         this.dueTime = ''
+        this.repeatType = ''
       } else {
         // 新增主任务
         this.isMoreShow = false
@@ -403,6 +432,7 @@ export default {
         this.inputTags = ''
         this.tags = []
         this.dueTime = ''
+        this.repeatType = ''
       }
       this.usedTags = dataCtrl.readTags()
       if (useLastTags) {
@@ -534,10 +564,10 @@ export default {
           }
         }
       }
-      .box-date-shortcuts {
+      .box-shortcuts {
         display: flex;
         width: 526px;
-        .date-btn {
+        .shortcuts-btn {
           margin-right: 6px;
           height: 18px;
           line-height: 18px;
@@ -590,7 +620,7 @@ export default {
       }
     }
     &.extend {
-      height: 300px;
+      height: 350px;
     }
     &.animated {
       margin-top: -1px;
@@ -627,8 +657,8 @@ export default {
             }
           }
         }
-        .box-date-shortcuts {
-          .date-btn {
+        .box-shortcuts {
+          .shortcuts-btn {
             color: $secondary-font-color-dark;
             border: 1px solid $color-active-dark;
             &:hover {

@@ -46,3 +46,13 @@ export const getFollowDay = (date, divDays = 1) => {
   targetDate += 1000 * 60 * 60 * 24 * divDays
   return targetDate
 }
+
+// 获取日期之后的下一个对应weekday
+// 0 - Sunday, 1~6 - Monday~Saturday
+export const getFollowWeekday = (date, weekday = 0) => {
+  date = new Date(date)
+  const dateWeekday = date.getDay()
+  let div = weekday - dateWeekday
+  div <= 0 && (div += 7)
+  return getFollowDay(date, div)
+}

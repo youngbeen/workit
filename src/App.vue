@@ -29,7 +29,7 @@
               item.parentId && !system.showSubTaskDetail && 'padded-right',
               item.status === 1 && 'done',
               system.tab === 'history' && isDoneInToday(item.doneTime) && 'highlight']">
-            <font-awesome-icon class="sub-icon" v-if="item.parentId" :icon="['fas', 'atom']" /> {{ item.content }}
+            <font-awesome-icon class="sub-icon" v-if="item.parentId" :icon="['fas', 'atom']" /><font-awesome-icon class="repeat-icon" :class="[item.parentId && 'sub']" v-if="item.repeatType" :icon="['fas', 'sync']" /> {{ item.content }}
             <due-tag v-if="item.status === 0 && item.dueTime" :time="item.dueTime" :now="nowTime" :now-date="nowDate"></due-tag>
           </div>
           <div class="labels"
@@ -110,7 +110,7 @@ import { cats, actions } from '@/models/DictMap'
 import system from '@/models/system'
 import config from '@/models/config'
 import { analysePossibleDuplicate } from '@/utils/analyzer'
-import { getFollowDay, getDayType } from '@/utils/holiday/HolidayUtil'
+import { getFollowDay, getDayType, getFollowWeekday, getFollowWorkday } from '@/utils/holiday/HolidayUtil'
 import systemCtrl from '@/ctrls/systemCtrl'
 import dataCtrl from '@/ctrls/dataCtrl'
 import LeftNav from './components/LeftNav.vue'
@@ -176,6 +176,7 @@ export default {
         //   dueTime: 1563168778668,
         //   doneTime: null,
         //   parentId: null, // 使用createTime作为id
+        //   repeatType: '', // 任务重复类型
         // }
       ],
       // displayedList: [],
@@ -462,7 +463,6 @@ export default {
       this.freshTime()
     }, 1000 * 60)
 
-    // 重构传入的参数，对象化处理
     eventBus.$on('addItem', (params) => {
       if (!params.parentId) {
         // 校验主任务的重复情况
@@ -556,7 +556,7 @@ export default {
       const doneDay = dateUtil.formatDateTime('YYYY-MM-DD', doneTime)
       return today === doneDay
     },
-    addItem ({ parentId = null, category, content, tags, dueTime = null, reverse = false }) {
+    addItem ({ parentId = null, category, content, tags, dueTime = null, repeatType = '', reverse = false }) {
       let labelArray = []
       if (tags) {
         labelArray = tags.split(',')
@@ -572,7 +572,9 @@ export default {
         createTime: now,
         updateTime: now,
         dueTime,
-        parentId
+        doneTime: null,
+        parentId,
+        repeatType
       }
       if (reverse) {
         // 插入到首行
@@ -614,14 +616,14 @@ export default {
 
       if (parentId && config.addNewAfterSubTaskAdded) {
         // 继续添加子任务
-        console.log('should add another sub task')
+        // console.log('should add another sub task')
         const parentTask = this.list.find(t => t.createTime === parentId)
         sleep(300).then(() => {
           this.handleAddSubTask(parentTask)
         })
       }
     },
-    editItem ({ parentId = null, category, content, tags, dueTime = null }) {
+    editItem ({ parentId = null, category, content, tags, dueTime = null, repeatType = '' }) {
       let labelArray = []
       if (tags) {
         labelArray = tags.split(',')
@@ -636,6 +638,7 @@ export default {
         item.labels = labelArray
         item.updateTime = now
         item.dueTime = dueTime
+        item.repeatType = repeatType
         item.doneTime = null
         this.list.push(item)
       } else {
@@ -644,6 +647,7 @@ export default {
         this.list[this.editingIndex].labels = labelArray
         this.list[this.editingIndex].updateTime = now
         this.list[this.editingIndex].dueTime = dueTime
+        this.list[this.editingIndex].repeatType = repeatType
       }
       dataCtrl.save(this.list)
       dataCtrl.saveTag(labelArray)
@@ -697,9 +701,19 @@ export default {
       dataCtrl.saveSnapshot(this.list)
       const now = (new Date()).getTime()
       const task = this.list[index]
+      const repeatTasks = []
       if (task.parentId) {
         // 完成子任务
         const item = this.list.splice(index, 1)[0]
+        if (item.repeatType) {
+          repeatTasks.push({
+            content: item.content,
+            category: item.cat,
+            tags: item.labels.join(','),
+            dueTime: this.getRepeatDueTime(item.repeatType, item.dueTime && dateUtil.formatDateTime('HH:mm:ss', item.dueTime)),
+            repeatType: item.repeatType
+          })
+        }
         item.status = 1
         item.doneTime = now
         this.list.splice(index, 0, item)
@@ -716,6 +730,15 @@ export default {
               subTask.cat = 'history'
             } else {
               // 子任务还未完成
+              if (subTask.repeatType) {
+                repeatTasks.push({
+                  content: subTask.content,
+                  category: subTask.cat,
+                  labels: subTask.labels.join(','),
+                  dueTime: this.getRepeatDueTime(subTask.repeatType, subTask.dueTime && dateUtil.formatDateTime('HH:mm:ss', subTask.dueTime)),
+                  repeatType: subTask.repeatType
+                })
+              }
               subTask.cat = 'history'
               subTask.status = 1
               subTask.doneTime = now
@@ -725,6 +748,15 @@ export default {
           }
         }
         const item = this.list.splice(index, 1)[0]
+        if (item.repeatType) {
+          repeatTasks.push({
+            content: item.content,
+            category: item.cat,
+            tags: item.labels.join(','),
+            dueTime: this.getRepeatDueTime(item.repeatType, item.dueTime && dateUtil.formatDateTime('HH:mm:ss', item.dueTime)),
+            repeatType: item.repeatType
+          })
+        }
         item.cat = 'history'
         item.status = 1
         item.doneTime = now
@@ -733,6 +765,10 @@ export default {
       }
       // console.table(this.list)
       dataCtrl.save(this.list)
+      // 写入新的重复任务
+      repeatTasks.forEach(rt => {
+        this.addItem(rt)
+      })
       const finishNotify = new Notification('🎉 Congratulations!', {
         body: 'You just finished a task, click to cancel...'
       })
@@ -743,6 +779,42 @@ export default {
           dataCtrl.save(this.list)
         }
       }
+    },
+    getRepeatDueTime (type, time) {
+      // console.log(type, time)
+      if (!type) {
+        return null
+      }
+      time = time || '18:00:00'
+      let newDay = ''
+      switch (type) {
+        case 'everyWorkday':
+          newDay = dateUtil.formatDateTime('YYYY-MM-DD', getFollowWorkday(new Date()))
+          break
+        case 'everyMonday':
+          newDay = dateUtil.formatDateTime('YYYY-MM-DD', getFollowWeekday(new Date(), 1))
+          break
+        case 'everyTuesday':
+          newDay = dateUtil.formatDateTime('YYYY-MM-DD', getFollowWeekday(new Date(), 2))
+          break
+        case 'everyWednesday':
+          newDay = dateUtil.formatDateTime('YYYY-MM-DD', getFollowWeekday(new Date(), 3))
+          break
+        case 'everyThursday':
+          newDay = dateUtil.formatDateTime('YYYY-MM-DD', getFollowWeekday(new Date(), 4))
+          break
+        case 'everyFriday':
+          newDay = dateUtil.formatDateTime('YYYY-MM-DD', getFollowWeekday(new Date(), 5))
+          break
+        case 'everySaturday':
+          newDay = dateUtil.formatDateTime('YYYY-MM-DD', getFollowWeekday(new Date(), 6))
+          break
+        case 'everySunday':
+          newDay = dateUtil.formatDateTime('YYYY-MM-DD', getFollowWeekday(new Date(), 0))
+          break
+      }
+      // console.log(`${newDay} ${time}`)
+      return (new Date(`${newDay} ${time}`)).getTime()
     },
     // handleLink (e, cat, task, showIndex) {
     //   this.focusIndex = task.index
@@ -1003,7 +1075,8 @@ export default {
         tags: task.labels.join(','),
         dueTime: task.dueTime,
         parentId: task.parentId,
-        parentName: this.list.find(item => item.createTime === task.parentId)?.content || ''
+        parentName: this.list.find(item => item.createTime === task.parentId)?.content || '',
+        repeatType: task.repeatType
       })
     },
     handleShowDetail (cat, index) {
@@ -1467,9 +1540,16 @@ select, input {
         }
         .sub-icon {
           position: relative;
-          top: -2px;
+          top: -1px;
           color: $sub-font-color;
           font-size: 8px;
+        }
+        .repeat-icon {
+          color: $sub-font-color;
+          font-size: 12px;
+          &.sub {
+            margin-left: 6px;
+          }
         }
       }
       .labels {
@@ -1664,6 +1744,9 @@ select, input {
             color: $primary-font-color-dark;
           }
           .sub-icon {
+            color: $sub-font-color-dark;
+          }
+          .repeat-icon {
             color: $sub-font-color-dark;
           }
         }

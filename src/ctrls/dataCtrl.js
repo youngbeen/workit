@@ -20,6 +20,7 @@ export default {
         item.index = index
         // 修复旧数据
         item.parentId === undefined && (item.parentId = null)
+        item.repeatType === undefined && (item.repeatType = '')
         // 修复错误数据
         if (item.cat === 'history' && item.status !== 1) {
           console.log('在history中的数据status错误')
