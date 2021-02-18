@@ -14,10 +14,11 @@ npm run e:build
 
 ## Features
 
-* Sub Tasks
 * Tag your tasks (labels)
 * Smart content detect and analysis(supports labels, due date)
 * Setting due date to tasks
+* Sub Tasks
+* Repeatable Tasks
 * Filter tasks
 * Search tasks by keyword/label
 * Show related notes automatically
