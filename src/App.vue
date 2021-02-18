@@ -109,6 +109,7 @@ import eventBus from '@/eventBus'
 import { cats, actions } from '@/models/DictMap'
 import system from '@/models/system'
 import config from '@/models/config'
+import { analysePossibleDuplicate } from '@/utils/analyzer'
 import { getFollowDay, getDayType } from '@/utils/holiday/HolidayUtil'
 import systemCtrl from '@/ctrls/systemCtrl'
 import dataCtrl from '@/ctrls/dataCtrl'
@@ -463,6 +464,25 @@ export default {
 
     // 重构传入的参数，对象化处理
     eventBus.$on('addItem', (params) => {
+      if (!params.parentId) {
+        // 校验主任务的重复情况
+        const duplicateInfo = analysePossibleDuplicate(params.content, this.list.reduce((soFar, t) => {
+          if (t.status === 0 && !t.parentId) {
+            soFar = [...soFar, t.content]
+          }
+          return soFar
+        }, []))
+        if (duplicateInfo.result) {
+          ipcRenderer.send('asynchronous-message', {
+            type: 'sys_confirm_add_duplicate',
+            content: {
+              info: duplicateInfo,
+              payload: params
+            }
+          })
+          return
+        }
+      }
       this.addItem(params)
     })
     eventBus.$on('editItem', (params) => {
@@ -479,6 +499,9 @@ export default {
     })
     ipcRenderer.on('sys_changesequence', (e, data) => {
       this.changeSequence(data)
+    })
+    ipcRenderer.on('sys_confirm_additem', (e, data) => {
+      this.addItem(data)
     })
     ipcRenderer.on('sys_becomesubtask', (e, data) => {
       this.becomeSubTask(data)

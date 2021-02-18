@@ -47,6 +47,17 @@ ipcMain.on('asynchronous-message', (event, arg) => {
           win.webContents.send('sys_becomesubtask', arg.content)
       }
     })
+  } else if (arg && arg.type === 'sys_confirm_add_duplicate') {
+    dialog.showMessageBox({
+      type: 'question',
+      buttons: ['Add Anyway', 'Cancel'],
+      // defaultId: 0,
+      message: `It seems that you are adding a duplicate task\nCurrent: ${arg.content.info.content}\n🚧 Exists: ${arg.content.info.target}`
+    }).then((data) => {
+      if (data.response === 0) {
+        win.webContents.send('sys_confirm_additem', Object.assign(arg.content.payload, { force: true }))
+      }
+    })
   }
   // else if (arg && arg.type === 'unlink_all_tasks') {
   //   // 重置所有当前项的分组

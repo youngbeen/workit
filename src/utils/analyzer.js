@@ -1,6 +1,7 @@
 
 import { dateUtil } from '@youngbeen/angle-util'
 import { getFollowWorkday, getFollowDay } from './holiday/HolidayUtil'
+const diff = require('diff')
 
 const analyseLabels = (content) => {
   // 分析标签，以##包裹
@@ -140,5 +141,73 @@ export const analyse = (content) => {
     matchedLabel,
     dueDate,
     matchedDays
+  }
+}
+
+export const analysePossibleDuplicate = (content, source = []) => {
+  // console.log(content, source)
+  // 原始长度<6不重复，6<=长度<=10须超过60%重复率，长度>10时须超过70%重复率
+  if (!content || !source.length || content.length < 6) {
+    return {
+      result: false,
+      content,
+      target: '',
+      change: []
+    }
+  }
+  if (content.length <= 10) {
+    for (let index = 0; index < source.length; index++) {
+      const t = source[index]
+      const change = diff.diffChars(content, t, {
+        ignoreCase: true
+      })
+      const sameLength = change.reduce((same, item) => {
+        if (!item.added && !item.removed) {
+          same += item.value.length
+        }
+        return same
+      }, 0)
+      if (sameLength / t.length >= 0.6) {
+        return {
+          result: true,
+          content,
+          target: t,
+          change
+        }
+      }
+    }
+    return {
+      result: false,
+      content,
+      target: '',
+      change: []
+    }
+  } else {
+    for (let index = 0; index < source.length; index++) {
+      const t = source[index]
+      const change = diff.diffChars(content, t, {
+        ignoreCase: true
+      })
+      const sameLength = change.reduce((same, item) => {
+        if (!item.added && !item.removed) {
+          same += item.value.length
+        }
+        return same
+      }, 0)
+      if (sameLength / t.length >= 0.7) {
+        return {
+          result: true,
+          content,
+          target: t,
+          change
+        }
+      }
+    }
+    return {
+      result: false,
+      content,
+      target: '',
+      change: []
+    }
   }
 }
