@@ -99,10 +99,10 @@
       </div>
     </div>
 
-    <div class="icon-btn sys-btn"
+    <span class="icon-btn sys-btn"
       @click="handleShowSysActions">
       <font-awesome-icon :icon="['fas', 'cog']" />
-    </div>
+    </span>
 
     <pop-actions :callback="confirmAction"></pop-actions>
   </section>
@@ -271,7 +271,7 @@ export default {
   .box-group {
     position: relative;
     margin: 10px;
-    &:not(:last-child):after {
+    &:not(:last-of-type):after {
       content: '';
       display: block;
       position: absolute;

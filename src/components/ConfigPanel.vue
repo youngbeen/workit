@@ -20,7 +20,7 @@
           <label for="leftnav-numbers-main">Only main tasks</label>
         </div>
         <div class="box-config-item">
-          <div class="title">Add another new sub task when last one added</div>
+          <div class="title">Add another new sub task after last one added</div>
           <input type="radio" id="addnew-subtask-no" :value="false" v-model="config.addNewAfterSubTaskAdded">
           <label for="addnew-subtask-no">No</label>
           <input type="radio" id="addnew-subtask-yes" :value="true" v-model="config.addNewAfterSubTaskAdded">
