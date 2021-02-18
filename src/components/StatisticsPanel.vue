@@ -223,6 +223,7 @@ export default {
           {
             name: 'Created',
             type: 'line',
+            smooth: true,
             areaStyle: {},
             emphasis: {
               focus: 'series'
@@ -232,6 +233,7 @@ export default {
           {
             name: 'Finished',
             type: 'line',
+            smooth: true,
             areaStyle: {},
             emphasis: {
               focus: 'series'

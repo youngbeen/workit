@@ -32,6 +32,7 @@
           :placeholder="parentId ? 'sub todo task content' : 'todo task content'"
           v-model="content"
           @keydown="handleContentChange()"
+          @keypress.tab.prevent="isMoreShow = true"
           @keypress.enter="save()"></textarea>
       </div>
       <!-- 更多录入 -->
@@ -257,6 +258,7 @@ export default {
       }
       if (analysedContent.dueDate) {
         this.dueTime = analysedContent.dueDate
+        this.isMoreShow = true
       }
     },
     handlePickDate () {
