@@ -223,6 +223,18 @@ export default {
         if (this.system.tab === 'focus') {
           // 聚焦tab
           rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.cat !== 'history' && item.status === 0 && item.dueTime && item.dueTime < this.nowTime + 1000 * 60 * 60 * 24)))
+          const availableParentIds = rawList.reduce((ids, item) => {
+            if (!item.parentId) {
+              ids.push(item.createTime)
+            }
+            return ids
+          }, [])
+          const lonelySubTasks = rawList.filter(item => item.parentId && !availableParentIds.includes(item.parentId))
+          lonelySubTasks.forEach(st => {
+            // 需要为孤儿子任务补充其父任务
+            const parent = JSON.parse(JSON.stringify(this.list.find(item => item.cat !== 'history' && item.status === 0 && !item.parentId && item.createTime === st.parentId)))
+            rawList.push(parent)
+          })
         } else {
           // 常规tab
           rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.cat === this.system.tab)))
@@ -768,8 +780,10 @@ export default {
       // 写入新的重复任务
       // const tomorrow = dateUtil.formatDateTime('YYYY-MM-DD', new Date().getTime() + 1000 * 60 * 60 * 24)
       // const dayAfterTomorrow = dateUtil.formatDateTime('YYYY-MM-DD', new Date().getTime() + 1000 * 60 * 60 * 24 * 2)
-      repeatTasks.forEach(rt => {
-        this.addItem(rt)
+      repeatTasks.forEach((rt, index) => {
+        sleep(100 * index).then(() => {
+          this.addItem(rt)
+        })
         // let newDay = dateUtil.formatDateTime('YYYY-MM-DD', new Date(rt.dueTime))
         // if (newDay === tomorrow) {
         //   newDay = 'tomorrow'
