@@ -15,7 +15,7 @@ npm run e:build
 ## Features
 
 * Tag your tasks (labels)
-* Smart content detect and analysis(supports labels, due date)
+* Smart content detect and analysis(supports labels, due date, repeat type)
 * Setting due date to tasks
 * Sub Tasks
 * Repeatable Tasks
@@ -85,11 +85,24 @@ Task content blahblah...~星期三~
 Task content blahblah...~星期4~
 Task content blahblah...~星期日~
 Task content blahblah...~星期天~
+Task content blahblah...~周日~
 ```
 
-### Fast repeat task setting by `$$`
+### Fast repeat task setting by `^^`
 
-**This feature is a plan, not deployed yet.**
+Whenever you input something in `^^` pair, the content inside will be fixed into repeat type and current task repeat type will be set automatically. e.g.
+
+```string
+Task content blahblah...^mo^
+Task content blahblah...^everymo^
+Task content blahblah...^Monday^
+Task content blahblah...^星期三^
+Task content blahblah...^每星期4^
+Task content blahblah...^每个周日^
+Task content blahblah...^ew^
+Task content blahblah...^每个工作日^
+Task content blahblah...^once^
+```
 
 ### Fast priority setting by `!!`
 

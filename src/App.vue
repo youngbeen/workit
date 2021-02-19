@@ -766,8 +766,20 @@ export default {
       // console.table(this.list)
       dataCtrl.save(this.list)
       // 写入新的重复任务
+      // const tomorrow = dateUtil.formatDateTime('YYYY-MM-DD', new Date().getTime() + 1000 * 60 * 60 * 24)
+      // const dayAfterTomorrow = dateUtil.formatDateTime('YYYY-MM-DD', new Date().getTime() + 1000 * 60 * 60 * 24 * 2)
       repeatTasks.forEach(rt => {
         this.addItem(rt)
+        // let newDay = dateUtil.formatDateTime('YYYY-MM-DD', new Date(rt.dueTime))
+        // if (newDay === tomorrow) {
+        //   newDay = 'tomorrow'
+        // } else if (newDay === dayAfterTomorrow) {
+        //   newDay = 'the day after tomorrow'
+        // }
+        // const notify = new Notification('Task re-planed', {
+        //   body: `"${rt.content}" is re-planned to ${newDay}`
+        // })
+        // notify.onclick = () => {}
       })
       const finishNotify = new Notification('🎉 Congratulations!', {
         body: 'You just finished a task, click to cancel...'

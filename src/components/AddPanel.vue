@@ -275,6 +275,7 @@ export default {
   methods: {
     handleContentChange () {
       const analysedContent = analyse(this.content)
+      // console.log(analysedContent)
       this.content = analysedContent.trimContent
       if (analysedContent.labels.length) {
         analysedContent.labels.forEach(l => {
@@ -284,6 +285,10 @@ export default {
       }
       if (analysedContent.dueDate) {
         this.dueTime = analysedContent.dueDate
+        this.isMoreShow = true
+      }
+      if (analysedContent.repeatType || analysedContent.repeatType === '') {
+        this.repeatType = analysedContent.repeatType
         this.isMoreShow = true
       }
     },
