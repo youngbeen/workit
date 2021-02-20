@@ -224,17 +224,23 @@ export default {
           // 聚焦tab
           rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.cat !== 'history' && item.status === 0 && item.dueTime && item.dueTime < this.nowTime + 1000 * 60 * 60 * 24)))
           const availableParentIds = rawList.reduce((ids, item) => {
-            if (!item.parentId) {
+            if (!item.parentId && !ids.includes(item.createTime)) {
               ids.push(item.createTime)
             }
             return ids
           }, [])
-          const lonelySubTasks = rawList.filter(item => item.parentId && !availableParentIds.includes(item.parentId))
-          lonelySubTasks.forEach(st => {
+          const lonelySubTaskParents = rawList.reduce((ps, item) => {
+            if (item.parentId && !availableParentIds.includes(item.parentId) && !ps.includes(item.parentId)) {
+              ps.push(item.parentId)
+            }
+            return ps
+          }, [])
+          lonelySubTaskParents.forEach(p => {
             // 需要为孤儿子任务补充其父任务
-            const parent = JSON.parse(JSON.stringify(this.list.find(item => item.cat !== 'history' && item.status === 0 && !item.parentId && item.createTime === st.parentId)))
+            const parent = JSON.parse(JSON.stringify(this.list.find(item => item.cat !== 'history' && item.status === 0 && !item.parentId && item.createTime === p)))
             rawList.push(parent)
           })
+          console.log(rawList)
         } else {
           // 常规tab
           rawList = JSON.parse(JSON.stringify(this.list.filter(item => item.cat === this.system.tab)))

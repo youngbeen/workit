@@ -45,6 +45,14 @@ export default {
         },
         {
           type: 'info',
+          content: 'Try ^workday^ or ^ew^ in content input to make task repeat in every workday in swift'
+        },
+        {
+          type: 'info',
+          content: 'Try ^friday^ in content input to make task repeat in every friday in swift'
+        },
+        {
+          type: 'info',
           content: 'Drag and drop a task onto another one can change their sequence or relations'
         },
         {
