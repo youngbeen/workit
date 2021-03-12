@@ -100,6 +100,7 @@
     </div>
 
     <span class="icon-btn sys-btn"
+      :class="[isShowCount && 'show']"
       @click="handleShowSysActions">
       <font-awesome-icon :icon="['fas', 'cog']" />
     </span>
@@ -352,6 +353,11 @@ export default {
     position: absolute;
     left: 3px;
     bottom: 3px;
+    opacity: 0;
+    transition: all $transition-time;
+    &.show {
+      opacity: 1;
+    }
   }
   &:hover {
     box-shadow: 0px 0px 2px 0 rgba(122, 122, 122, .2) inset;

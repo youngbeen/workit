@@ -32,7 +32,7 @@
             Total <span class="highlight">{{ totalCount.finished }}</span> finished, <span class="highlight">{{ avarageCount.finished }}</span> finished per day
           </div>
           <div class="box-efficiency">
-            <div class="label">Your Efficiency:</div>
+            <div class="label">Efficiency:</div>
             <div class="text">
               <efficiency-bar :base="totalCount.created" :bar="totalCount.finished"></efficiency-bar>
             </div>
@@ -335,7 +335,7 @@ export default {
             color: $secondary-font-color;
           }
           .text {
-            width: 600px;
+            width: 640px;
           }
         }
       }

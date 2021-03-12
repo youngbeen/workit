@@ -1247,7 +1247,7 @@ export default {
     },
     checkNearHoliday () {
       if ((this.nowHour === 10 || this.nowHour === 17) && getDayType(this.nowDate) === 'workday' && getDayType(getFollowDay(this.nowDate)) === 'holiday') {
-        const notify = new Notification('Wish you have a nice holiday 🎉', {
+        const notify = new Notification('Wish you have a nice holiday ☀️', {
           body: 'Thanks for your great work'
         })
         notify.onclick = () => {}
@@ -1378,6 +1378,7 @@ select, input {
     font-weight: 600;
     transition: all $transition-time;
     cursor: default;
+    user-select: none;
     &.active {
       background: $toolbar-bgcolor-active;
     }
