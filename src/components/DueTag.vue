@@ -175,13 +175,21 @@ export default {
 }
 @media (prefers-color-scheme: dark) {
   .comp-due-tag {
+    &.warning {
+      border: 1px solid $color-warning-dark;
+      background: $color-warning-dark;
+    }
+    &.danger {
+      border: 1px solid $color-danger-dark;
+      background: $color-danger-dark;
+    }
     .time {
       color: $primary-font-color;
     }
     .day {
       .day-block {
         &:not(:last-of-type) {
-          border-right: 1px solid #ccc;
+          border-right: 1px solid #bbb;
         }
         &.holiday {
           background: $dark-3;

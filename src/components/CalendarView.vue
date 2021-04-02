@@ -190,6 +190,7 @@ export default {
 
 .comp-calendar {
   padding: 6px;
+  overflow-x: hidden;
   .box-actions {
     display: flex;
     justify-content: space-between;

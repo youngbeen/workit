@@ -348,7 +348,7 @@ export const analyse = (content) => {
 
 export const analysePossibleDuplicate = (content, source = []) => {
   // console.log(content, source)
-  // 原始长度<6不重复，6<=长度<=10须超过60%重复率，长度>10时须超过70%重复率
+  // 原始长度<6不重复，6<=长度<=16须超过70%重复率，长度>16时须超过90%重复率
   if (!content || !source.length || content.length < 6) {
     return {
       result: false,
@@ -357,7 +357,7 @@ export const analysePossibleDuplicate = (content, source = []) => {
       change: []
     }
   }
-  if (content.length <= 10) {
+  if (content.length <= 16) {
     for (let index = 0; index < source.length; index++) {
       const t = source[index]
       const change = diff.diffChars(content, t, {
@@ -369,7 +369,7 @@ export const analysePossibleDuplicate = (content, source = []) => {
         }
         return same
       }, 0)
-      if (sameLength / t.length >= 0.6) {
+      if (sameLength / t.length >= 0.7) {
         return {
           result: true,
           content,
@@ -396,7 +396,7 @@ export const analysePossibleDuplicate = (content, source = []) => {
         }
         return same
       }, 0)
-      if (sameLength / t.length >= 0.7) {
+      if (sameLength / t.length >= 0.9) {
         return {
           result: true,
           content,

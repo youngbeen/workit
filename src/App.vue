@@ -1052,7 +1052,7 @@ export default {
       this.focusIndex = task.index
       let options = [...this.actionOptions]
       if (system.tab === 'focus') {
-        options = options.filter((o, index) => index !== 1 && index !== 2)
+        options = options.filter((o, index) => index !== 2 && index !== 3)
       }
       eventBus.$emit('showPopActions', {
         options,
@@ -1070,17 +1070,20 @@ export default {
     confirmAction (data) {
       this.focusIndex = -1
       switch (data.value) {
+        // case 'edit':
+        //   this.handleShowEdit(data.tag.cat, data.tag.index)
+        //   break
+        case 'copy':
+          this.handleCopyContent(data.tag.cat, data.tag.index)
+          break
+        case 'detail':
+          this.handleShowDetail(data.tag.cat, data.tag.showIndex)
+          break
         case 'btt':
           this.bringToTop(data.tag.cat, data.tag.index)
           break
         case 'stb':
           this.setToBottom(data.tag.cat, data.tag.index)
-          break
-        // case 'edit':
-        //   this.handleShowEdit(data.tag.cat, data.tag.index)
-        //   break
-        case 'detail':
-          this.handleShowDetail(data.tag.cat, data.tag.showIndex)
           break
         case 'delete':
           this.deleteTask(data.tag.cat, data.tag.index)
@@ -1110,6 +1113,16 @@ export default {
         parentName: this.list.find(item => item.createTime === task.parentId)?.content || '',
         repeatType: task.repeatType
       })
+    },
+    handleCopyContent (cat, index) {
+      const task = this.list[index]
+      task && clipboard.writeText(task.content)
+      const copyNotify = new Notification('✅ Content Copied', {
+        body: 'Content was copied into clipboard'
+      })
+      copyNotify.onclick = () => {
+        // console.log('copied into clipboard')
+      }
     },
     handleShowDetail (cat, index) {
       eventBus.$emit('showItemDetail', {

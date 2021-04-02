@@ -25,6 +25,7 @@ export const navigations = [
 
 export const actions = [
   // { value: 'edit', label: 'Edit' },
+  { value: 'copy', label: 'Copy Content' },
   { value: 'detail', label: 'Detail' },
   { value: 'btt', label: 'Bring To Top' },
   { value: 'stb', label: 'Set To Bottom' },
