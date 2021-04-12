@@ -72,9 +72,20 @@ export default {
     height: 20px;
     line-height: 20px;
     padding-right: 3px;
-    background: rgba(49, 192, 49, 0.7);
+    background: linear-gradient(90deg, rgba(49, 192, 49, 0.7), rgba(49, 192, 49, 0.4), rgba(49, 192, 49, 0.7));
+    background-size: 1000px;
+    background-clip: padding-box;
     text-align: right;
-    transition: all $transition-time-normal;
+    animation: rolling 8s linear infinite;
+    // transition: all $transition-time-normal;
+  }
+}
+@keyframes rolling {
+  0% {
+    background-position: 0px;
+  }
+  100% {
+    background-position: 1000px;
   }
 }
 </style>

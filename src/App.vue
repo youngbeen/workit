@@ -1527,7 +1527,7 @@ select, input {
         opacity: 1;
       }
       &.focused {
-        background: linear-gradient(-90deg, #fff 3%, #eee 60%, #eee 100%);
+        background: rgba($color-active, .04);
       }
       .group-indicator {
         position: absolute;

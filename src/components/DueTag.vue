@@ -42,7 +42,9 @@ export default {
       return map[weekDay]
     },
     detailLeftTime () {
-      if (this.showTime.days) {
+      if (this.showTime.minutes < 0 || this.showTime.hours < 0 || this.showTime.days < 0) {
+        return 'overdue'
+      } else if (this.showTime.days) {
         return `due in ${this.showTime.days || 0} day${this.showTime.days > 1 ? 's' : ''} ${this.showTime.hours || 0} hour${this.showTime.hours > 1 ? 's' : ''}`
       } else {
         return `due in ${this.showTime.hours || 0} hour${this.showTime.hours > 1 ? 's' : ''} ${this.showTime.minutes || 0} minute${this.showTime.minutes > 1 ? 's' : ''}`
