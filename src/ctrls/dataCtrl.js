@@ -114,14 +114,14 @@ export default {
   },
   savePrefers () {
     window.localStorage.setItem('workitPrefers', JSON.stringify({
-      showSubTaskDetail: system.showSubTaskDetail
+      subTaskDisplayMode: system.subTaskDisplayMode
     }))
   },
   resumePrefers () {
     let data = window.localStorage.getItem('workitPrefers')
     if (data) {
       data = JSON.parse(data)
-      data.showSubTaskDetail !== undefined && (system.showSubTaskDetail = data.showSubTaskDetail)
+      data.subTaskDisplayMode !== undefined && (system.subTaskDisplayMode = data.subTaskDisplayMode)
     } else {
       return null
     }

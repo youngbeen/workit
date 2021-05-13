@@ -9,11 +9,12 @@
       <span v-show="isFilterActive">{{ filteredCount }}/{{ totalCount }}</span>
     </div>
     <div class="icon-btn lg"
-      title="Toggle Sub Task Detail"
+      title="Toggle Sub Task Display Mode"
       v-show="system.tab !== 'calendar'"
-      @click="toggleSubTaskDetail()">
-      <font-awesome-icon :icon="['fas', 'cookie']" v-show="system.showSubTaskDetail" />
-      <font-awesome-icon :icon="['fas', 'cookie-bite']" v-show="!system.showSubTaskDetail" />
+      @click="toggleSubTaskDisplayMode()">
+      <font-awesome-icon :icon="['fas', 'cookie']" v-show="system.subTaskDisplayMode === 'full'" />
+      <font-awesome-icon :icon="['fas', 'cookie-bite']" v-show="system.subTaskDisplayMode === 'fit'" />
+      <font-awesome-icon :icon="['fas', 'envelope-square']" v-show="system.subTaskDisplayMode === 'openFit'" />
     </div>
     <!-- <div class="icon-btn lg" title="Sort" v-show="system.tab !== 'history'" @click="sort()">
       <font-awesome-icon :icon="['fas', 'sort-amount-down']" />
@@ -81,8 +82,13 @@ export default {
     //     type: 'unlink_all_tasks'
     //   })
     // },
-    toggleSubTaskDetail () {
-      system.showSubTaskDetail = !system.showSubTaskDetail
+    toggleSubTaskDisplayMode () {
+      const modeMap = new Map([
+        ['full', 'fit'],
+        ['fit', 'openFit'],
+        ['openFit', 'full']
+      ])
+      system.subTaskDisplayMode = modeMap.get(system.subTaskDisplayMode)
       dataCtrl.savePrefers()
     },
     add () {

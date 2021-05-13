@@ -7,6 +7,6 @@ export default {
     toTime: '', // 时间戳
     tags: []
   }, // 筛选条件
-  showSubTaskDetail: true, // 是否展示子任务的细节
+  subTaskDisplayMode: 'full', // 子任务展示方式，'full' - 全展示，'fit' - 只展示内容主体, 'openFit' - 只展示未完成的内容主体
   isPanelActive: false // panel 弹框是否已激活
 }

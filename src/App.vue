@@ -26,7 +26,7 @@
           <div class="content"
             :class="[
               item.parentId && 'sub',
-              item.parentId && !system.showSubTaskDetail && 'padded-right',
+              item.parentId && system.subTaskDisplayMode !== 'full' && 'padded-right',
               item.status === 1 && 'done',
               system.tab === 'history' && isDoneInToday(item.doneTime) && 'highlight']">
             <font-awesome-icon class="sub-icon" v-if="item.parentId" :icon="['fas', 'atom']" /><font-awesome-icon class="repeat-icon" :class="[item.parentId && 'sub']" v-if="item.repeatType" :icon="['fas', 'sync']" /> {{ item.content }}
@@ -34,7 +34,7 @@
           </div>
           <div class="labels"
             :class="[item.parentId && 'sub']"
-            v-show="item.labels.length && (!item.parentId || system.showSubTaskDetail)">
+            v-show="item.labels.length && (!item.parentId || system.subTaskDisplayMode === 'full')">
             <span class="common-tag sm label" v-for="(label, i) in item.labels" :key="i">{{ label }}</span>
           </div>
           <div class="box-btns">
@@ -288,7 +288,12 @@ export default {
           rawList = []
           tasks.forEach(t => {
             rawList.push(t)
-            const relatedSubTasks = subTasks.filter(st => st.parentId === t.createTime)
+            let relatedSubTasks = []
+            if (this.system.subTaskDisplayMode === 'openFit') {
+              relatedSubTasks = subTasks.filter(st => st.status === 0 && st.parentId === t.createTime)
+            } else {
+              relatedSubTasks = subTasks.filter(st => st.parentId === t.createTime)
+            }
             rawList = [...rawList, ...relatedSubTasks]
           })
         }
@@ -729,7 +734,8 @@ export default {
             category: item.cat,
             tags: item.labels.join(','),
             dueTime: this.getRepeatDueTime(item.repeatType, item.dueTime && dateUtil.formatDateTime('HH:mm:ss', item.dueTime)),
-            repeatType: item.repeatType
+            repeatType: item.repeatType,
+            reverse: true
           })
         }
         item.status = 1
@@ -754,7 +760,8 @@ export default {
                   category: subTask.cat,
                   labels: subTask.labels.join(','),
                   dueTime: this.getRepeatDueTime(subTask.repeatType, subTask.dueTime && dateUtil.formatDateTime('HH:mm:ss', subTask.dueTime)),
-                  repeatType: subTask.repeatType
+                  repeatType: subTask.repeatType,
+                  reverse: true
                 })
               }
               subTask.cat = 'history'
@@ -772,7 +779,8 @@ export default {
             category: item.cat,
             tags: item.labels.join(','),
             dueTime: this.getRepeatDueTime(item.repeatType, item.dueTime && dateUtil.formatDateTime('HH:mm:ss', item.dueTime)),
-            repeatType: item.repeatType
+            repeatType: item.repeatType,
+            reverse: true
           })
         }
         item.cat = 'history'
@@ -1249,7 +1257,7 @@ export default {
         if (task.cat === 'history' && task.status === 1 && task.doneTime) {
           const now = (new Date()).getTime()
           if (now - task.doneTime > 1000 * 60 * 60 * 24 * config.historyClearDaysFilter) {
-            console.log('removing a old done task', i, task)
+            console.log('removing an old done task', i, task)
             this.list.splice(i, 1)
             edited = true
           }
