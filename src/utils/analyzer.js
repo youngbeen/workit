@@ -40,6 +40,29 @@ const analyseDueDate = (content) => {
       matchedDueDate: matchedDays
     }
   }
+  // 分析due date，以~~包裹的MM-dd，yyyy-MM-dd
+  let matchedDate = content.match(/(?<=~)(\d{4}-)?\d{2}-\d{2}(?=~)/)
+  if (matchedDate) {
+    matchedDate = matchedDate[0]
+    trimContent = trimContent.replace(`~${matchedDate}~`, '')
+    let year = (new Date()).getFullYear()
+    let month = ''
+    let day = ''
+    if (matchedDate.length > 5) {
+      // 含年
+      [year, month, day] = matchedDate.split('-')
+    } else {
+      // 不含年
+      [month, day] = matchedDate.split('-')
+    }
+    dueDate = `${year}-${month}-${day} 18:00:00`
+    return {
+      content,
+      trimContent,
+      dueDate,
+      matchedDueDate: matchedDate
+    }
+  }
   // 分析due date，以~~包裹的星期x
   // 支持mo/tu/we...不区分大小写
   // 支持monday/tuesday...不区分大小写

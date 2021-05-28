@@ -28,7 +28,8 @@
               item.parentId && 'sub',
               item.parentId && system.subTaskDisplayMode !== 'full' && 'padded-right',
               item.status === 1 && 'done',
-              system.tab === 'history' && isDoneInToday(item.doneTime) && 'highlight']">
+              system.tab === 'history' && isDoneInToday(item.doneTime) && 'highlight']"
+            :id="'task-' + item.createTime">
             <font-awesome-icon class="sub-icon" v-if="item.parentId" :icon="['fas', 'atom']" /><font-awesome-icon class="repeat-icon" :class="[item.parentId && 'sub']" v-if="item.repeatType" :icon="['fas', 'sync']" /> {{ item.content }}
             <due-tag v-if="item.status === 0 && item.dueTime" :time="item.dueTime" :now="nowTime" :now-date="nowDate"></due-tag>
           </div>
@@ -1578,7 +1579,7 @@ select, input {
         margin-left: 26px;
         padding: 6px 6px 6px 0;
         &.sub {
-          margin-left: 36px;
+          margin-left: 42px;
           font-size: 13px;
         }
         &.padded-right {

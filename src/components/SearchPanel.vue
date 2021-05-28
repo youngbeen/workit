@@ -50,7 +50,10 @@
               <span class="common-tag sm label" v-for="(label, i) in item.labels" :key="i">{{ label }}</span>
               <div class="mask">&nbsp;</div>
             </div>
-            <div class="icon-btn lg" @click="go(cat.category)">
+            <div class="icon-btn" @click="handleDetail(item)" title="Detail">
+              <font-awesome-icon :icon="['fas', 'info']" />
+            </div>
+            <div class="icon-btn lg" @click="go(cat.category, item)" title="Navigate">
               <font-awesome-icon :icon="['fas', 'chevron-right']" />
             </div>
           </div>
@@ -237,11 +240,22 @@ export default {
       }
       return result
     },
-    go (cat) {
+    handleDetail (item) {
+      eventBus.$emit('showItemDetail', {
+        list: [item],
+        index: 0
+      })
+    },
+    go (cat, item) {
       if (system.tab !== cat) {
         systemCtrl.changeTab(cat)
       }
       this.close()
+      setTimeout(() => {
+        document.querySelector(`#task-${item.createTime}`).scrollIntoView({
+          behavior: 'smooth'
+        })
+      }, 300)
     },
     toggleCategoryCollapse (index) {
       this.searchResults[index].collapsed = !this.searchResults[index].collapsed

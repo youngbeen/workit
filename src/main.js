@@ -44,7 +44,8 @@ import {
   faCookieBite,
   faCog,
   faSync,
-  faEnvelopeSquare
+  faEnvelopeSquare,
+  faInfo
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -91,6 +92,7 @@ library.add(faCookieBite)
 library.add(faCog)
 library.add(faSync)
 library.add(faEnvelopeSquare)
+library.add(faInfo)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
