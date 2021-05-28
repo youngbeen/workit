@@ -74,7 +74,7 @@ Task content blahblah...~0~
 Task content blahblah...~1~
 ```
 
-Weekdays are supported as well. e.g.
+Weekdays are supported. e.g.
 
 ```string
 # Task due date will be set as the target day 6pm
@@ -86,6 +86,14 @@ Task content blahblah...~星期4~
 Task content blahblah...~星期日~
 Task content blahblah...~星期天~
 Task content blahblah...~周日~
+```
+
+Date format is supported as well. e.g.
+
+```string
+# Task due date will be set as the target day 6pm
+Task content blahblah...~03-23~
+Task content blahblah...~2021-03-23~
 ```
 
 ### Fast repeat task setting by `^^`
