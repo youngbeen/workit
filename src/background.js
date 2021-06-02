@@ -235,6 +235,17 @@ async function createWindow () {
           }
         }
       ]
+    },
+    {
+      label: 'Help',
+      submenu: [
+        {
+          label: 'Guide',
+          click: () => {
+            win.webContents.send('sys_showguide')
+          }
+        }
+      ]
     }
   ])
   Menu.setApplicationMenu(customMenu)

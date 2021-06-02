@@ -97,6 +97,7 @@
     <search-panel :list="list"></search-panel>
     <config-panel></config-panel>
     <statistics-panel :list="list" :today="nowDate"></statistics-panel>
+    <document-panel></document-panel>
 
     <date-picker></date-picker>
   </div>
@@ -128,6 +129,7 @@ import FilterPanel from './components/FilterPanel.vue'
 import SearchPanel from './components/SearchPanel.vue'
 import ConfigPanel from './components/ConfigPanel.vue'
 import StatisticsPanel from './components/StatisticsPanel.vue'
+import DocumentPanel from './components/DocumentPanel.vue'
 import DueTag from '@/components/DueTag.vue'
 import IndexIndicator from '@/components/IndexIndicator.vue'
 import CatIndicator from '@/components/CatIndicator.vue'
@@ -149,6 +151,7 @@ export default {
     SearchPanel,
     ConfigPanel,
     StatisticsPanel,
+    DocumentPanel,
     DueTag,
     IndexIndicator,
     CatIndicator,
