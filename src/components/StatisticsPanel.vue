@@ -187,13 +187,13 @@ export default {
       }
       const option = {
         tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'cross',
-            label: {
-              backgroundColor: '#6a7985'
-            }
-          }
+          trigger: 'axis'
+          // axisPointer: {
+          //   type: 'cross',
+          //   label: {
+          //     backgroundColor: '#6a7985'
+          //   }
+          // }
         },
         legend: {
           textStyle: {
@@ -201,12 +201,12 @@ export default {
           },
           data: ['Created', 'Finished']
         },
-        grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '3%',
-          containLabel: true
-        },
+        // grid: {
+        //   left: '3%',
+        //   right: '4%',
+        //   bottom: '3%',
+        //   containLabel: true
+        // },
         xAxis: [
           {
             type: 'category',
@@ -222,8 +222,8 @@ export default {
         series: [
           {
             name: 'Created',
-            type: 'line',
-            smooth: true,
+            type: 'bar',
+            // smooth: true,
             areaStyle: {},
             emphasis: {
               focus: 'series'
@@ -232,8 +232,8 @@ export default {
           },
           {
             name: 'Finished',
-            type: 'line',
-            smooth: true,
+            type: 'bar',
+            // smooth: true,
             areaStyle: {},
             emphasis: {
               focus: 'series'
@@ -310,7 +310,7 @@ export default {
     .box-content {
       padding: 62px 18px 12px;
       .box-chart {
-        height: 300px;
+        height: 360px;
       }
       .box-detail {
         margin: 12px 24px;
