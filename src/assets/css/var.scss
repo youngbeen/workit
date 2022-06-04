@@ -1,0 +1,107 @@
+
+// 定义公共样式
+$dark-0: #1e1e1e;
+$dark-1: #2d292c;
+$dark-2: #3a3639;
+$dark-3: #524e51;
+$dark-4: #6e6a6d;
+$dark-5: #929292;
+$primary-color: #000;
+$primary-bgcolor: #fff;
+$primary-bgcolor-dark: $dark-0;
+$color-active: #1b87fc;
+$color-active-dark: rgba($color-active, .8);
+$color-warning: #ebee33;
+$color-warning-dark: #c6c943;
+$color-danger: #f83c3c;
+$color-danger-dark: #cc4141;
+$input-height: 28px;
+$input-bgcolor: transparent;
+$input-bgcolor-active: #fff;
+$input-bgcolor-active-dark: rgba($dark-3, .8);
+$border-radius: 6px;
+$border-color: #e1e1e1;
+$border-color-dark: #4b4b4a;
+$modal-bgcolor: rgba(0, 0, 0, .3);
+$modal-bgcolor-dark: rgba(0, 0, 0, .3);
+$primary-font-size: 13px;
+$secondary-font-size: 12px;
+$sub-font-size: 11px;
+$primary-font-color: #333;
+$primary-font-color-dark: #f0f0f0;
+$secondary-font-color: #666;
+$secondary-font-color-dark: #979797;
+$sub-font-color: #999;
+$sub-font-color-dark: #707070;
+$scrollbar-thumb-color: rgba(#ccc, .8);
+$scrollbar-thumb-color-dark: rgba($dark-3, .8);
+$transition-time: 0.2s;
+$transition-time-normal: 0.4s;
+
+// 定义导航navigator样式
+$navigator-arrow-bgcolor: #bcbcba;
+$navigator-arrow-bgcolor-active: #fff;
+
+// 定义分类category
+$category-color: #bbb;
+$category-font-size: 11px;
+
+// 定义side bar
+$sidebar-height: 28px;
+$sidebar-bgcolor: #f1f1f1;
+$sidebar-bgcolor-dark: $dark-1;
+
+// 定义side bar中的tab
+$sidebar-tab-bgcolor-active: #ded1d2;
+$sidebar-tab-bgcolor-active-dark: $color-active-dark;
+$sidebar-tab-badge-bgcolor: #ded7d7;
+$sidebar-tab-badge-bgcolor-dark: #444;
+$sidebar-tab-badge-bgcolor-active: #c5b8b9;
+$sidebar-tab-badge-bgcolor-active-dark: #aaa;
+$sidebar-tab-badge-color: #555;
+$sidebar-tab-badge-color-dark: $secondary-font-color-dark;
+
+// 定义toolbar
+$toolbar-color: #444;
+$toolbar-bgcolor: #fcf4f5;
+$toolbar-bgcolor-dark: #393538;
+$toolbar-icon-color: #696969;
+$toolbar-icon-color-dark: #b9b5b8;
+$toolbar-bgcolor-hover: #efe7e8;
+$toolbar-bgcolor-hover-dark: #484246;
+$toolbar-bgcolor-active: #efe7e8;
+$toolbar-bgcolor-active-dark: #484246;
+$toolbar-bgcolor-active-hover: #c9c1c2;
+$toolbar-bgcolor-active-hover-dark: #6e686c;
+
+// 定义集成toolbar
+$itoolbar-height: 24px;
+$itoolbar-border-color: #e7e9e4;
+$itoolbar-color: #717370;
+$itoolbar-bgcolor: #eaeee7;
+$itoolbar-bgcolor-dark: rgba(255, 255, 255, .06);
+$itoolbar-item-bgcolor: transparent;
+$itoolbar-item-bgcolor-active: #fff;
+$itoolbar-item-bgcolor-active-dark: rgba(255, 255, 255, .2);
+$itoolbar-item-border-color: transparent;
+$itoolbar-item-border-color-active: #b3b5b1;
+$itoolbar-item-border-color-active-dark: #747474;
+$itoolbar-item-boxshadow-active: 0 0 2px 0 rgba(112, 112, 112, .3);
+
+// 定义sheet
+$sheet-bgcolor: #fcfaf6;
+$sheet-bgcolor-dark: $dark-1;
+$sheet-boxshadow: 0px 0px 8px 2px rgba(122, 122, 122, .4);
+
+// 定义弹出菜单menu
+$menu-padding: 4px;
+$menu-border-color: #d4d4d4;
+$menu-bgcolor: rgba(240, 240, 240, .96);
+$menu-boxshadow: 0px 3px 7px 1px rgba(122, 122, 122, .4);
+$menu-item-height: 24px;
+$menu-item-padding-x: 4px;
+$menu-item-border-radius: 4px;
+$menu-item-color-active: #fff;
+
+// **** for testing ***
+$test-color: #d3c3c3;
