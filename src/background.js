@@ -133,9 +133,9 @@ function resetData () {
 
 async function createWindow () {
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 900,
-    height: 600,
+    height: 630,
     resizable: false,
     maximizable: false,
     titleBarStyle: 'hiddenInset',
@@ -176,17 +176,17 @@ async function createWindow () {
       label: 'Data',
       submenu: [
         {
-          label: 'Add Task',
-          accelerator: 'CommandOrControl+A',
+          label: 'New Task',
+          accelerator: 'CommandOrControl+N',
           click: () => {
-            win.webContents.send('sys_additem')
+            win.webContents.send('sys_additem_full')
           }
         },
         {
-          label: 'Add Task with Extra Config',
-          accelerator: 'CommandOrControl+Shift+A',
+          label: 'New Task in swift',
+          accelerator: 'CommandOrControl+Shift+N',
           click: () => {
-            win.webContents.send('sys_additem_full')
+            win.webContents.send('sys_additem')
           }
         },
         {
@@ -262,6 +262,7 @@ async function createWindow () {
     createProtocol('app')
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
+    // win.webContents.openDevTools()
   }
 
   win.on('closed', () => {

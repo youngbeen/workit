@@ -1285,10 +1285,10 @@ export default {
 <style lang="scss">
 @import "./assets/css/var.scss";
 
-@font-face {
-  font-family: 'WorkSans Regular';
-  src: url('./assets/fonts/WorkSans-Regular.otf');
-}
+// @font-face {
+//   font-family: 'WorkSans Regular';
+//   src: url('./assets/fonts/WorkSans-Regular.otf');
+// }
 
 html, body {
   margin: 0;
@@ -1296,7 +1296,7 @@ html, body {
   height: 100%;
 }
 select, input {
-  font-family: 'WorkSans Regular';
+  font-family: Work Sans;
 }
 #app {
   position: relative;
@@ -1306,7 +1306,7 @@ select, input {
   background: $primary-bgcolor;
   color: $primary-color;
   font-size: $primary-font-size;
-  font-family: 'WorkSans Regular', 'Monaco', Helvetica, Arial, sans-serif;
+  font-family: Work Sans, 'Monaco', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
