@@ -1425,7 +1425,7 @@ select, input {
   border-radius: $border-radius;
   background: $input-bgcolor;
   color: $primary-font-color;
-  font-family: 'WorkSans Regular', 'Monaco', Helvetica, Arial, sans-serif;
+  font-family: Work Sans, 'Monaco', Helvetica, Arial, sans-serif;
   font-size: $primary-font-size;
   font-weight: 500;
   resize: none;
