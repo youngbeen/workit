@@ -10,12 +10,15 @@
       <!-- list -->
       <div class="box-list" v-show="system.tab !== 'calendar'">
         <!-- <button @click="checkNearHoliday()">Test</button> -->
-        <div class="box-item" :class="[item.index === focusIndex && 'focused', 'animated']"
+        <div class="box-item" :class="[
+            item.index === focusIndex && 'focused', 'animated',
+            item.index === overIndex && 'before-me'
+          ]"
           :style="{ transitionDelay: index / 20 + 's' }"
-          :draggable="system.tab !== 'focus'"
           v-for="(item, index) in currentList" :key="item.index"
+          :draggable="system.tab !== 'focus'"
           @dragstart="handleDragstart($event, item.cat, item.index)"
-          @dragover.prevent="handleDragover"
+          @dragover.prevent="handleDragover($event, item.index)"
           @drop.prevent="handleDrop($event, item.index)">
           <index-indicator :index="index"></index-indicator>
           <cat-indicator v-show="system.tab === 'focus'" :name="item.cat"></cat-indicator>
@@ -166,6 +169,7 @@ export default {
       focusIndex: -1, // 正聚焦的索引（代表当前触发激活了pop box）
       seePartHistory: true, // 是否只展示部分历史数据
       historyLimit: 30, // 默认展示的历史条目数上限
+      overIndex: -1, // 当前拖拽over的项索引
       // groupColors: new Map(), // 颜色匹配字典，key=group, value=<css color string>
       list: [
         // {
@@ -682,7 +686,7 @@ export default {
     copyAllContent (withTags = false) {
       let contents = []
       if (withTags) {
-        contents = this.currentList.map(item => {
+        contents = this.currentList.map((item, i) => {
           let tagStr = ''
           if (item.labels.length) {
             item.labels.forEach(l => {
@@ -690,10 +694,10 @@ export default {
             })
             tagStr += ' - '
           }
-          return `${tagStr}${item.content}`
+          return `${i + 1}. ${tagStr}${item.content}`
         })
       } else {
-        contents = this.currentList.map(item => item.content)
+        contents = this.currentList.map((item, i) => `${i + 1}. ${item.content}`)
       }
       clipboard.writeText(contents.join('\n'))
       const copyNotify = new Notification('✅ Content Copied', {
@@ -970,7 +974,8 @@ export default {
     changeSequence ({ sourceIndex = -1, targetIndex = -1 }) {
       if (sourceIndex > -1 && targetIndex > -1 && sourceIndex !== targetIndex) {
         const item = this.list.splice(sourceIndex, 1)[0]
-        this.list.splice(targetIndex, 0, item)
+        const finalIndex = sourceIndex < targetIndex ? targetIndex - 1 : targetIndex
+        this.list.splice(finalIndex, 0, item)
         dataCtrl.save(this.list)
       }
     },
@@ -979,7 +984,8 @@ export default {
         const targetTask = this.list[targetIndex]
         const item = this.list.splice(sourceIndex, 1)[0]
         item.parentId = targetTask.createTime
-        this.list.splice(targetTask.index + 1, 0, item)
+        const finalIndex = sourceIndex < targetTask.index ? targetTask.index - 1 : targetTask.index
+        this.list.splice(finalIndex + 1, 0, item)
         dataCtrl.save(this.list)
       }
     },
@@ -1176,7 +1182,7 @@ export default {
     handlePopClose () {
       this.focusIndex = -1
     },
-    handleMouseover (cat, index) {
+    handleMouseover (index) {
       // this.list[cat][index].isShowAction = true
     },
     handleMouseout (cat, index) {
@@ -1188,13 +1194,17 @@ export default {
       e.dataTransfer.setData('sourceCat', cat)
       e.dataTransfer.setData('sourceIndex', index)
     },
-    handleDragover (e) {
-      // console.log('over', e)
+    handleDragover (e, index) {
+      // console.log('over', index)
       e.dataTransfer.dropEffect = 'move'
+      if (this.overIndex !== index && index >= 0) {
+        this.overIndex = index
+      }
     },
     handleDrop (e, index) {
       // console.log('drop', index)
       e.dataTransfer.dropEffect = 'move'
+      this.overIndex = -1
       // const sourceCat = e.dataTransfer.getData('sourceCat')
       const sourceIndex = parseInt(e.dataTransfer.getData('sourceIndex'))
       if (sourceIndex === index) {
@@ -1218,18 +1228,21 @@ export default {
         } else {
           // 正常交换位置
           const item = this.list.splice(sourceIndex, 1)[0]
-          this.list.splice(index, 0, item)
+          const targetIndex = sourceIndex < index ? index - 1 : index
+          this.list.splice(targetIndex, 0, item)
         }
       } else if (targetTask.parentId) {
         // drop到子任务，则变更为该子任务兄弟任务，放于该子任务前
         const item = this.list.splice(sourceIndex, 1)[0]
         item.parentId = targetTask.parentId
-        this.list.splice(targetTask.index, 0, item)
+        const finalIndex = sourceIndex < targetTask.index ? targetTask.index - 1 : targetTask.index
+        this.list.splice(finalIndex, 0, item)
       } else {
         // 子任务drop主任务，变更为该主任务的子任务
         const item = this.list.splice(sourceIndex, 1)[0]
         item.parentId = targetTask.createTime
-        this.list.splice(targetTask.index + 1, 0, item)
+        const finalIndex = sourceIndex < targetTask.index ? targetTask.index - 1 : targetTask.index
+        this.list.splice(finalIndex + 1, 0, item)
       }
       dataCtrl.save(this.list)
     },
@@ -1534,12 +1547,15 @@ select, input {
       opacity: 0;
       cursor: default;
       overflow: hidden;
-      transition: all $transition-time;
+      transition: opacity $transition-time, background $transition-time;
       &.animated {
         opacity: 1;
       }
       &.focused {
         background: rgba($color-active, .04);
+      }
+      &.before-me {
+        border-top: 2px dashed $color-active;
       }
       .group-indicator {
         position: absolute;
@@ -1783,6 +1799,9 @@ select, input {
         background: $primary-bgcolor-dark;
         &.focused {
           background: rgba($dark-1, .9)
+        }
+        &.before-me {
+          border-top: 2px dashed $color-active-dark;
         }
         .box-radio {
           border: 1px solid $secondary-font-color-dark;

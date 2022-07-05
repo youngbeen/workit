@@ -41,10 +41,10 @@ npm run e:build
 
 `Workit` now supports 3 types shortcuts
 
-* <kbd>Command/Ctrl</kbd> + <kbd>A</kbd>
-  * Fast task adding
-* <kbd>Command/Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>A</kbd>
-  * Fast task adding with extra config opened
+* <kbd>Command/Ctrl</kbd> + <kbd>N</kbd>
+  * New task
+* <kbd>Command/Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>N</kbd>
+  * New task in swift
 * <kbd>Command/Ctrl</kbd> + <kbd>Up/Down</kbd>
   * Toggle in left navigations
 
@@ -54,7 +54,7 @@ You may think editing task in seperated area from content area is a bit of diffi
 
 ### Fast labels tagging by `##`
 
-Whenever you input something in `##` pair, the content inside will be fixed into labels and automatically be merged into current labels. e.g.
+When you input something in `##` pair, the content inside will be fixed into labels and automatically be merged into current labels. e.g.
 
 ```string
 Task content blahblah...#tag1,tag-2#
@@ -62,7 +62,7 @@ Task content blahblah...#tag1,tag-2#
 
 ### Fast due date setting/postpone by `~~`
 
-Whenever you input something in `~~` pair, the content inside will be fixed into due date and current task due date will be set automatically.
+When you input something in `~~` pair, the content inside will be fixed into due date and current task due date will be set automatically.
 
 Numbers are treated as post days after today. e.g.
 
@@ -74,7 +74,7 @@ Task content blahblah...~0~
 Task content blahblah...~1~
 ```
 
-Weekdays are supported. e.g.
+Weekdays are supported as well. e.g.
 
 ```string
 # Task due date will be set as the target day 6pm
@@ -98,7 +98,7 @@ Task content blahblah...~2021-03-23~
 
 ### Fast repeat task setting by `^^`
 
-Whenever you input something in `^^` pair, the content inside will be fixed into repeat type and current task repeat type will be set automatically. e.g.
+When you input something in `^^` pair, the content inside will be fixed into repeat type and current task repeat type will be set automatically. e.g.
 
 ```string
 Task content blahblah...^mo^

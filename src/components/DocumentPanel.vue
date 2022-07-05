@@ -18,10 +18,10 @@
           <span class="code">Workit</span> now supports 3 types of shortcuts
         </p>
         <p class="bullet">
-          <span class="keycode">Command/Ctrl</span> + <span class="keycode">A</span> (Fast task adding)
+          <span class="keycode">Command/Ctrl</span> + <span class="keycode">N</span> (New task)
         </p>
         <p class="bullet">
-          <span class="keycode">Command/Ctrl</span> + <span class="keycode">Shift</span> + <span class="keycode">A</span> (Fast task adding with extra option)
+          <span class="keycode">Command/Ctrl</span> + <span class="keycode">Shift</span> + <span class="keycode">N</span> (New task in swift)
         </p>
         <p class="bullet">
           <span class="keycode">Command/Ctrl</span> + <span class="keycode">Up/Down</span> (Toggle in left navigations)
@@ -36,7 +36,7 @@
           Fast labels tagging by <span class="code">##</span>
         </div>
         <p>
-          Whenever you input something in <span class="code">##</span> pair, the content inside will be fixed into labels and automatically be merged into current labels. e.g.
+          When you input something in <span class="code">##</span> pair, the content inside will be fixed into labels and automatically be merged into current labels. e.g.
         </p>
         <div class="code-block">
           Task content blahblah...#tag1,tag-2#
@@ -45,7 +45,7 @@
           Fast due date setting/postpone by <span class="code">~~</span>
         </div>
         <p>
-          Whenever you input something in <span class="code">~~</span> pair, the content inside will be fixed into due date and current task due date will be set automatically.
+          When you input something in <span class="code">~~</span> pair, the content inside will be fixed into due date and current task due date will be set automatically.
         </p>
         <p>
           Numbers are treated as post days after today. e.g.
@@ -57,7 +57,7 @@
           Task content blahblah...~1~
         </div>
         <p>
-          Weekdays are supported. e.g.
+          Weekdays are supported as well. e.g.
         </p>
         <div class="code-block">
           # Task due date will be set as the target day 6pm<br/>
@@ -82,7 +82,7 @@
           Fast repeat task setting by <span class="code">^^</span>
         </div>
         <p>
-          Whenever you input something in <span class="code">^^</span> pair, the content inside will be fixed into repeat type and current task repeat type will be set automatically. e.g.
+          When you input something in <span class="code">^^</span> pair, the content inside will be fixed into repeat type and current task repeat type will be set automatically. e.g.
         </p>
         <div class="code-block">
           Task content blahblah...^mo^<br/>

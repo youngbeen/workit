@@ -21,11 +21,11 @@ export default {
         },
         {
           type: 'info',
-          content: `Use ${formatKeystroke('Command/Ctrl')} + ${formatKeystroke('A')} to add a new task`
+          content: `Use ${formatKeystroke('Command/Ctrl')} + ${formatKeystroke('N')} to add a new task`
         },
         {
           type: 'info',
-          content: `Use ${formatKeystroke('Command/Ctrl')} + ${formatKeystroke('Shift')} + ${formatKeystroke('A')} to add a new task with extra config`
+          content: `Use ${formatKeystroke('Command/Ctrl')} + ${formatKeystroke('Shift')} + ${formatKeystroke('N')} to add a new task in swift`
         },
         {
           type: 'info',
