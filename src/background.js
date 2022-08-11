@@ -139,6 +139,8 @@ async function createWindow () {
     resizable: false,
     maximizable: false,
     titleBarStyle: 'hiddenInset',
+    // autoHideMenuBar: true,
+    // frame: false,
     webPreferences: {
 
       // Use pluginOptions.nodeIntegration, leave this alone
@@ -149,6 +151,10 @@ async function createWindow () {
       contextIsolation: false
     }
   })
+  // hides the traffic lights
+  // if (process.platform === 'darwin') {
+  //   win.setWindowButtonVisibility(false)
+  // }
 
   const customMenu = Menu.buildFromTemplate([
     { role: 'appMenu' },

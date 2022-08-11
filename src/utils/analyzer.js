@@ -1,6 +1,6 @@
 
 import { dateUtil } from '@youngbeen/angle-util'
-import { getFollowWorkday, getFollowNatureDay } from '@youngbeen/workday'
+import { getComingWorkday, getComingNatureDay } from '@youngbeen/workday'
 const diff = require('diff')
 
 const analyseLabels = (content) => {
@@ -162,9 +162,9 @@ const getDateByPostDays = (postDays = 0, type = 'workday') => {
   let date = now
   if (postDays) {
     if (type === 'workday') {
-      date = getFollowWorkday(now, postDays)
+      date = getComingWorkday(now, postDays)
     } else if (type === 'natual') {
-      date = getFollowNatureDay(now, postDays)
+      date = getComingNatureDay(now, postDays)
     }
   }
   return date

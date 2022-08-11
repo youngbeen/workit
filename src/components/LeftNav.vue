@@ -195,6 +195,7 @@ export default {
     handleDragover (e) {
       // console.log('over', e)
       e.dataTransfer.dropEffect = 'move'
+      this.$emit('e-hover-nav')
     },
     handleDrop (e, cat) {
       // console.log('drop', index)

@@ -1,16 +1,23 @@
 <template>
   <div id="app">
-    <left-nav :counts="catCounts" :mainCounts="catMainTaskCounts"></left-nav>
+    <left-nav
+      :counts="catCounts"
+      :mainCounts="catMainTaskCounts"
+      @e-hover-nav="overIndex = -1"></left-nav>
 
     <note-panel :data="relatedNotes"></note-panel>
 
-    <div class="box-main" :class="[relatedNotes.length && 'collapse']">
-      <action-bar :filteredCount="currentList.length" :totalCount="catCounts[system.tab]"></action-bar>
+    <div class="box-main"
+      :class="[relatedNotes.length && 'collapse']">
+      <action-bar
+        :filteredCount="currentList.length"
+        :totalCount="catCounts[system.tab]"></action-bar>
 
       <!-- list -->
       <div class="box-list" v-show="system.tab !== 'calendar'">
         <!-- <button @click="checkNearHoliday()">Test</button> -->
-        <div class="box-item" :class="[
+        <div class="box-item"
+          :class="[
             item.index === focusIndex && 'focused', 'animated',
             item.index === overIndex && 'before-me'
           ]"
@@ -18,8 +25,7 @@
           v-for="(item, index) in currentList" :key="item.index"
           :draggable="system.tab !== 'focus'"
           @dragstart="handleDragstart($event, item.cat, item.index)"
-          @dragover.prevent="handleDragover($event, item.index)"
-          @drop.prevent="handleDrop($event, item.index)">
+        >
           <index-indicator :index="index"></index-indicator>
           <cat-indicator v-show="system.tab === 'focus'" :name="item.cat"></cat-indicator>
           <!-- <div class="group-indicator" v-show="system.tab !== 'history' && item.group" :style="{ 'background': groupColors.get(item.group) }">&nbsp;</div> -->
@@ -41,39 +47,45 @@
             v-show="item.labels.length && (!item.parentId || system.subTaskDisplayMode === 'full')">
             <span class="common-tag sm label" v-for="(label, i) in item.labels" :key="i">{{ label }}</span>
           </div>
+          <div class="up-layer"
+            @dragover.prevent="handleDragover($event, item.index, 'up')"
+            @drop.prevent="handleDrop($event, item.index, 'up')">&nbsp;</div>
+          <div class="down-layer"
+            @dragover.prevent="handleDragover($event, item.index, 'down')"
+            @drop.prevent="handleDrop($event, item.index, 'down')">&nbsp;</div>
           <div class="box-btns">
-            <!-- <div class="icon-btn btn" v-show="system.tab !== 'history' && !item.group && currentList.length > 1" @click="handleLink($event, system.tab, item, index)">
+            <!-- <div class="icon-btn btn vision-btn" v-show="system.tab !== 'history' && !item.group && currentList.length > 1" @click="handleLink($event, system.tab, item, index)">
               <font-awesome-icon :icon="['fas', 'link']" title="Link" />
             </div>
-            <div class="icon-btn btn" v-show="system.tab !== 'history' && item.group" @click="handleUnlink($event, system.tab, item, index)">
+            <div class="icon-btn btn vision-btn" v-show="system.tab !== 'history' && item.group" @click="handleUnlink($event, system.tab, item, index)">
               <font-awesome-icon :icon="['fas', 'unlink']" title="Unlink" />
             </div> -->
-            <div class="icon-btn btn"
+            <div class="icon-btn btn vision-btn"
               v-show="system.tab === 'focus'"
               @click="goto(item)">
               <font-awesome-icon :icon="['fas', 'chevron-right']" :title="'Go to ' + item.cat" />
             </div>
-            <div class="icon-btn btn"
+            <div class="icon-btn btn vision-btn"
               v-show="item.status === 0 && !item.parentId"
               @click="handleAddSubTask(item)">
               <font-awesome-icon :icon="['fas', 'plus']" title="Add Sub Task" />
             </div>
-            <div class="icon-btn btn"
+            <div class="icon-btn btn vision-btn"
               v-show="item.status === 0 && item.parentId"
               @click="becomeMainTask(item)">
               <font-awesome-icon :icon="['fas', 'eject']" title="Become Main Task" />
             </div>
-            <div class="icon-btn btn"
+            <div class="icon-btn btn vision-btn"
               v-show="!(item.parentId && item.status === 1)"
               @click="handleShowEdit(item.cat, item.index)">
               <font-awesome-icon :icon="['fas', 'edit']" title="Edit" />
             </div>
-            <div class="icon-btn btn"
+            <div class="icon-btn btn vision-btn"
               v-show="!(item.parentId && item.status === 1)"
               @click="handleChangeCat($event, item)">
               <font-awesome-icon :icon="['fas', 'paper-plane']" title="Change Category" />
             </div>
-            <div class="icon-btn btn" @click="handleShowMore($event, item, index)">
+            <div class="icon-btn btn vision-btn" @click="handleShowMore($event, item, index)">
               <font-awesome-icon :icon="['fas', 'ellipsis-h']" title="More" />
             </div>
           </div>
@@ -1194,16 +1206,20 @@ export default {
       e.dataTransfer.setData('sourceCat', cat)
       e.dataTransfer.setData('sourceIndex', index)
     },
-    handleDragover (e, index) {
-      // console.log('over', index)
-      e.dataTransfer.dropEffect = 'move'
+    handleDragover (e, index, source) {
+      // console.log('over', e)
+      if (source === 'up') {
+        e.dataTransfer.dropEffect = 'move'
+      } else {
+        e.dataTransfer.dropEffect = 'link'
+      }
       if (this.overIndex !== index && index >= 0) {
         this.overIndex = index
       }
     },
-    handleDrop (e, index) {
+    handleDrop (e, index, source) {
       // console.log('drop', index)
-      e.dataTransfer.dropEffect = 'move'
+      // e.dataTransfer.dropEffect = 'move'
       this.overIndex = -1
       // const sourceCat = e.dataTransfer.getData('sourceCat')
       const sourceIndex = parseInt(e.dataTransfer.getData('sourceIndex'))
@@ -1216,14 +1232,20 @@ export default {
       if (!sourceTask.parentId && !targetTask.parentId) {
         // 主任务drop主任务
         if (!this.list.some(t => t.parentId === sourceTask.createTime)) {
-          // 无子任务的主任务drop主任务，需要确认是交换位置还是变为其子任务
-          ipcRenderer.send('asynchronous-message', {
-            type: 'sys_confirm_drop_maintask',
-            content: {
+          // 无子任务的主任务drop主任务
+          if (source === 'up') {
+            // 交换顺序
+            this.changeSequence({
               sourceIndex,
               targetIndex: index
-            }
-          })
+            })
+          } else {
+            // 变为子任务
+            this.becomeSubTask({
+              sourceIndex,
+              targetIndex: index
+            })
+          }
           return
         } else {
           // 正常交换位置
@@ -1360,6 +1382,12 @@ select, input {
     &.active {
       background: $toolbar-bgcolor-active-hover;
     }
+  }
+}
+.vision-btn {
+  background: rgba($toolbar-bgcolor-hover, .4);
+  &:not(:first-of-type) {
+    margin-left: 6px;
   }
 }
 .modal-bg {
@@ -1569,6 +1597,7 @@ select, input {
         position: absolute;
         left: 5px;
         top: 8px;
+        z-index: 3;
         width: 16px;
         height: 16px;
         border: 1px solid #ccc;
@@ -1637,6 +1666,22 @@ select, input {
         .label {
           margin-right: 3px;
         }
+      }
+      .up-layer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        height: 50%;
+        background-color: transparent;
+      }
+      .down-layer {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        height: 50%;
+        background-color: transparent;
       }
       .box-btns {
         position: absolute;
@@ -1716,6 +1761,9 @@ select, input {
         background: $toolbar-bgcolor-active-hover-dark;
       }
     }
+  }
+  .vision-btn {
+    background: rgba($toolbar-bgcolor-hover-dark, .4);
   }
   .modal-bg {
     background: $modal-bgcolor-dark;

@@ -124,7 +124,7 @@
 <script>
 import { ipcRenderer } from 'electron'
 import { sleep } from '@youngbeen/sleep'
-import { getFollowWorkday } from '@youngbeen/workday'
+import { getComingWorkday } from '@youngbeen/workday'
 import eventBus from '@/eventBus'
 import { cats } from '@/models/DictMap'
 import system from '@/models/system'
@@ -339,7 +339,7 @@ export default {
       const now = new Date()
       let date = now
       if (postDays) {
-        date = getFollowWorkday(now, postDays)
+        date = getComingWorkday(now, postDays)
       }
       return date
     },
