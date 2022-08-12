@@ -1,5 +1,5 @@
 <template>
-  <section class="bed-config-panel" v-show="isShow">
+  <section class="bed-config-panel" v-if="isShow">
     <div class="container">
       <div class="box-row">
         <div class="icon-btn lg" @click="close()">

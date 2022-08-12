@@ -5,8 +5,8 @@
       v-show="system.tab !== 'calendar'"
       title="Filter"
       @click="showFilter()">
-      <font-awesome-icon :icon="['fas', 'filter']" />&nbsp;
-      <span v-show="isFilterActive">{{ filteredCount }}/{{ totalCount }}</span>
+      <font-awesome-icon :icon="['fas', 'filter']" />
+      <span v-show="isFilterActive">&nbsp;{{ filteredCount }}/{{ totalCount }}</span>
     </div>
     <div class="icon-btn lg"
       title="Toggle Sub Task Display Mode"

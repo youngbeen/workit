@@ -113,6 +113,7 @@
     <config-panel></config-panel>
     <statistics-panel :list="list" :today="nowDate"></statistics-panel>
     <document-panel></document-panel>
+    <about-me></about-me>
 
     <date-picker></date-picker>
   </div>
@@ -145,6 +146,7 @@ import SearchPanel from './components/SearchPanel.vue'
 import ConfigPanel from './components/ConfigPanel.vue'
 import StatisticsPanel from './components/StatisticsPanel.vue'
 import DocumentPanel from './components/DocumentPanel.vue'
+import AboutMe from './components/AboutMe.vue'
 import DueTag from '@/components/DueTag.vue'
 import IndexIndicator from '@/components/IndexIndicator.vue'
 import CatIndicator from '@/components/CatIndicator.vue'
@@ -167,6 +169,7 @@ export default {
     ConfigPanel,
     StatisticsPanel,
     DocumentPanel,
+    AboutMe,
     DueTag,
     IndexIndicator,
     CatIndicator,
@@ -540,6 +543,9 @@ export default {
     eventBus.$on('clearHistory', () => {
       this.clearHistory()
     })
+    eventBus.$on('copyContent', (param) => {
+      this.copyAllContent(param)
+    })
     ipcRenderer.on('sys_changesequence', (e, data) => {
       this.changeSequence(data)
     })
@@ -549,21 +555,21 @@ export default {
     ipcRenderer.on('sys_becomesubtask', (e, data) => {
       this.becomeSubTask(data)
     })
-    ipcRenderer.on('sys_copycontent', () => {
-      this.copyAllContent()
-    })
-    ipcRenderer.on('sys_copycontent_withtag', () => {
-      this.copyAllContent(true)
-    })
+    // ipcRenderer.on('sys_copycontent', () => {
+    //   this.copyAllContent()
+    // })
+    // ipcRenderer.on('sys_copycontent_withtag', () => {
+    //   this.copyAllContent(true)
+    // })
     // ipcRenderer.on('sys_unlink_all', () => {
     //   this.unlinkAll()
     // })
-    ipcRenderer.on('sys_export_trigger', () => {
-      ipcRenderer.send('asynchronous-message', {
-        type: 'sys_export_file',
-        content: window.localStorage.getItem('workitSaveData')
-      })
-    })
+    // ipcRenderer.on('sys_export_trigger', () => {
+    //   ipcRenderer.send('asynchronous-message', {
+    //     type: 'sys_export_file',
+    //     content: window.localStorage.getItem('workitSaveData')
+    //   })
+    // })
     ipcRenderer.on('sys_importdata', (e, content, type) => {
       // console.log(content, type)
       this.importData(content, type)
@@ -579,6 +585,7 @@ export default {
     eventBus.$off('editItem')
     eventBus.$off('proceedSort')
     eventBus.$off('clearHistory')
+    eventBus.$off('copyContent')
   },
 
   methods: {
@@ -1346,6 +1353,37 @@ select, input {
   -moz-osx-font-smoothing: grayscale;
 }
 // 公共样式
+.cs-logo {
+  position: relative;
+  z-index: 1000;
+  display: inline-block;
+  width: 58px;
+  height: 40px;
+  line-height: 48px;
+  padding-left: 22px;
+  // padding-right: 80px;
+  background: linear-gradient(90deg, red, orange, gold, green, cyan, blue, purple, pink, red);
+  background-size: 1200px;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  // color: #444;
+  // text-shadow: 1px 1px #fff;
+  // text-align: justify;
+  font-size: 15px;
+  font-weight: bold;
+  user-select: none;
+  -webkit-app-region: drag;
+  animation: rolling infinite 20s linear;
+}
+@keyframes rolling {
+  0% {
+    background-position: 0px;
+  }
+
+  100% {
+    background-position: 1200px;
+  }
+}
 .icon-image {
   display: flex;
   justify-content: center;
@@ -1672,7 +1710,7 @@ select, input {
         left: 0;
         top: 0;
         right: 0;
-        height: 50%;
+        height: 60%;
         background-color: transparent;
       }
       .down-layer {
@@ -1680,7 +1718,7 @@ select, input {
         left: 0;
         bottom: 0;
         right: 0;
-        height: 50%;
+        height: 40%;
         background-color: transparent;
       }
       .box-btns {

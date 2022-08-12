@@ -45,7 +45,9 @@ import {
   faCog,
   faSync,
   faEnvelopeSquare,
-  faInfo
+  faInfo,
+  faMinusSquare,
+  faWindowClose
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -93,6 +95,8 @@ library.add(faCog)
 library.add(faSync)
 library.add(faEnvelopeSquare)
 library.add(faInfo)
+library.add(faMinusSquare)
+library.add(faWindowClose)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 

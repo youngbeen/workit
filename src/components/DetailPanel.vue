@@ -1,5 +1,5 @@
 <template>
-  <section class="bed-detail-panel" v-show="isShow">
+  <section class="bed-detail-panel" v-if="isShow">
     <div class="modal-bg" :class="[animated && 'animated']" @click="close()"></div>
     <div class="container" :class="[animated && 'animated']">
       <div class="box-previous" v-show="prev.content" @click="toggle(-1)">

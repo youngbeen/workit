@@ -33,6 +33,12 @@ export const actions = [
 ]
 
 export const sysActions = [
+  { value: 'about', label: 'About' },
+  { value: 'document', label: 'Guide' },
+  { value: 'export', label: 'Export' },
+  { value: 'import', label: 'Import' },
+  { value: 'reset', label: 'Reset' },
   { value: 'statistics', label: 'Statistics' },
-  { value: 'config', label: 'Config' }
+  { value: 'config', label: 'Config' },
+  { value: 'copy_all_content', label: 'Copy All Content' }
 ]

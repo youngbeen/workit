@@ -1,6 +1,19 @@
 <template>
   <section class="bed-left-nav" @mouseover="handleMouseover" @mouseout="handleMouseout">
-    <div class="box-title">Workit</div>
+    <logo-comp></logo-comp>
+    <div class="box-sys-actions"
+      :class="[isShowCount && 'show']">
+      <span class="icon-btn"
+        style="color: #aaa;"
+        @click="handleMinWindow()">
+        <font-awesome-icon :icon="['fas', 'minus-square']" />
+      </span>
+      <span class="icon-btn"
+        style="color: rgb(196,43,28);"
+        @click="handleCloseWindow()">
+        <font-awesome-icon :icon="['fas', 'window-close']" />
+      </span>
+    </div>
     <div class="box-group">
       <div class="nav" :class="[system.tab === 'focus' && 'active']" @click="changeTab('focus')">
         <div class="title">
@@ -116,10 +129,12 @@ import { navigations, sysActions } from '@/models/DictMap'
 import system from '@/models/system'
 import config from '@/models/config'
 import systemCtrl from '@/ctrls/systemCtrl'
+import LogoComp from './LogoComp.vue'
 import PopActions from '@/components/PopSysActions.vue'
 
 export default {
   components: {
+    LogoComp,
     PopActions
   },
 
@@ -227,13 +242,44 @@ export default {
     },
     confirmAction (data) {
       switch (data.value) {
+        case 'about':
+          eventBus.$emit('showAboutMe')
+          break
+        case 'document':
+          eventBus.$emit('showDocument')
+          break
+        case 'export':
+          ipcRenderer.send('asynchronous-message', {
+            type: 'sys_export_file',
+            content: window.localStorage.getItem('workitSaveData')
+          })
+          break
+        case 'import':
+          ipcRenderer.send('asynchronous-message', {
+            type: 'sys_import_trigger'
+          })
+          break
+        case 'reset':
+          ipcRenderer.send('asynchronous-message', {
+            type: 'sys_reset_trigger'
+          })
+          break
         case 'statistics':
           eventBus.$emit('showStatistics')
           break
         case 'config':
           eventBus.$emit('showConfig')
           break
+        case 'copy_all_content':
+          eventBus.$emit('copyContent', true)
+          break
       }
+    },
+    handleMinWindow () {
+      ipcRenderer.send('window-min')
+    },
+    handleCloseWindow () {
+      ipcRenderer.send('window-close')
     }
   }
 }
@@ -252,23 +298,19 @@ export default {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   transition: all $transition-time;
-  .box-title {
-    display: block;
-    height: 40px;
-    line-height: 38px;
-    padding-left: 80px;
-    background: linear-gradient(90deg, red, orange, gold, green, cyan, blue, purple, pink, red);
-    background-size: 1200px;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    // color: #444;
-    // text-shadow: 1px 1px #fff;
-    // text-align: justify;
-    font-size: 15px;
-    font-weight: bold;
-    user-select: none;
-    -webkit-app-region: drag;
-    animation: rolling infinite 20s linear;
+  .box-sys-actions {
+    display: flex;
+    justify-content: flex-end;
+    position: absolute;
+    right: 10px;
+    top: 12px;
+    // width: 60px;
+    // background: red;
+    opacity: 0;
+    transition: all $transition-time;
+    &.show {
+      opacity: 1;
+    }
   }
   .box-group {
     position: relative;
@@ -441,14 +483,6 @@ export default {
   }
   100% {
     transform: rotateX(0deg);
-  }
-}
-@keyframes rolling {
-  0% {
-    background-position: 0px;
-  }
-  100% {
-    background-position: 1200px;
   }
 }
 </style>

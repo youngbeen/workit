@@ -94,7 +94,7 @@ export default {
   }
   .title {
     height: 40px;
-    line-height: 40px;
+    line-height: 48px;
     padding: 0 10px;
     color: $sub-font-color;
     font-weight: bold;

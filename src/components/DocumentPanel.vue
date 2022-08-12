@@ -1,5 +1,5 @@
 <template>
-  <section class="bed-document-panel" v-show="isShow">
+  <section class="bed-document-panel" v-if="isShow">
     <div class="container">
       <div class="box-row">
         <div class="icon-btn lg" @click="close()">
@@ -101,8 +101,8 @@
 </template>
 
 <script>
-import { ipcRenderer } from 'electron'
-// import eventBus from '@/eventBus'
+// import { ipcRenderer } from 'electron'
+import eventBus from '@/eventBus'
 import system from '@/models/system'
 
 export default {
@@ -114,12 +114,19 @@ export default {
   },
 
   mounted () {
-    ipcRenderer.on('sys_showguide', () => {
-      if (system.isPanelActive) {
-        return
-      }
+    eventBus.$on('showDocument', () => {
       this.show()
     })
+    // ipcRenderer.on('sys_showguide', () => {
+    //   if (system.isPanelActive) {
+    //     return
+    //   }
+    //   this.show()
+    // })
+  },
+
+  beforeDestroy () {
+    eventBus.$off('showDocument')
   },
 
   methods: {
