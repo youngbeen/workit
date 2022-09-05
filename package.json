@@ -1,6 +1,8 @@
 {
   "name": "workit",
-  "version": "2.12.0",
+  "version": "2.13.0",
+  "versionDesc": "",
+  "publishDate": "Sept 2022",
   "private": true,
   "description": "Workit is an app to deal with your daily work todo tasks",
   "author": "youngbeen",

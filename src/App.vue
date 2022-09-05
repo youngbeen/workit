@@ -96,8 +96,9 @@
         </div>
       </div>
 
-      <div class="no-data" v-show="system.tab !== 'calendar' && !catCounts[system.tab]">
+      <div class="text-center" v-show="system.tab !== 'calendar' && !catCounts[system.tab]">
         <use-tip></use-tip>
+        <img src="@/assets/envelop.png" alt="" style="width: 240px;">
       </div>
 
       <calendar-view v-show="system.tab === 'calendar'" :today="nowDate" :due-counts="calendarDueCounts"></calendar-view>
@@ -1353,6 +1354,9 @@ select, input {
   -moz-osx-font-smoothing: grayscale;
 }
 // 公共样式
+.text-center {
+  text-align: center;
+}
 .cs-logo {
   position: relative;
   z-index: 1000;

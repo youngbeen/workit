@@ -61,7 +61,7 @@
       </div>
 
       <div class="no-data" v-if="!hasSearched && !searchResults.length">
-        Please input keyword to search
+        <img src="@/assets/books.png" alt="Input keywords to search">
       </div>
       <div class="no-data" v-if="hasSearched && !searchResults.length">
         No tasks matched
@@ -433,6 +433,9 @@ export default {
       padding: 16px;
       color: #aaa;
       text-align: center;
+      img {
+        width: 240px;
+      }
     }
   }
 }

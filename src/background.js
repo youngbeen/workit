@@ -145,109 +145,109 @@ async function createWindow () {
     win.setWindowButtonVisibility(false)
   }
 
-  // const customMenu = Menu.buildFromTemplate([
-  //   { role: 'appMenu' },
-  //   {
-  //     label: 'Edit',
-  //     submenu: [
-  //       { role: 'undo' },
-  //       { role: 'redo' },
-  //       { type: 'separator' },
-  //       { role: 'copy' },
-  //       { role: 'paste' },
-  //       { role: 'cut' },
-  //       { role: 'delete' },
-  //       {
-  //         label: 'Cancel',
-  //         accelerator: 'Esc',
-  //         click: () => {
-  //           win.webContents.send('sys_cancel')
-  //         }
-  //       }
-  //     ]
-  //   },
-  //   { role: 'windowMenu' },
-  //   {
-  //     label: 'Data',
-  //     submenu: [
-  //       {
-  //         label: 'New Task',
-  //         accelerator: 'CommandOrControl+N',
-  //         click: () => {
-  //           win.webContents.send('sys_additem_full')
-  //         }
-  //       },
-  //       {
-  //         label: 'New Task in swift',
-  //         accelerator: 'CommandOrControl+Shift+N',
-  //         click: () => {
-  //           win.webContents.send('sys_additem')
-  //         }
-  //       },
-  //       {
-  //         label: 'Copy All Content',
-  //         click: () => {
-  //           win.webContents.send('sys_copycontent')
-  //         }
-  //       },
-  //       {
-  //         label: 'Copy All Content with Labels',
-  //         click: () => {
-  //           win.webContents.send('sys_copycontent_withtag')
-  //         }
-  //       },
-  //       {
-  //         label: 'Export Data as File',
-  //         click: () => {
-  //           win.webContents.send('sys_export_trigger')
-  //         }
-  //       },
-  //       {
-  //         label: 'Import Data from File',
-  //         click: () => {
-  //           importData()
-  //         }
-  //       },
-  //       {
-  //         label: 'Reset Workit',
-  //         click: () => {
-  //           resetData()
-  //         }
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     label: 'Navigation',
-  //     submenu: [
-  //       {
-  //         label: 'Navigate Next',
-  //         accelerator: 'CommandOrControl+Down',
-  //         click: () => {
-  //           win.webContents.send('sys_navdown')
-  //         }
-  //       },
-  //       {
-  //         label: 'Navigate Previous',
-  //         accelerator: 'CommandOrControl+Up',
-  //         click: () => {
-  //           win.webContents.send('sys_navup')
-  //         }
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     label: 'Help',
-  //     submenu: [
-  //       {
-  //         label: 'Guide',
-  //         click: () => {
-  //           win.webContents.send('sys_showguide')
-  //         }
-  //       }
-  //     ]
-  //   }
-  // ])
-  // Menu.setApplicationMenu(customMenu)
+  const customMenu = Menu.buildFromTemplate([
+    { role: 'appMenu' },
+    // {
+    //   label: 'Edit',
+    //   submenu: [
+    //     { role: 'undo' },
+    //     { role: 'redo' },
+    //     { type: 'separator' },
+    //     { role: 'copy' },
+    //     { role: 'paste' },
+    //     { role: 'cut' },
+    //     { role: 'delete' },
+    //     {
+    //       label: 'Cancel',
+    //       accelerator: 'Esc',
+    //       click: () => {
+    //         win.webContents.send('sys_cancel')
+    //       }
+    //     }
+    //   ]
+    // },
+    // { role: 'windowMenu' },
+    {
+      label: 'Data',
+      submenu: [
+        {
+          label: 'New Task',
+          accelerator: 'CommandOrControl+N',
+          click: () => {
+            win.webContents.send('sys_additem_full')
+          }
+        },
+        {
+          label: 'New Task in swift',
+          accelerator: 'CommandOrControl+Shift+N',
+          click: () => {
+            win.webContents.send('sys_additem')
+          }
+        },
+        {
+          label: 'Copy All Content',
+          click: () => {
+            win.webContents.send('sys_copycontent')
+          }
+        },
+        {
+          label: 'Copy All Content with Labels',
+          click: () => {
+            win.webContents.send('sys_copycontent_withtag')
+          }
+        },
+        {
+          label: 'Export Data as File',
+          click: () => {
+            win.webContents.send('sys_export_trigger')
+          }
+        },
+        {
+          label: 'Import Data from File',
+          click: () => {
+            importData()
+          }
+        },
+        {
+          label: 'Reset Workit',
+          click: () => {
+            resetData()
+          }
+        }
+      ]
+    },
+    {
+      label: 'Navigation',
+      submenu: [
+        {
+          label: 'Navigate Next',
+          accelerator: 'CommandOrControl+Down',
+          click: () => {
+            win.webContents.send('sys_navdown')
+          }
+        },
+        {
+          label: 'Navigate Previous',
+          accelerator: 'CommandOrControl+Up',
+          click: () => {
+            win.webContents.send('sys_navup')
+          }
+        }
+      ]
+    }
+    // {
+    //   label: 'Help',
+    //   submenu: [
+    //     {
+    //       label: 'Guide',
+    //       click: () => {
+    //         win.webContents.send('sys_showguide')
+    //       }
+    //     }
+    //   ]
+    // }
+  ])
+  Menu.setApplicationMenu(customMenu)
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode

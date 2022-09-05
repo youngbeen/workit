@@ -47,7 +47,8 @@ import {
   faEnvelopeSquare,
   faInfo,
   faMinusSquare,
-  faWindowClose
+  faWindowClose,
+  faSlidersH
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -97,6 +98,7 @@ library.add(faEnvelopeSquare)
 library.add(faInfo)
 library.add(faMinusSquare)
 library.add(faWindowClose)
+library.add(faSlidersH)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 

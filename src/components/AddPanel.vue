@@ -29,7 +29,7 @@
       <div class="box-row">
         <textarea id="task-input" class="common-textarea"
           autofocus
-          :placeholder="parentId ? 'sub todo task content' : 'todo task content'"
+          :placeholder="parentId ? 'sub todo task content goes here...' : 'todo task content goes here...'"
           v-model="content"
           @keydown="handleContentChange()"
           @keypress.tab.prevent="isMoreShow = true"
@@ -47,7 +47,7 @@
         </div>
         <div class="row" style="padding-top: 6px;" v-if="usedTags.length">
           <div class="box-input" style="margin-left: 38px;">
-            <input class="common-input" type="text" placeholder="tags seperate with comma" v-model="inputTags" @keypress.enter="save()" @keyup="tags = inputTags.split(',')">
+            <input class="common-input" type="text" placeholder="tags, seperate with comma" v-model="inputTags" @keypress.enter="save()" @keyup="tags = inputTags.split(',')">
             <div class="box-btns">
               <div class="icon-btn" title="Clear" v-show="inputTags" @click="clearTags()">
                 <font-awesome-icon :icon="['fas', 'times-circle']" />
@@ -60,7 +60,7 @@
             <font-awesome-icon :icon="['fas', 'tag']" />
           </div>
           <div class="box-input">
-            <input class="common-input" type="text" placeholder="tags seperate with comma" v-model="inputTags" @keypress.enter="save()" @keyup="tags = inputTags.split(',')">
+            <input class="common-input" type="text" placeholder="tags, seperate with comma" v-model="inputTags" @keypress.enter="save()" @keyup="tags = inputTags.split(',')">
             <div class="box-btns">
               <div class="icon-btn" title="Clear" v-show="inputTags" @click="clearTags()">
                 <font-awesome-icon :icon="['fas', 'times-circle']" />

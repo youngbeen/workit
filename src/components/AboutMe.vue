@@ -4,7 +4,7 @@
     <div class="container" :class="[animated && 'animated']">
       <img class="logo" src="@/assets/Icon-MacOS-512x512@2x.png" alt="logo">
       <div class="title">Workit</div>
-      <div class="version">{{ version }}</div>
+      <div class="version">{{ version }}<span v-if="publishDate"> ({{ publishDate }})</span></div>
       <div class="sub-title">Released under ISC, all rights reversed by youngbeen 2019 - present</div>
       <div class="sub-title">created by youngbeen with ❤️</div>
     </div>
@@ -23,12 +23,14 @@ export default {
     return {
       isShow: false,
       animated: false, // 开启动画控制
-      version: ''
+      version: '',
+      publishDate: ''
     }
   },
 
   mounted () {
     this.version = projectInfo?.version || ''
+    this.publishDate = projectInfo?.publishDate || ''
     eventBus.$on('showAboutMe', () => {
       this.show()
     })

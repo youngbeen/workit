@@ -115,7 +115,7 @@
     <span class="icon-btn sys-btn"
       :class="[isShowCount && 'show']"
       @click="handleShowSysActions">
-      <font-awesome-icon :icon="['fas', 'cog']" />
+      <font-awesome-icon :icon="['fas', 'sliders-h']" />
     </span>
 
     <pop-actions :callback="confirmAction"></pop-actions>
