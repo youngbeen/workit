@@ -1090,7 +1090,10 @@ export default {
       this.focusIndex = task.index
       let options = [...this.actionOptions]
       if (system.tab === 'focus') {
-        options = options.filter((o, index) => index !== 2 && index !== 3)
+        options = options.filter(o => !o.tag.includes('invalid-in-focus'))
+      }
+      if (task.parentId) {
+        options = options.filter(o => !o.tag.includes('invalid-when-subtask'))
       }
       eventBus.$emit('showPopActions', {
         options,
@@ -1113,6 +1116,9 @@ export default {
         //   break
         case 'copy':
           this.handleCopyContent(data.tag.cat, data.tag.index)
+          break
+        case 'copy_subtask_content':
+          this.handleCopySubTaskContent(data.tag.cat, data.tag.index)
           break
         case 'detail':
           this.handleShowDetail(data.tag.cat, data.tag.showIndex)
@@ -1155,6 +1161,19 @@ export default {
     handleCopyContent (cat, index) {
       const task = this.list[index]
       task && clipboard.writeText(task.content)
+      const copyNotify = new Notification('✅ Content Copied', {
+        body: 'Content was copied into clipboard'
+      })
+      copyNotify.onclick = () => {
+        // console.log('copied into clipboard')
+      }
+    },
+    handleCopySubTaskContent (cat, index) {
+      const task = this.list[index]
+      const subTasks = this.currentList.filter(item => item.parentId === task.createTime)
+      let contents = []
+      contents = subTasks.map((item, i) => `${i + 1}. ${item.content}`)
+      clipboard.writeText(contents.join('\n'))
       const copyNotify = new Notification('✅ Content Copied', {
         body: 'Content was copied into clipboard'
       })

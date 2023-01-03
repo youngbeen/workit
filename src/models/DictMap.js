@@ -25,11 +25,12 @@ export const navigations = [
 
 export const actions = [
   // { value: 'edit', label: 'Edit' },
-  { value: 'copy', label: 'Copy Content' },
-  { value: 'detail', label: 'Detail' },
-  { value: 'btt', label: 'Bring To Top' },
-  { value: 'stb', label: 'Set To Bottom' },
-  { value: 'delete', label: 'Delete' }
+  { value: 'copy', label: 'Copy Content', tag: [] },
+  { value: 'copy_subtask_content', label: 'Copy Sub Task Content', tag: ['invalid-when-subtask'] },
+  { value: 'detail', label: 'Detail', tag: [] },
+  { value: 'btt', label: 'Bring To Top', tag: ['invalid-in-focus'] },
+  { value: 'stb', label: 'Set To Bottom', tag: ['invalid-in-focus'] },
+  { value: 'delete', label: 'Delete', tag: [] }
 ]
 
 export const sysActions = [

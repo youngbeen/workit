@@ -41,7 +41,7 @@ export default {
       this.top = params.position.top || 0
       // 修正位置
       if (this.left > 0) {
-        this.left -= 128
+        this.left -= 168
       }
       if (this.top > 400) {
         this.top -= 24 * this.options.length
@@ -105,7 +105,7 @@ export default {
     right: 0px;
     top: 38px;
     z-index: 10;
-    width: 120px;
+    width: 160px;
     padding: $menu-padding;
     border: 1px solid $menu-border-color;
     border-radius: $border-radius;
