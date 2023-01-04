@@ -1,6 +1,6 @@
 {
   "name": "workit",
-  "version": "2.14.0",
+  "version": "2.14.1",
   "versionDesc": "copy sub task content & overdue reminder",
   "publishDate": "Jan 2023",
   "private": true,

@@ -601,7 +601,7 @@ export default {
       // 检查5分钟后过期的项目，进行提醒
       const duingTask = []
       this.list.forEach(item => {
-        if (item.status === 0 && this.nowTime < item.dueTime && this.nowTime > item.dueTime - 1000 * 60 * 5) {
+        if (item.status === 0 && item.dueTime && this.nowTime < item.dueTime && this.nowTime > item.dueTime - 1000 * 60 * 5) {
           duingTask.push(item)
         }
       })
