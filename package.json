@@ -1,8 +1,8 @@
 {
   "name": "workit",
-  "version": "2.13.1",
-  "versionDesc": "update holiday calendar",
-  "publishDate": "Dec 2022",
+  "version": "2.14.0",
+  "versionDesc": "copy sub task content & overdue reminder",
+  "publishDate": "Jan 2023",
   "private": true,
   "description": "Workit is an app to deal with your daily work todo tasks",
   "author": "youngbeen",

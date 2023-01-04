@@ -508,6 +508,7 @@ export default {
     // ticking by minute
     this.tc = setInterval(() => {
       this.freshTime()
+      this.reminder()
     }, 1000 * 60)
 
     eventBus.$on('addItem', (params) => {
@@ -595,6 +596,23 @@ export default {
       this.nowTime = now.getTime()
       this.nowHour = now.getHours()
       this.nowDate = dateUtil.formatDateTime('YYYY-MM-DD', this.nowTime)
+    },
+    reminder () {
+      // 检查5分钟后过期的项目，进行提醒
+      const duingTask = []
+      this.list.forEach(item => {
+        if (item.status === 0 && this.nowTime < item.dueTime && this.nowTime > item.dueTime - 1000 * 60 * 5) {
+          duingTask.push(item)
+        }
+      })
+      if (duingTask.length) {
+        const notify = new Notification('🚨 Task is about to overdue', {
+          body: `${duingTask.length} task${duingTask.length > 1 ? 's are' : ' is'} about to overdue`
+        })
+        notify.onclick = () => {
+          // console.log('copied into clipboard')
+        }
+      }
     },
     toggleHistoryViewMode () {
       this.seePartHistory = !this.seePartHistory
