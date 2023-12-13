@@ -328,7 +328,7 @@ export default {
         case 'friday': {
           const nowWeekday = now.getDay()
           let leftDays = 5 - nowWeekday
-          leftDays < 0 && (leftDays += 7)
+          leftDays <= 0 && (leftDays += 7)
           const friday = now.getTime() + 1000 * 60 * 60 * 24 * leftDays
           this.dueTime = dateUtil.formatDateTime('YYYY-MM-DD', friday) + ' 18:00:00'
           break
