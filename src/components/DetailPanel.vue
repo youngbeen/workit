@@ -230,7 +230,7 @@ export default {
   .container {
     position: relative;
     margin: 5% auto;
-    width: 600px;
+    width: 800px;
     padding: 60px 0 60px;
     border-radius: $border-radius;
     background: $sheet-bgcolor;

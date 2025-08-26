@@ -290,7 +290,7 @@ export default {
 
 .bed-left-nav {
   position: relative;
-  width: 180px;
+  width: 220px;
   height: 100%;
   // border-right: 1px solid $border-color;
   background: $sidebar-bgcolor;
@@ -321,7 +321,7 @@ export default {
       position: absolute;
       left: 0;
       bottom: -5px;
-      width: 80%;
+      width: 100%;
       height: 1px;
       border-bottom: 1px solid $border-color;
     }

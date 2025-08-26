@@ -82,7 +82,7 @@ export default {
 @import "../assets/css/var.scss";
 
 .bed-note-panel {
-  width: 200px;
+  width: 240px;
   height: 100%;
   border-left: 1px solid $border-color;
   border-right: 1px solid $border-color;

@@ -1398,7 +1398,7 @@ select, input {
   position: relative;
   z-index: 1000;
   display: inline-block;
-  width: 58px;
+  width: 58px; // NOTE 这个宽度不能调宽，因为会遮挡其他正常的功能按钮
   height: 40px;
   line-height: 48px;
   padding-left: 22px;
@@ -1623,7 +1623,7 @@ select, input {
 
 // 主区域私有样式
 .box-main {
-  width: 720px;
+  width: 1056px;
   height: 100%;
   background: $primary-bgcolor;
   box-shadow: 0px 0px 4px 0 rgba(122, 122, 122, .2);
@@ -1631,10 +1631,10 @@ select, input {
   -webkit-overflow-scrolling: touch;
   transition: all $transition-time-normal;
   &.collapse {
-    width: 520px;
+    width: 816px;
   }
   .box-list {
-    max-height: 524px;
+    max-height: 729px;
     padding: 0 0 18px 18px;
     font-size: 14px;
     // font-family: 'Monaco';
@@ -1674,11 +1674,11 @@ select, input {
       }
       .box-radio {
         position: absolute;
-        left: 5px;
-        top: 8px;
+        left: 4px;
+        top: 10px;
         z-index: 3;
-        width: 16px;
-        height: 16px;
+        width: 17px;
+        height: 17px;
         border: 1px solid #ccc;
         border-radius: 50%;
         opacity: 0;
@@ -1692,11 +1692,11 @@ select, input {
           position: absolute;
           left: 2px;
           top: 2px;
-          width: 12px;
-          height: 12px;
+          width: 13px;
+          height: 13px;
           border-radius: 50%;
           background: $color-active;
-          // animation: heartbeat 2s linear infinite;
+          animation: scaling 1s linear infinite;
         }
         &.always-show {
           opacity: 1;
@@ -1704,7 +1704,7 @@ select, input {
       }
       .content {
         margin-left: 26px;
-        padding: 6px 6px 6px 0;
+        padding: 10px 6px 10px 0;
         &.sub {
           margin-left: 42px;
           font-size: 13px;
@@ -1822,6 +1822,17 @@ select, input {
   //   left: 2px;
   //   top: 2px;
   // }
+}
+@keyframes scaling {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.8);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 @media (prefers-color-scheme: dark) {

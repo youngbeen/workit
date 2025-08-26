@@ -335,7 +335,7 @@ export default {
             color: $secondary-font-color;
           }
           .text {
-            width: 640px;
+            width: 1100px;
           }
         }
       }

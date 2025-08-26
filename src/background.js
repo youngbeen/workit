@@ -123,8 +123,8 @@ function resetData () {
 async function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 900,
-    height: 600,
+    width: 1280,
+    height: 800,
     resizable: false,
     maximizable: false,
     titleBarStyle: 'hiddenInset',

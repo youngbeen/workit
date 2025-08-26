@@ -323,7 +323,7 @@ export default {
         height: $input-height;
       }
       .common-input {
-        width: 480px;
+        width: 850px;
       }
     }
     .row-counts {
@@ -376,7 +376,7 @@ export default {
           }
           .content {
             // min-width: 300px;
-            width: 500px;
+            width: 860px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -394,7 +394,7 @@ export default {
             overflow: hidden;
             // box-shadow: -3px 0px 8px 1px rgba(0, 0, 0, .3) inset;
             &.extended {
-              width: 200px;
+              width: 300px;
             }
             .label {
               margin-right: 3px;

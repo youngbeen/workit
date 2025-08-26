@@ -213,14 +213,14 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    height: 440px;
+    height: 570px;
     .row {
       display: flex;
       justify-content: space-between;
       .cell {
         box-sizing: border-box;
         width: 14%;
-        height: 70px;
+        height: 90px;
         padding: 6px;
         border-radius: $border-radius;
         // background: red;

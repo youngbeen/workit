@@ -22,7 +22,7 @@ module.exports = defineConfig({
           icon: './workit_icon.png'
         },
         electronDownload: {
-          mirror: 'https://npm.taobao.org/mirrors/electron/'
+          mirror: 'https://registry.npmmirror.com/-/binary/electron/'
         }
       }
     }
