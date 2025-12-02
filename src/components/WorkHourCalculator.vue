@@ -1,19 +1,28 @@
 <template>
   <section class="comp-work-hour-calculator">
     <div class="tip-block">
-      This tool is designed to calculate your real work hours based on check in/out times.
+      This tool is designed to calculate your real work hours by start time & end time.
     </div>
-    <p>
-      Start Time: <input type="number" class="common-input" v-model="startHour" min="0" max="23" placeholder="hour" style="width: 80px;" /> : <input type="number" class="common-input" v-model="startMinute" min="0" max="59" placeholder="minute" style="width: 80px;" />
-    </p>
-    <p>
-      End Time: <input type="number" class="common-input" v-model="endHour" min="0" max="23" placeholder="hour" style="width: 80px;" /> : <input type="number" class="common-input" v-model="endMinute" min="0" max="59" placeholder="minute" style="width: 80px;" />
-    </p>
-    <p>
-      Fixed Minutes: <input type="number" class="common-input" v-model="fixedMinutes" min="0" placeholder="This value will be removed from work hours" style="width: 80px;" />
-    </p>
+    <div class="row">
+      <div class="label">Start Time</div>
+      <div class="content">
+        <input type="number" class="common-input" v-model="startHour" min="0" max="23" placeholder="hour" style="width: 80px;" /> : <input type="number" class="common-input" v-model="startMinute" min="0" max="59" placeholder="minute" style="width: 80px;" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="label">End Time</div>
+      <div class="content">
+        <input type="number" class="common-input" v-model="endHour" min="0" max="23" placeholder="hour" style="width: 80px;" /> : <input type="number" class="common-input" v-model="endMinute" min="0" max="59" placeholder="minute" style="width: 80px;" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="label">Fixed Minutes</div>
+      <div class="content">
+        <input type="number" class="common-input" v-model="fixedMinutes" min="0" placeholder="This value will be removed from work hours" style="width: 80px;" />
+      </div>
+    </div>
     <hr />
-    <p style="display: flex; align-items: center;">
+    <div class="box-result">
       <span>Work hours is <strong>{{ workHoursText }}</strong></span>
       <span style="display: inline-flex; align-items: center;">
         <div class="icon-btn lg"
@@ -23,7 +32,7 @@
           <font-awesome-icon :icon="['fas', 'copy']" />
         </div>
       </span>
-    </p>
+    </div>
   </section>
 </template>
 
@@ -98,6 +107,26 @@ export default {
 
 <style scoped lang="scss">
 @import "../assets/css/var.scss";
+
+.row {
+  margin: 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  // padding: 6px 0;
+  color: $color-active;
+  .label {
+    width: 120px;
+    text-align: right;
+    font-weight: 600;
+  }
+}
+
+.box-result {
+  display: flex;
+  align-items: center;
+  margin-left: 130px;
+}
 
 .tip-block {
   padding: 16px;
