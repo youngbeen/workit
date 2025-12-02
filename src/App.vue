@@ -114,6 +114,7 @@
     <config-panel></config-panel>
     <statistics-panel :list="list" :today="nowDate"></statistics-panel>
     <document-panel></document-panel>
+    <toolbox-panel></toolbox-panel>
     <about-me></about-me>
 
     <date-picker></date-picker>
@@ -147,6 +148,7 @@ import SearchPanel from './components/SearchPanel.vue'
 import ConfigPanel from './components/ConfigPanel.vue'
 import StatisticsPanel from './components/StatisticsPanel.vue'
 import DocumentPanel from './components/DocumentPanel.vue'
+import ToolboxPanel from './components/ToolboxPanel.vue'
 import AboutMe from './components/AboutMe.vue'
 import DueTag from '@/components/DueTag.vue'
 import IndexIndicator from '@/components/IndexIndicator.vue'
@@ -170,6 +172,7 @@ export default {
     ConfigPanel,
     StatisticsPanel,
     DocumentPanel,
+    ToolboxPanel,
     AboutMe,
     DueTag,
     IndexIndicator,

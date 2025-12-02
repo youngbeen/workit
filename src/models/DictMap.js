@@ -41,5 +41,11 @@ export const sysActions = [
   { value: 'reset', label: 'Reset' },
   { value: 'statistics', label: 'Statistics' },
   { value: 'config', label: 'Config' },
+  { value: 'toolbox', label: 'Toolbox' },
   { value: 'copy_all_content', label: 'Copy All Content' }
+]
+
+export const toolboxUtils = [
+  { value: 'work_hour_calculator', label: 'Work Hours Calculator' },
+  { value: 'dev_hour_map', label: 'Dev Hours Map' }
 ]

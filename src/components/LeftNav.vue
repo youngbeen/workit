@@ -270,6 +270,9 @@ export default {
         case 'config':
           eventBus.$emit('showConfig')
           break
+        case 'toolbox':
+          eventBus.$emit('showToolbox')
+          break
         case 'copy_all_content':
           eventBus.$emit('copyContent', true)
           break
