@@ -6,19 +6,19 @@
     <div class="row">
       <div class="label">Start Time</div>
       <div class="content">
-        <input type="number" class="common-input" v-model="startHour" min="0" max="23" placeholder="hour" style="width: 80px;" /> : <input type="number" class="common-input" v-model="startMinute" min="0" max="59" placeholder="minute" style="width: 80px;" />
+        <input type="number" class="common-input" v-model="startHour" min="0" max="23" placeholder="hour" style="width: 80px;" @wheel="handleWheel($event, 'startHour')" /> : <input type="number" class="common-input" v-model="startMinute" min="0" max="59" placeholder="minute" style="width: 80px;" @wheel="handleWheel($event, 'startMinute')" />
       </div>
     </div>
     <div class="row">
       <div class="label">End Time</div>
       <div class="content">
-        <input type="number" class="common-input" v-model="endHour" min="0" max="23" placeholder="hour" style="width: 80px;" /> : <input type="number" class="common-input" v-model="endMinute" min="0" max="59" placeholder="minute" style="width: 80px;" />
+        <input type="number" class="common-input" v-model="endHour" min="0" max="23" placeholder="hour" style="width: 80px;" @wheel="handleWheel($event, 'endHour')" /> : <input type="number" class="common-input" v-model="endMinute" min="0" max="59" placeholder="minute" style="width: 80px;" @wheel="handleWheel($event, 'endMinute')" />
       </div>
     </div>
     <div class="row">
       <div class="label">Fixed Minutes</div>
       <div class="content">
-        <input type="number" class="common-input" v-model="fixedMinutes" min="0" placeholder="This value will be removed from work hours" style="width: 80px;" />
+        <input type="number" class="common-input" v-model="fixedMinutes" min="0" placeholder="This value will be removed from work hours" style="width: 80px;" @wheel="handleWheel($event, 'fixedMinutes')" />
       </div>
     </div>
     <hr />
@@ -92,6 +92,26 @@ export default {
         minutes: minutes
       }
     },
+    handleWheel (e, target) {
+      // console.log(e, target)
+      if (e && e.deltaY) {
+        if (e.deltaY < 0) {
+          // 上滑，减少目标值
+          let newVal = parseInt(this[target], 10) - 1
+          newVal < 0 && (newVal = 0)
+          this[target] = newVal.toString()
+        } else {
+          // 下滑，增加目标值
+          let newVal = parseInt(this[target], 10) + 1
+          if ((target === 'startHour' || target === 'endHour') && newVal > 23) {
+            newVal = 23
+          } else if ((target === 'startMinute' || target === 'endMinute') && newVal > 59) {
+            newVal = 59
+          }
+          this[target] = newVal.toString()
+        }
+      }
+    },
     copy () {
       clipboard.writeText(this.workHoursText)
       const copyNotify = new Notification('✅ Content Copied', {
@@ -125,6 +145,7 @@ export default {
 .box-result {
   display: flex;
   align-items: center;
+  gap: 6px;
   margin-left: 130px;
 }
 

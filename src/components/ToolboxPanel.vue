@@ -23,6 +23,7 @@
         </div>
 
         <work-hour-calculator v-if="currentTab === 'work_hour_calculator'"></work-hour-calculator>
+        <dev-hour-map v-if="currentTab === 'dev_hour_map'"></dev-hour-map>
       </div>
     </div>
   </section>
@@ -34,11 +35,13 @@ import eventBus from '@/eventBus'
 import system from '@/models/system'
 import { toolboxUtils } from '@/models/DictMap'
 import WorkHourCalculator from './WorkHourCalculator.vue'
+import DevHourMap from './DevHourMap.vue'
 
 export default {
   name: 'toolboxPanel',
   components: {
-    WorkHourCalculator
+    WorkHourCalculator,
+    DevHourMap
   },
   data () {
     return {
