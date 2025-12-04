@@ -28,10 +28,49 @@
         <div class="icon-btn lg"
           v-show="workHoursText !== '-' && workHoursText !== 'invalid'"
           title="Copy"
-          @click="copy()">
+          @click="copy(workHoursText)">
           <font-awesome-icon :icon="['fas', 'copy']" />
         </div>
       </span>
+      <span style="display: inline-flex; align-items: center;">
+        <div class="icon-btn lg"
+          v-show="workHoursText !== '-' && workHoursText !== 'invalid'"
+          title="Copy Down"
+          @click="copyDown(workHoursText)">
+          <font-awesome-icon :icon="['fas', 'chevron-circle-down']" />
+        </div>
+      </span>
+    </div>
+
+    <div class="tip-block" style="margin-top: 12px;">
+      This tool is designed to calculate 2 work hours div.
+    </div>
+    <div class="row">
+      <div class="label"> </div>
+      <div class="content" data-tip="eg. 8h26m">
+        <input type="text" class="common-input" v-model="hour1" @change="formatTime('hour1')" placeholder="hour" style="width: 80px;" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="label">-</div>
+      <div class="content" data-tip="eg. 8h26m">
+        <input type="text" class="common-input" v-model="hour2" @change="formatTime('hour2')" placeholder="hour" style="width: 80px;" />
+      </div>
+    </div>
+    <hr />
+    <div class="row">
+      <div class="label">=</div>
+      <div class="content" style="display: flex; align-items: center; gap: 6px;">
+        <strong>{{ workHoursDiv }}</strong>
+        <span style="display: inline-flex; align-items: center;">
+          <div class="icon-btn lg"
+            v-show="workHoursDiv !== '?' && workHoursDiv !== 'invalid'"
+            title="Copy"
+            @click="copy(workHoursDiv)">
+            <font-awesome-icon :icon="['fas', 'copy']" />
+          </div>
+        </span>
+      </div>
     </div>
   </section>
 </template>
@@ -46,7 +85,9 @@ export default {
       startMinute: '30',
       endHour: '18',
       endMinute: '30',
-      fixedMinutes: '30'
+      fixedMinutes: '30',
+      hour1: '',
+      hour2: ''
     }
   },
   computed: {
@@ -67,6 +108,19 @@ export default {
       }
       const result = this.calculateTimeDifference(startHour, startMinute, endHour, endMinute, this.fixedMinutes)
       return `${result.hours}h${result.minutes}m`
+    },
+    workHoursDiv () {
+      if (!this.hour1 || !this.hour2) {
+        return '?'
+      }
+      if (!/^(\d+h)?(\d+m)?$/.test(this.hour1) || !/^(\d+h)?(\d+m)?$/.test(this.hour2)) {
+        return 'invalid'
+      }
+      const minutes1 = this.getMinutesByTime(this.hour1)
+      const minutes2 = this.getMinutesByTime(this.hour2)
+      const isNegative = minutes1 < minutes2
+      const divTime = this.getTimeByMinutes(Math.abs(minutes1 - minutes2))
+      return `${isNegative ? '-' : ''}${divTime.timeString}`
     }
   },
 
@@ -112,13 +166,120 @@ export default {
         }
       }
     },
-    copy () {
-      clipboard.writeText(this.workHoursText)
+    formatTime (param) {
+      // NOTE 1. 支持3h4m, 3小时4分钟之类的输入。同时支持夹杂空格以及min、分之类的其他写法
+      // 2. 支持输入小数自动换算单位
+      // 3. 支持缺省单位（默认为小时）
+      let logTime = this[param]
+      logTime = logTime.replace(/\s|\n|\r/g, '')
+      logTime = logTime.replace(/[^hm小时分钟分\d.]/g, '')
+      if (!logTime) {
+        this[param] = ''
+        return
+      }
+      if (/^\d+(\.\d+)*$/.test(logTime)) {
+        // 纯数字，缺省默认为小时
+        const allMinute = Math.round(Number(logTime) * 60)
+        const finalHour = Math.floor(allMinute / 60)
+        const finalMinute = allMinute % 60
+        // 组装最后规范的结果
+        let finalString = ''
+        if (finalHour) {
+          finalString += finalHour + 'h'
+        }
+        if (finalMinute) {
+          finalString += finalMinute + 'm'
+        }
+        this[param] = finalString
+      } else {
+        // 根据“干货”内容整理规范工时
+        let hour = logTime.match(/^\d+(\.\d+)*(?=[h(小时)]+)/)
+        if (hour && hour.length) {
+          hour = hour[0] // 此时处理完的内容是小时数字字符串，可能是含小数的，例如3.5
+        }
+        let minute = logTime.match(/(?<=[h(小时)]*)\d+(\.\d+)*(?=[m分钟])/)
+        if (minute && minute.length) {
+          minute = minute[0] // 此时处理完的内容是分钟数字字符串，可能是含小数的，例如3.5
+        }
+        // 小时字符串转换为分钟，分钟字符串直接保留取整，最后相加归集换算
+        let allMinute = 0
+        if (hour) {
+          allMinute += Math.round(Number(hour) * 60)
+        }
+        if (minute) {
+          allMinute += Math.floor(Number(minute))
+        }
+        const finalHour = Math.floor(allMinute / 60)
+        const finalMinute = allMinute % 60
+        // 组装最后规范的结果
+        let finalString = ''
+        if (finalHour) {
+          finalString += finalHour + 'h'
+        }
+        if (finalMinute) {
+          finalString += finalMinute + 'm'
+        }
+        this[param] = finalString
+      }
+    },
+    getMinutesByTime (time) {
+      let hour = time.match(/^\d+(\.\d+)*(?=[h(小时)]+)/)
+      if (hour && hour.length) {
+        hour = hour[0] // 此时处理完的内容是小时数字字符串，可能是含小数的，例如3.5
+      }
+      let minute = time.match(/(?<=[h(小时)]*)\d+(\.\d+)*(?=[m分钟])/)
+      if (minute && minute.length) {
+        minute = minute[0] // 此时处理完的内容是分钟数字字符串，可能是含小数的，例如3.5
+      }
+      // 小时字符串转换为分钟，分钟字符串直接保留取整，最后相加归集换算
+      let allMinute = 0
+      if (hour) {
+        allMinute += Math.round(Number(hour) * 60)
+      }
+      if (minute) {
+        allMinute += Math.floor(Number(minute))
+      }
+      return allMinute
+    },
+    getTimeByMinutes (minutes) {
+      const finalHour = Math.floor(minutes / 60)
+      const finalMinute = minutes % 60
+      let hourString = ''
+      if (finalHour) {
+        hourString = `${finalHour}h`
+      }
+      let minuteString = ''
+      if (finalMinute) {
+        minuteString = `${finalMinute}m`
+      } else if (!hourString) {
+        minuteString = '0m'
+      }
+      return {
+        hours: finalHour,
+        minutes: finalMinute,
+        timeString: `${hourString}${minuteString}`
+      }
+    },
+    copy (content) {
+      if (!content) {
+        return
+      }
+      clipboard.writeText(content)
       const copyNotify = new Notification('✅ Content Copied', {
         body: 'Content was copied into clipboard'
       })
       copyNotify.onclick = () => {
         // console.log('copied into clipboard')
+      }
+    },
+    copyDown (content) {
+      if (!content) {
+        return
+      }
+      if (!this.hour1) {
+        this.hour1 = content
+      } else if (!this.hour2) {
+        this.hour2 = content
       }
     }
   }
@@ -134,11 +295,26 @@ export default {
   align-items: center;
   gap: 6px;
   // padding: 6px 0;
-  color: $color-active;
   .label {
     width: 120px;
+    color: $color-active;
     text-align: right;
     font-weight: 600;
+  }
+  .content {
+    position: relative;
+    &:after {
+      content: attr(data-tip);
+      position: absolute;
+      z-index: 1;
+      left: calc(100% + 6px);
+      top: 0;
+      min-width: 300px;
+      height: 30px;
+      line-height: 30px;
+      color: #999;
+      // background: red;
+    }
   }
 }
 

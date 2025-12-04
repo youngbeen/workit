@@ -165,9 +165,9 @@ table {
   align-items: center;
   gap: 6px;
   // padding: 6px 0;
-  color: $color-active;
   .label {
     width: 180px;
+    color: $color-active;
     text-align: right;
     font-weight: 600;
   }
