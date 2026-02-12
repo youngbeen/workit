@@ -1,7 +1,7 @@
 
 import { dateUtil } from '@youngbeen/angle-util'
 import { getComingWorkday, getComingNatureDay } from '@youngbeen/workday'
-const diff = require('diff')
+import { diffChars } from 'diff'
 
 const analyseLabels = (content) => {
   // 分析标签，以##包裹
@@ -383,7 +383,8 @@ export const analysePossibleDuplicate = (content, source = []) => {
   if (content.length <= 30) {
     for (let index = 0; index < source.length; index++) {
       const t = source[index]
-      const change = diff.diffChars(content, t, {
+      if (t.length < 16) continue
+      const change = diffChars(content, t, {
         ignoreCase: true
       })
       const sameLength = change.reduce((same, item) => {
@@ -410,7 +411,8 @@ export const analysePossibleDuplicate = (content, source = []) => {
   } else {
     for (let index = 0; index < source.length; index++) {
       const t = source[index]
-      const change = diff.diffChars(content, t, {
+      if (t.length < 16) continue
+      const change = diffChars(content, t, {
         ignoreCase: true
       })
       const sameLength = change.reduce((same, item) => {
