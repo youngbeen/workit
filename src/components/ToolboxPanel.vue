@@ -146,7 +146,7 @@ export default {
   }
 }
 @media (prefers-color-scheme: dark) {
-  .bed-document-panel {
+  .bed-toolbox-panel {
     .container {
       background: $primary-bgcolor-dark;
       &::-webkit-scrollbar-thumb {
