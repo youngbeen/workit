@@ -47,5 +47,6 @@ export const sysActions = [
 
 export const toolboxUtils = [
   { value: 'work_hour_calculator', label: 'Work Hours Calculator' },
+  { value: 'batch_hour_calculator', label: 'Batch Hours' },
   { value: 'dev_hour_map', label: 'Dev Hours Map' }
 ]

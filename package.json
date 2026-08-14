@@ -1,8 +1,8 @@
 {
   "name": "workit",
-  "version": "2.17.2",
-  "publishDate": "Mar 2026",
-  "versionDesc": "fix: dark mode support & dark mode picture",
+  "version": "2.18.0",
+  "publishDate": "Aug 2026",
+  "versionDesc": "feat: batch hour calculator",
   "private": true,
   "description": "Workit is an app to deal with your daily work todo tasks",
   "author": "youngbeen",
